@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>595</width>
+    <height>426</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTableView" name="tableView"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>595</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action_4"/>
+    <addaction name="action_5"/>
+   </widget>
+   <widget class="QMenu" name="menu_service">
+    <property name="title">
+     <string>Сервис</string>
+    </property>
+    <addaction name="action_Excel"/>
+    <addaction name="action_Excel_2"/>
+    <addaction name="separator"/>
+    <addaction name="action_3"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+    <addaction name="action_6"/>
+    <addaction name="action_7"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_service"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_editor">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_editorTool"/>
+   <addaction name="actionSave"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_editorTool">
+   <property name="text">
+    <string>Редактор</string>
+   </property>
+   <property name="toolTip">
+    <string>Открыть редактор</string>
+   </property>
+  </action>
+  <action name="action_Excel">
+   <property name="text">
+    <string>Импорт Excel</string>
+   </property>
+  </action>
+  <action name="action_Excel_2">
+   <property name="text">
+    <string>Экспорт Excel</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Настройки подключения к БД</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Открыть набор</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Создать новый</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>Руководство пользователя</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить изменения</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
