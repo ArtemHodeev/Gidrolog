@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     DatabaseAccessor::dbPassword = "123";
     DatabaseAccessor::dbPort = 5432;
 
-	
     MainWindow w;
     w.show();
 
