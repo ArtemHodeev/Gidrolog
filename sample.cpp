@@ -3,7 +3,7 @@
 Sample::Sample()
 {
     comment = "";
-    components = new QHash();
+    components = new QHash<QString, double>();
 }
 Sample::~Sample()
 {
@@ -25,7 +25,7 @@ QDate Sample::getDate()
 {
     return date;
 }
-QHash<QString,double> Sample::getComponents()
+QHash<QString,double>* Sample::getComponents()
 {
     return components;
 }

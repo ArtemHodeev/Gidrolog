@@ -13,7 +13,7 @@ public:
     QDate getDate();
     unsigned int getLocationId();
     QString getComment();
-    QHash *getComponents();
+    QHash<QString, double> *getComponents();
     void setId(unsigned int id);
     void setSampleSetId(unsigned int id);
     void setDate(QDate date);
