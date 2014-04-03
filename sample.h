@@ -13,13 +13,13 @@ public:
     QDate getDate();
     unsigned int getLocationId();
     QString getComment();
-    QHash<QString, double> *getComponents();
+    QHash<unsigned int, double> *getComponents();
     void setId(unsigned int id);
     void setSampleSetId(unsigned int id);
     void setDate(QDate date);
     void setLocationId(unsigned int location_id);
     void setComment(QString comment);
-    void setComponents(QHash<QString, double> *components);
+    void setComponents(QHash<unsigned int, double> *components);
 private:
     unsigned int id;
     unsigned int sample_set_id;
@@ -27,7 +27,7 @@ private:
     unsigned int location_id;
     QString comment;
 
-    QHash<QString, double> *components;
+    QHash<unsigned int, double> *components;
 };
 
 #endif // SAMPLE_H

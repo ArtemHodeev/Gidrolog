@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <tablemodel.h>
 #include <itemtablemodel.h>
+#include <samplemodel.h>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -12,10 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    TableModel *model = new ItemTableModel();
-    QObject::connect(this,SIGNAL(actionSave()), model,SLOT(actionSave_clicked()));
+    SampleModel *model = new SampleModel();
+//    QObject::connect(this,SIGNAL(actionSave()), model,SLOT(actionSave_clicked()));
 
     model->setItems();
+    model->setHeaders();
+
     ui->tableView->setModel(model);
 }
 

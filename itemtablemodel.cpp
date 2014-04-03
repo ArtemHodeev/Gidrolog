@@ -271,6 +271,7 @@ bool ItemTableModel::setData(const QModelIndex &index, const QVariant &value, in
             };
 
             items.append(i);
+            items_to_save.append(i);
             insertRows(rCount,1);
         }
 
