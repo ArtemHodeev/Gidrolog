@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     SampleModel *model = new SampleModel();
-//    QObject::connect(this,SIGNAL(actionSave()), model,SLOT(actionSave_clicked()));
+    QObject::connect(this,SIGNAL(actionSave()), model,SLOT(on_actionSave_triggered()));
 
     model->setItems();
     model->setHeaders();

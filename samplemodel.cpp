@@ -5,17 +5,14 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QMessageBox>
-#include <QRegExp>
 SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
     params = new QHash<QString, unsigned int>();
-//    headers = new QHash<unsigned int, QString>();
 }
 SampleModel::~SampleModel()
 {
     delete params;
-//    delete headers;
 }
 QVariant SampleModel::data(const QModelIndex &index, int role) const
 {
@@ -45,8 +42,13 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
             QString param_name = headers[index.column()];
 
             unsigned int param_id = params->value(param_name);
+            //если в пробе есть параметр с id равынм param_id, то взять отобразить его значение, если нет, то отбразить Н/О
+            double param_value = -1;
+            if (items[index.row()]->getComponents()->contains(param_id))
+            {
+                param_value = items[index.row()]->getComponents()->value(param_id);
+            }
 
-            double param_value = items[index.row()]->getComponents()->value(param_id);
             res = param_value < 0 ? QVariant("Н/О") : QVariant(param_value);
             break;
         }
@@ -95,69 +97,91 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     {
         return false;
     }
+
+    //если режактируется существующая проба
     if (index.row() < rCount - 1)
     {
-        qDebug()<<"column: "<<index.column();
         switch(index.column())
         {
         case 1:
+        {
             items[index.row()]->setLocationId(value != "" ? value.toUInt() : index.data().toUInt());
             break;
+        }
         case 2:
         {
-            QRegExp r("\\d{1,2}\,|\.\\d{1,2}\,|\.\\d{4}");
-            QDate d;
-            qDebug()<<"ExactMatch: "<<r.exactMatch(value.toString());
-            QVariant v = value;
+           //узнаем: была ли введена новая дата или нужно оставить старую
+            QVariant v = value != "" ? value.toString() : index.data().toString();
+            QDate d = QDate::fromString(v.toString(),"yyyy-MM-dd");
 
-            qDebug()<<"Value: " << v.toString();
-            if (value != "" )
-            {
-
-                d = QDate::fromString(value.toString(),"dd.mm.yyyy");
-            }
-            else
-            {
-                d = QDate::fromString(index.data().toString(),"dd/mm/yyyy");
-            }
-            qDebug()<<"Is Valid: "<<d.isValid();
-            qDebug()<<"Is NULL: "<<d.isNull();
+            qDebug()<<"Date: "<< d.toString("yyyy-MM-dd");
             items[index.row()]->setDate(d);
+
             break;
         }
         case 3:
+        {
             items[index.row()]->setComment(value.toString());
             break;
+        }
         default:
+        {
             QString param_name = headers[index.column()];
             unsigned int param_id = params->value(param_name);
-            items[index.row()]->getComponents()->insert(param_id, value != "" ? value.toDouble() : index.data().toDouble());// = index.data().toDouble();
-            //        items[index.row()]->getComponents()->value(param_id) = value != "" ? value.toDouble() : index.data().toDouble();
+            items[index.row()]->getComponents()->insert(param_id, value != "" ? value.toDouble() : index.data().toDouble());
             break;
         }
-        if (!items_to_save.contains(items[index.row()]))
+        }
+
+        //добавление редактируемой пробы/строки в список проб на обновление в БД
+        if (!items_to_update.contains(items[index.row()]))
         {
-            items_to_save.append(items[index.row()]);
+            items_to_update.append(items[index.row()]);
         }
     }
+    // Если создает новая проба
     else
     {
+        qDebug()<< "Value: "<<value;
         if (value != "")
         {
             bool sign = true;
             Sample *i = new Sample();
+
             switch(index.column())
             {
             case 1:
-                i->setLocationId(value != "" ? value.toUInt() : index.data().toUInt());
+            {
+                i->setLocationId(value.toUInt());
+                sign = true;
+
                 break;
+            } // case 1:
             case 2:
-                i->setDate(value != "" ? value.toDate() : index.data().toDate());
-                break;
+            {
+                QDate d = QDate::fromString(value.toString(),"yyyy-MM-dd");
+
+                i->setDate(d);
+                sign = true;
+
+                 break;
+            }// case 2:
             case 3:
-                i->setComment(value.toString());
+            {
+                if (index.model()->index(index.row(),1).data() == 0 || index.model()->index(index.row(),2).data() == "")
+                {
+                    QMessageBox::about(NULL,QString("Предупреждение"),QString("Укажите место взятия и дату отбора пробы"));
+                    sign = false;
+                }
+                else
+                {
+                    i->setComment(value.toString());
+                    sign = true;
+                }
                 break;
+            } // case 3:
             default:
+            {
                 if (index.model()->index(index.row(),1).data() == 0 || index.model()->index(index.row(),2).data() == "")
                 {
                     QMessageBox::about(NULL,QString("Предупреждение"),QString("Укажите место взятия и дату отбора пробы"));
@@ -171,11 +195,20 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
                     i->getComponents()->insert(param_id, value != "" ? value.toDouble() : index.data().toDouble());// = index.data().toDouble();
                 }
                 break;
-            }
-            if (sign)
+            } // default:
+
+
+            }// switch (index.column())
+
+            //Если не заполнины место отбора и дата отбора, то проба не создается
+            if (sign == true)
             {
                 items.append(i);
-                items_to_save.append(i);
+                if (!items_to_save.contains(i))
+                {
+                    items_to_save.append(i);
+                }
+//                items_to_save.append(i);
                 insertRows(rCount,1);
             }
         }
@@ -249,7 +282,87 @@ void SampleModel::setHeaders()
         params->insert(name, query->value("id").toUInt());
     }
 }
+void SampleModel::updateItems()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+
+    qDebug()<<"Size of items_to_update: "<<items_to_update.size();
+    while (!items_to_update.empty())
+    {
+        query->prepare("UPDATE gydro.sample SET location_id = :location, sample_date = :date, comment = :comment WHERE id = :id");
+
+        query->bindValue(":id",items_to_update.first()->getId());
+        query->bindValue(":location",items_to_update.first()->getLocationId());
+        query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd"));
+        query->bindValue(":comment",items_to_update.first()->getComment());
+
+        query->exec();
+        qDebug()<<"Error on update sample: "<<query->lastError().text();
+
+        query->prepare("UPDATE gydro.item_sample SET value = :value WHERE sample_id = :s_id AND item_id = :i_id");
+        QHash<unsigned int, double>::iterator i;
+        for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
+        {
+            query->bindValue(":s_id",items_to_update.first()->getId());
+            query->bindValue(":i_id",i.key());
+            query->bindValue(":value",i.value());
+
+            qDebug()<<"s_id: "<<items_to_update.first()->getId();
+            qDebug()<<"i_id: "<<i.key();
+            qDebug()<<"value: "<<i.value();
+
+
+            query->exec();
+            qDebug()<<"Error on update item_sample: "<<query->lastError().text();
+        }
+
+        items_to_update.removeFirst();
+    }
+
+    delete query;
+}
 void SampleModel::saveItems()
 {
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    qDebug()<<"Size of items_to_save: "<<items_to_save.size();
+    while (!items_to_save.empty())
+    {
+        sql = "INSERT INTO gydro.sample (sample_set_id, location_id, sample_date, comment) ";
+        sql += "VALUES (:sample_set_id,:location_id,:date,:comment)";
+        query->prepare(sql);
+        query->bindValue(":sample_set_id",1);
+        query->bindValue(":location_id",items_to_save.first()->getLocationId());
+        query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd"));
+        query->bindValue(":comment", items_to_save.first()->getComment());
+        query->exec();
 
+        qDebug()<<"Error on insert sample: "<<query->lastError().text();
+//        query->finish();
+//        QSqlQuery *query1 = new QSqlQuery(DatabaseAccessor::getDb());
+        sql = "INSERT INTO gydro.item_sample (sample_id, item_id, value) ";
+        sql += "VALUES (:s_id, :i_id, :value)";
+
+        query->prepare(sql);
+        QHash<unsigned int, double>::iterator i;
+        for (i = items_to_save.first()->getComponents()->begin(); i != items_to_save.first()->getComponents()->end(); i ++)
+        {
+            query->bindValue(":s_id",items_to_save.first()->getId());
+            query->bindValue(":i_id",i.key());
+            query->bindValue(":value",i.value());
+
+            query->exec();
+            qDebug()<<"Error on insert item_sample: "<<query->lastError().text();
+//            query1->finish();
+        }
+//        delete query;
+
+        items_to_save.removeFirst();
+    }
+
+}
+void  SampleModel::on_actionSave_triggered()
+{
+    updateItems();
+    saveItems();
 }

@@ -23,14 +23,20 @@ public:
     unsigned int getVaule(QString param_name) const;
     void setItems();
     void saveItems();
+    void updateItems();
     void setHeaders();
+public slots:
+    void on_actionSave_triggered();
 
 
 private:
+    QVector<Sample*> items_to_update;
+    QVector<Sample*> items_to_delete;
     QVector<Sample*> items_to_save;
     QVector<Sample*> items;
-    QHash<QString, unsigned int> *params;
-    QVector<QString> headers; // параметры: QString - имя параметра, unsigned int - id параметра
+    QHash<QString, unsigned int> *params;// все какие есть параметры в БДQ.
+//                                          QString - имя параметра, unsigned int - id параметра из БД
+    QVector<QString> headers; // заголовки столбцов
 
 };
 
