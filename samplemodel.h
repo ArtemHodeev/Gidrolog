@@ -4,6 +4,7 @@
 #include <QAbstractTableModel>
 #include <tablemodel.h>
 #include <sample.h>
+#include <iteminsample.h>
 
 class SampleModel : public TableModel
 {
@@ -34,6 +35,9 @@ private:
     QVector<Sample*> items_to_delete;
     QVector<Sample*> items_to_save;
     QVector<Sample*> items;
+    QVector<ItemInSample*> params_to_save;// параметры проб, которые будут созданы: в пробе появилось значение данного параметр
+    QVector<ItemInSample*> params_to_update;// параметры проб, котороые обновили свое значение
+    QVector<ItemInSample*> params_to_delete;// параметры проб, которые будут удалены из БД: значение стало -1
     QHash<QString, unsigned int> *params;// все какие есть параметры в БДQ.
 //                                          QString - имя параметра, unsigned int - id параметра из БД
     QVector<QString> headers; // заголовки столбцов

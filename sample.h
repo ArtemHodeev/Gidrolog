@@ -2,6 +2,7 @@
 #define SAMPLE_H
 #include <QDate>
 #include <QHash>
+#include <iteminsample.h>
 
 class Sample
 {
@@ -10,24 +11,29 @@ public:
     ~Sample();
     unsigned int getId();
     unsigned int getSampleSetId();
-    QDate getDate();
+    unsigned int getPosition();
     unsigned int getLocationId();
+    QDate getDate();
     QString getComment();
-    QHash<unsigned int, double> *getComponents();
+    QHash<unsigned int, ItemInSample> *getComponents();
+
     void setId(unsigned int id);
     void setSampleSetId(unsigned int id);
-    void setDate(QDate date);
+    void setPosition(unsigned int position);
     void setLocationId(unsigned int location_id);
+    void setDate(QDate date);
     void setComment(QString comment);
-    void setComponents(QHash<unsigned int, double> *components);
-private:
-    unsigned int id;
-    unsigned int sample_set_id;
-    QDate date;
-    unsigned int location_id;
-    QString comment;
+    void setComponents(QHash<unsigned int, ItemInSample> *components);
 
-    QHash<unsigned int, double> *components;
+private:
+    unsigned int id; // id пробы из БД
+    unsigned int sample_set_id; // номер набора проби из БД (пока устанавливается вручную)
+    unsigned int position; // номер строки пробы в системе
+    unsigned int location_id;// id места отбора пробы из БД
+    QDate date; // дата отбора пробы
+    QString comment; // комментарий к пробе
+
+    QHash<unsigned int, ItemInSample> *components; // список параметров пробы
 };
 
 #endif // SAMPLE_H

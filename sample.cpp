@@ -5,8 +5,9 @@ Sample::Sample()
     id = 0;
     comment = "";
     location_id = 0;
+    position = 0;
 
-    components = new QHash<unsigned int, double>();
+    components = new QHash<unsigned int, ItemInSample>();
 }
 Sample::~Sample()
 {
@@ -20,15 +21,20 @@ unsigned int Sample::getSampleSetId()
 {
     return sample_set_id;
 }
+unsigned int Sample::getPosition()
+{
+    return position;
+}
 unsigned int Sample::getLocationId()
 {
     return location_id;
 }
+
 QDate Sample::getDate()
 {
     return date;
 }
-QHash<unsigned int,double>* Sample::getComponents()
+QHash<unsigned int,ItemInSample>* Sample::getComponents()
 {
     return components;
 }
@@ -44,6 +50,10 @@ void Sample::setSampleSetId(unsigned int id)
 {
     this->sample_set_id = id;
 }
+void Sample::setPosition(unsigned int position)
+{
+    this->position = position;
+}
 void Sample::setLocationId(unsigned int location_id)
 {
     this->location_id = location_id;
@@ -56,7 +66,7 @@ void Sample::setComment(QString comment)
 {
     this->comment = comment;
 }
-void Sample::setComponents(QHash<unsigned int, double> *components)
+void Sample::setComponents(QHash<unsigned int, ItemInSample> *components)
 {
     *(this->components) = *components;
 }

@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     itemtypemodel.cpp \
     itemtype.cpp \
     sample.cpp \
-    samplemodel.cpp
+    samplemodel.cpp \
+    iteminsample.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     itemtypemodel.h \
     itemtype.h \
     sample.h \
-    samplemodel.h
+    samplemodel.h \
+    iteminsample.h
 
 FORMS    += mainwindow.ui \
     editor.ui
