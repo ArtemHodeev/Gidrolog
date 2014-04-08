@@ -41,5 +41,17 @@ bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 
     return true;
 }
+bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    if (row < 0 || count < 0)
+    {
+        return false;
+    }
+
+    qDebug()<<"row begin: "<<row<<" | row end: "<<row + count - 1;
+    beginRemoveRows(parent, row, row + count - 1);
+    rCount -= count;
+    endRemoveRows();
+}
 
 

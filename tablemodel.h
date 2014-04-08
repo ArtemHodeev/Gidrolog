@@ -17,6 +17,7 @@ public:
     virtual void setItems() = 0;
     virtual void saveItems() = 0;
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
 private:
 

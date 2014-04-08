@@ -78,7 +78,14 @@ QVariant SampleModel::headerData(int section, Qt::Orientation orientation, int r
     }
     else
     {
-        res = QVariant(section + 1);
+        if (section < rCount - 1)
+        {
+            res = QVariant(section + 1);
+        }
+        else
+        {
+            res = QVariant("+");
+        }
     }
 
     return res;
@@ -408,6 +415,23 @@ void SampleModel::saveItems()
         items_to_save.removeFirst();
     }
 
+}
+void SampleModel::removeItems()
+{
+
+}
+void SampleModel::setItemsToDelete(int *mass)
+{
+    int count = 0;
+    int first = mass[count];
+
+    while(mass[count] != -1)
+    {
+        items_to_delete.append(items[mass[count]]);
+        items.removeAt(mass[count]);
+        count ++;
+    }
+    removeRows(first,count);
 }
 void  SampleModel::on_actionSave_triggered()
 {

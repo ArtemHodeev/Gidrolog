@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <samplemodel.h>
+#include <QItemSelectionModel>
 
 namespace Ui {
 class MainWindow;
@@ -19,8 +21,12 @@ public slots:
     void on_actionSave_triggered();
 signals:
     void actionSave();
+protected:
+    void keyPressEvent(QKeyEvent *key_event);
 private:
     Ui::MainWindow *ui;
+    SampleModel *model;
+    QItemSelectionModel *sel_model;
 };
 
 #endif // MAINWINDOW_H

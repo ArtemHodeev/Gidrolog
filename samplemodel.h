@@ -23,8 +23,10 @@ public:
 //    void setParams();
     unsigned int getVaule(QString param_name) const;
     void setItems();
+    void setItemsToDelete(int *mass);
     void saveItems();
     void updateItems();
+    void removeItems();
     void setHeaders();
 public slots:
     void on_actionSave_triggered();
