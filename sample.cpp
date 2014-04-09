@@ -6,6 +6,7 @@ Sample::Sample()
     comment = "";
     location_id = 0;
     position = 0;
+    water_id = 0;
 
     components = new QHash<unsigned int, ItemInSample>();
 }
@@ -28,6 +29,10 @@ unsigned int Sample::getPosition()
 unsigned int Sample::getLocationId()
 {
     return location_id;
+}
+unsigned int Sample::getWaterId()
+{
+    return water_id;
 }
 
 QDate Sample::getDate()
@@ -57,6 +62,10 @@ void Sample::setPosition(unsigned int position)
 void Sample::setLocationId(unsigned int location_id)
 {
     this->location_id = location_id;
+}
+void Sample::setWaterId(unsigned int water_id)
+{
+    this->water_id = water_id;
 }
 void Sample::setDate(QDate date)
 {

@@ -34,6 +34,9 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
             res = QVariant(items.at(index.row())->getDate());
             break;
         case 3:
+            res = QVariant(items.at(index.row())->getWaterId());
+            break;
+        case 4:
             res = QVariant(items.at(index.row())->getComment());
             break;
 
@@ -44,7 +47,7 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
             unsigned int param_id = params->value(param_name);
             //если в пробе есть параметр с id равынм param_id, то взять  и отобразить его значение, если нет, то отобразить Н/О
             double param_value = -1;
-//            qDebug()<<"param_value for s_id = "<<items[index.row()]<< " : "<<param_value;
+
             if (items[index.row()]->getComponents()->contains(param_id) == true)
             {
                 param_value = items[index.row()]->getComponents()->value(param_id).getValue();
@@ -126,6 +129,11 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
             break;
         }
         case 3:
+        {
+            items[index.row()]->setWaterId(value.toUInt());
+            break;
+        }
+        case 4:
         {
             items[index.row()]->setComment(value.toString());
             break;
@@ -214,9 +222,18 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
             }// case 2:
             case 3:
             {
-                if (index.model()->index(index.row(),1).data() == 0 || index.model()->index(index.row(),2).data() == "")
+                i->setWaterId(value.toUInt());
+                sign = true;
+
+                break;
+            }
+            case 4:
+            {
+                if (index.model()->index(index.row(),1).data() == 0 ||
+                        index.model()->index(index.row(),2).data() == "" ||
+                        index.model()->index(index.row(),3).data() == 0)
                 {
-                    QMessageBox::about(NULL,QString("Предупреждение"),QString("Укажите место взятия и дату отбора пробы"));
+                    QMessageBox::about(NULL,QString("Предупреждение"),QString("Укажите место взятия, дату отбора пробы и тип водной массы"));
                     sign = false;
                 }
                 else
@@ -236,10 +253,11 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
             }// switch (index.column())
 
-            //Проба создается, если заполенены место отбора и дата отбора
+            //Проба создается, если заполенены место отбора, дата отбора и тип водной массы
             if (sign == true)
             {
                 items.append(i);
+                qDebug()<<"Contains: "<<items_to_save.contains(i);
                 if (!items_to_save.contains(i))
                 {
                     items_to_save.append(i);
@@ -265,7 +283,8 @@ void SampleModel::setItems()
     query->prepare("SELECT id, sample_set_id, location_id, sample_date, comment FROM gydro.sample");
     query->exec();
 
-    column_count_query->prepare("SELECT sample_id, count(item_id) c FROM gydro.item_sample GROUP BY sample_id ORDER BY c DESC LIMIT 1");
+//    column_count_query->prepare("SELECT sample_id, count(item_id) c FROM gydro.item_sample GROUP BY sample_id ORDER BY c DESC LIMIT 1");
+    column_count_query->prepare("SELECT count(id)c FROM gydro.item");
     column_count_query->exec();
 
     column_count_query->next();
@@ -280,6 +299,7 @@ void SampleModel::setItems()
         s->setId(query->value("id").toUInt());
         s->setLocationId(query->value("location_id").toUInt());
         s->setSampleSetId(query->value("sample_set_id").toUInt());
+        s->setWaterId(query->value("water_type_id").toUInt());
         s->setDate(query->value("sample_date").toDate());
         s->setComment(query->value("comment").toString());
 
@@ -312,6 +332,7 @@ void SampleModel::setHeaders()
     headers.append(QString("id"));
     headers.append(QString("Место взятия"));
     headers.append(QString("Дата взятия"));
+    headers.append(QString("Тип водной массы"));
     headers.append(QString("Комментарий"));
 
     QString name = QString("");
@@ -329,10 +350,11 @@ void SampleModel::updateItems()
     qDebug()<<"Size of items_to_update: "<<items_to_update.size();
     while (!items_to_update.empty())
     {
-        query->prepare("UPDATE gydro.sample SET location_id = :location, sample_date = :date, comment = :comment WHERE id = :id");
+        query->prepare("UPDATE gydro.sample SET location_id = :location, water_type_id = :water_id, sample_date = :date, comment = :comment WHERE id = :id");
 
         query->bindValue(":id",items_to_update.first()->getId());
         query->bindValue(":location",items_to_update.first()->getLocationId());
+        query->bindValue(":water_id", items_to_update.first()->getWaterId());
         query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd"));
         query->bindValue(":comment",items_to_update.first()->getComment());
 
@@ -359,7 +381,7 @@ void SampleModel::updateItems()
             }
             else
             {
-                qDebug()<<"Changed: "<<i->getChanged();
+//                qDebug()<<"Changed: "<<i->getChanged();
                 switch(i->getChanged())
                 {
                 case 1:
@@ -403,12 +425,13 @@ void SampleModel::saveItems()
     //Параметры пробы могут быть сохранены только при обновлении пробы
     while (!items_to_save.empty())
     {
-        sql = "INSERT INTO gydro.sample (sample_set_id, location_id, sample_date, comment) ";
-        sql += "VALUES (:sample_set_id,:location_id,:date,:comment)";
+        sql = "INSERT INTO gydro.sample (sample_set_id, location_id, sample_date, water_type_id, comment) ";
+        sql += "VALUES (:sample_set_id,:location_id,:date,:water_id,:comment)";
         query->prepare(sql);
 
         query->bindValue(":sample_set_id",1);
         query->bindValue(":location_id",items_to_save.first()->getLocationId());
+        query->bindValue(":water_id", items_to_save.first()->getWaterId());
         query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd"));
         query->bindValue(":comment", items_to_save.first()->getComment());
         query->exec();
@@ -418,7 +441,47 @@ void SampleModel::saveItems()
 }
 void SampleModel::removeItems()
 {
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    qDebug()<<"Size of items_to_delete: "<<items_to_delete.size();
+    while(!items_to_delete.empty())
+    {
+        Sample *s = items_to_delete.first();
+        sql = "DELETE FROM gydro.item_sample WHERE sample_id = :s_id AND item_id = :i_id";
+        query->prepare(sql);
 
+        QHash<unsigned int, ItemInSample>::iterator i;
+        unsigned int s_id = 0;
+        for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
+        {
+            // Определение id удаляемой пробы
+            // Если проба была недавно добавлена в системе и сохранена,
+            // то в БД у нее появляется id, но система о нем еще не знает
+            if (s->getId() == 0)
+            {
+                QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
+                q->prepare("Select id FROM gydro.sample");
+                q->exec();
+                q->seek(s->getPosition());
+                s_id = q->value("id").toUInt();
+            }
+            else
+            {
+                s_id = s->getId();
+            }
+            query->bindValue(":s_id", s_id);
+            query->bindValue(":i_id", i.key());
+            query->exec();
+        }
+
+        sql = "DELETE FROM gydro.sample WHERE id = :s_id";
+        query->prepare(sql);
+        query->bindValue(":s_id", s_id);
+        query->exec();
+
+        items_to_delete.removeFirst();
+    }
+    delete query;
 }
 void SampleModel::setItemsToDelete(int *mass)
 {
@@ -428,6 +491,20 @@ void SampleModel::setItemsToDelete(int *mass)
     while(mass[count] != -1)
     {
         items_to_delete.append(items[mass[count]]);
+        int update_index = items_to_update.indexOf(items[mass[count]]);
+        int save_index = items_to_save.indexOf(items[mass[count]]);
+
+        // Если удаляема проба есть в списках на добавление новых проб или обновление,
+        // то ее сразу удалить из этих списков.
+        if (update_index >= 0)
+        {
+            items_to_update.removeAt(update_index);
+        }
+        if (save_index >= 0)
+        {
+            items_to_save.removeAt(save_index);
+        }
+
         items.removeAt(mass[count]);
         count ++;
     }
@@ -437,4 +514,5 @@ void  SampleModel::on_actionSave_triggered()
 {
     saveItems();
     updateItems();
+    removeItems();
 }

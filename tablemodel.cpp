@@ -34,9 +34,7 @@ bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 
     // вставка строк: вставить одну строку с номера row -1, по номер row -1
     beginInsertRows(QModelIndex(), row - 1, row - 1);
-
     rCount += 1;
-
     endInsertRows();
 
     return true;
@@ -48,7 +46,6 @@ bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
         return false;
     }
 
-    qDebug()<<"row begin: "<<row<<" | row end: "<<row + count - 1;
     beginRemoveRows(parent, row, row + count - 1);
     rCount -= count;
     endRemoveRows();
