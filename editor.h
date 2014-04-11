@@ -29,6 +29,7 @@ private slots:
     void on_pushButton_itemAdd_clicked();
     void on_pushButton_exit_clicked();
     void on_pushButton_itemRemove_clicked();
+    void on_pushButton_exit_pressed();
 };
 
 #endif // EDITOR_H

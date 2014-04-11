@@ -249,3 +249,8 @@ void ItemTypeModel::saveItems()
         items_to_save.removeFirst();
     }
 }
+
+void ItemTypeModel::updateItems()
+{}
+void ItemTypeModel::removeItems()
+{}

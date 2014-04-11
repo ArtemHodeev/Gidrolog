@@ -4,7 +4,7 @@
 #include <databaseaccessor.h>
 #include <tablemodel.h>
 #include <QSqlError>
-#include <itemtablemodel.h>
+#include <itemmodel.h>
 #include <itemtypemodel.h>
 
 Editor::Editor(QWidget *parent) :
@@ -14,7 +14,7 @@ Editor::Editor(QWidget *parent) :
     ui->setupUi(this);
 
     ui->stackedWidget->setCurrentIndex(0);
-    model = new ItemTableModel();
+    model = new ItemModel();
 //    ui->pushButton_itemAdd->si
     model->setItems();
     connect(this,SIGNAL(save_clicked()),model,SLOT(on_saveButton_clicked()));
@@ -26,14 +26,14 @@ Editor::Editor(QWidget *parent) :
 void Editor::on_listWidget_editorMenu_clicked()
 {
     int cur = ui->listWidget_editorMenu->currentIndex().row();
-    ui->stackedWidget->setCurrentIndex(cur);
+//    ui->stackedWidget->setCurrentIndex(cur);
 
     switch(cur)
     {
     case 0:
-        model = new ItemTableModel();
+        model = new ItemModel();
         model->setItems();
-        ui->tableView_itemInSystem->setModel(model);
+//        ui->tableView_itemInSystem->setModel(model);
         break;
 //    case 1:
 //        sql = "SELECT id, name, value FROM gydro.factor";
@@ -44,7 +44,7 @@ void Editor::on_listWidget_editorMenu_clicked()
         model = new ItemTypeModel();
         model->setItems();
 
-        ui->tableView_locationInSystem->setModel(model);
+//        ui->tableView_locationInSystem->setModel(model);
 
         break;
     case 3:
@@ -54,6 +54,7 @@ void Editor::on_listWidget_editorMenu_clicked()
 
         break;
     };// switch(cur)
+    ui->tableView_itemInSystem->setModel(model);
 }
 Editor::~Editor()
 {
@@ -68,10 +69,17 @@ void Editor::on_pushButton_itemAdd_clicked()
 
 void Editor::on_pushButton_exit_clicked()
 {
-    emit(exit_action());
+//    emit(exit_action());
 }
 
 void Editor::on_pushButton_itemRemove_clicked()
 {
     emit(remove_clicked());
+}
+
+void Editor::on_pushButton_exit_pressed()
+{
+    model->saveItems();
+    model->updateItems();
+    model->removeItems();
 }

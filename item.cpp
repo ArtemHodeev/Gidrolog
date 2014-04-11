@@ -8,6 +8,10 @@ Item::Item()
     min_value = 0;
     error_line = 0;
 }
+Item::~Item()
+{
+
+}
 unsigned int Item::getId() const
 {
     return id;
@@ -15,6 +19,10 @@ unsigned int Item::getId() const
 QString Item::getName() const
 {
     return name;
+}
+unsigned int Item::getPosition() const
+{
+    return position;
 }
 unsigned int Item::getTypeId() const
 {
@@ -47,6 +55,10 @@ void Item::setMinValue(const double &minValue)
 void Item::setErrorLine(const double &errorLine)
 {
     this->error_line = errorLine;
+}
+void Item::setPosition(const double &position)
+{
+    this->position = position;
 }
 
 

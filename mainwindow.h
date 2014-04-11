@@ -16,13 +16,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-public slots:
-    void on_action_editorTool_triggered();
-    void on_actionSave_triggered();
+
 signals:
     void actionSave();
 protected:
     void keyPressEvent(QKeyEvent *key_event);
+private slots:
+    void on_action_editorTool_triggered();
+    void on_actionSave_triggered();
+    void on_action_importExcel_triggered();
+
 private:
     Ui::MainWindow *ui;
     SampleModel *model;

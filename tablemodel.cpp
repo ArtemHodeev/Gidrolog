@@ -10,7 +10,14 @@ TableModel::~TableModel()
 {
     qDebug()<<"Destructor of TableModel";
 }
-
+int TableModel::rowCount(const QModelIndex &parent) const
+{
+    return rCount;
+}
+int TableModel::columnCount(const QModelIndex &parent) const
+{
+    return cCount;
+}
 /*
  * F:
  *  bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
@@ -49,6 +56,11 @@ bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
     beginRemoveRows(parent, row, row + count - 1);
     rCount -= count;
     endRemoveRows();
+}
+
+void TableModel::setItemsToDelete(int *mass)
+{
+
 }
 
 

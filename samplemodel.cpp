@@ -60,14 +60,7 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
 
     return res;
 }
-int SampleModel::rowCount(const QModelIndex &parent) const
-{
-    return rCount;
-}
-int SampleModel::columnCount(const QModelIndex &parent) const
-{
-    return cCount;
-}
+
 QVariant SampleModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
@@ -268,22 +261,24 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     }
     return true;
 }
-
-unsigned int SampleModel::getVaule(QString param_name) const
+QHash<QString, unsigned int>* SampleModel::getParams()
 {
-    return params->value(param_name);
-
+    return params;
 }
+//unsigned int SampleModel::getVaule(QString param_name) const
+//{
+//    return params->value(param_name);
+
+//}
 void SampleModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
     QSqlQuery *column_count_query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    query->prepare("SELECT id, sample_set_id, location_id, sample_date, comment FROM gydro.sample");
+    query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM gydro.sample");
     query->exec();
 
-//    column_count_query->prepare("SELECT sample_id, count(item_id) c FROM gydro.item_sample GROUP BY sample_id ORDER BY c DESC LIMIT 1");
     column_count_query->prepare("SELECT count(id)c FROM gydro.item");
     column_count_query->exec();
 
@@ -351,13 +346,11 @@ void SampleModel::updateItems()
     while (!items_to_update.empty())
     {
         query->prepare("UPDATE gydro.sample SET location_id = :location, water_type_id = :water_id, sample_date = :date, comment = :comment WHERE id = :id");
-
         query->bindValue(":id",items_to_update.first()->getId());
         query->bindValue(":location",items_to_update.first()->getLocationId());
         query->bindValue(":water_id", items_to_update.first()->getWaterId());
         query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd"));
         query->bindValue(":comment",items_to_update.first()->getComment());
-
         query->exec();
 
         QHash<unsigned int, ItemInSample>::iterator i;
@@ -381,7 +374,6 @@ void SampleModel::updateItems()
             }
             else
             {
-//                qDebug()<<"Changed: "<<i->getChanged();
                 switch(i->getChanged())
                 {
                 case 1:
@@ -401,11 +393,9 @@ void SampleModel::updateItems()
             }
 
             query->prepare(sql);
-
             query->bindValue(":s_id",s_id);
             query->bindValue(":i_id",i.key());
             query->bindValue(":value",i.value().getValue());
-
             query->exec();
         }
 
@@ -443,41 +433,47 @@ void SampleModel::removeItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
+
     qDebug()<<"Size of items_to_delete: "<<items_to_delete.size();
     while(!items_to_delete.empty())
     {
         Sample *s = items_to_delete.first();
+        QHash<unsigned int, ItemInSample>::iterator i;
+        unsigned int s_id = 0;
+
+        // Определение id удаляемой пробы
+        // Если проба была недавно добавлена в системе и сохранена,
+        // то в БД у нее появляется id, но система о нем еще не знает
+        if (s->getId() == 0)
+        {
+            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
+            q->prepare("Select id FROM gydro.sample");
+            q->exec();
+            q->seek(s->getPosition());
+            s_id = q->value("id").toUInt();
+        }
+        else
+        {
+            s_id = s->getId();
+        }
+
         sql = "DELETE FROM gydro.item_sample WHERE sample_id = :s_id AND item_id = :i_id";
         query->prepare(sql);
 
-        QHash<unsigned int, ItemInSample>::iterator i;
-        unsigned int s_id = 0;
+        //удаление всех параметров пробы
         for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
         {
-            // Определение id удаляемой пробы
-            // Если проба была недавно добавлена в системе и сохранена,
-            // то в БД у нее появляется id, но система о нем еще не знает
-            if (s->getId() == 0)
-            {
-                QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-                q->prepare("Select id FROM gydro.sample");
-                q->exec();
-                q->seek(s->getPosition());
-                s_id = q->value("id").toUInt();
-            }
-            else
-            {
-                s_id = s->getId();
-            }
             query->bindValue(":s_id", s_id);
             query->bindValue(":i_id", i.key());
             query->exec();
         }
 
+        // удаление пробы
         sql = "DELETE FROM gydro.sample WHERE id = :s_id";
         query->prepare(sql);
         query->bindValue(":s_id", s_id);
         query->exec();
+        qDebug()<<"Error on delete sample: "<<query->lastError().text();
 
         items_to_delete.removeFirst();
     }
@@ -510,9 +506,4 @@ void SampleModel::setItemsToDelete(int *mass)
     }
     removeRows(first,count);
 }
-void  SampleModel::on_actionSave_triggered()
-{
-    saveItems();
-    updateItems();
-    removeItems();
-}
+

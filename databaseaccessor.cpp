@@ -1,5 +1,7 @@
 #include "databaseaccessor.h"
 #include <QDebug>
+#include <QSqlQuery>
+#include<QStringList>
 DatabaseAccessor::DatabaseAccessor()
 {
     if (!db.isOpen())
@@ -31,3 +33,29 @@ QSqlDatabase DatabaseAccessor::getDb()
     return instance.db;
 }
 
+bool DatabaseAccessor::createDb()
+{
+
+}
+bool DatabaseAccessor::checkTables()
+{
+    QSqlQuery *query = new QSqlQuery(db);
+
+    QString sql = "SELECT * FROM information_schema.tables where table_schema = 'gydro'";
+    QStringList table_names;
+    table_names.append("item");
+    table_names.append("item_sample");
+    table_names.append("water_type");
+    table_names.append("item_type");
+    table_names.append("factor");
+    table_names.append("location");
+    table_names.append("sample_set");
+
+    query->prepare(sql);
+    query->exec();
+    while(query->next())
+    {
+//        if ()
+    }
+
+}

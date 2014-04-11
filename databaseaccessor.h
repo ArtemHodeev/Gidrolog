@@ -13,10 +13,14 @@ public:
     static int dbPort;
 
     static QSqlDatabase getDb();
+    bool createDb();
+    bool checkTables();
+
 private:
     DatabaseAccessor();
     DatabaseAccessor& operator=(const DatabaseAccessor&);
     DatabaseAccessor(const DatabaseAccessor&);
+
     static QSqlDatabase db;
 };
 

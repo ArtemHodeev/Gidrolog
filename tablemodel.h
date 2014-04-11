@@ -16,9 +16,13 @@ public:
     ~TableModel();
     virtual void setItems() = 0;
     virtual void saveItems() = 0;
+    virtual void updateItems() = 0;
+    virtual void removeItems() = 0;
+    virtual void setItemsToDelete(int *mass);
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
-
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
 private:
 
 signals:

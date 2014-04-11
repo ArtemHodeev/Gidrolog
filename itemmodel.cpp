@@ -1,23 +1,23 @@
-#include "itemtablemodel.h"
+#include "itemmodel.h"
 #include <QSqlQuery>
 #include <databaseaccessor.h>
 #include <QSqlError>
 #include <QDebug>
 #include <QSqlRecord>
 
-ItemTableModel::ItemTableModel(QObject *parent) :
+ItemModel::ItemModel(QObject *parent) :
     TableModel(parent)
 {
 
 }
 
-ItemTableModel::~ItemTableModel()
+ItemModel::~ItemModel()
 {
 }
 
 /*
  * F:
- *  QVariant ItemTableModel::data(const QModelIndex &index, int role) const
+ *  QVariant ItemModel::data(const QModelIndex &index, int role) const
  * I:
  *  index - индекс элемента(текущего) в моделе
  *  role - теукщфа роль
@@ -29,7 +29,7 @@ ItemTableModel::~ItemTableModel()
  *  элемента списка items в позиции равной номеру строки и отображает данные
  *  его полей в соответствующую ячейку таблицы
  */
-QVariant ItemTableModel::data(const QModelIndex &index, int role) const
+QVariant ItemModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || role != Qt::DisplayRole)
     {
@@ -68,7 +68,7 @@ QVariant ItemTableModel::data(const QModelIndex &index, int role) const
 
 /*
  * F:
- *  int ItemTableModel::rowCount(const QModelIndex &parent) const
+ *  int ItemModel::rowCount(const QModelIndex &parent) const
  * I:
  *  &parent - ссылка объект роделя модели, по умолчанию ссылка на NULL
  * O:
@@ -76,14 +76,14 @@ QVariant ItemTableModel::data(const QModelIndex &index, int role) const
  * D:
  *
  */
-int ItemTableModel::rowCount(const QModelIndex &parent) const
-{
-    return rCount;
-}
+//int ItemModel::rowCount(const QModelIndex &parent) const
+//{
+//    return rCount;
+//}
 
 /*
  * F:
- *  int ItemTableModel::columnCount(const QModelIndex &parent) const
+ *  int ItemModel::columnCount(const QModelIndex &parent) const
  * I:
  *  &parent - ссылка объект роделя модели, по умолчанию ссылка на NULL
  * O:
@@ -91,43 +91,28 @@ int ItemTableModel::rowCount(const QModelIndex &parent) const
  * D:
  *
  */
-int ItemTableModel::columnCount(const QModelIndex &parent) const
-{
-    return cCount;
-}
-
-//bool ItemTableModel::insertRows(int row, int count, const QModelIndex &parent)
+//int ItemModel::columnCount(const QModelIndex &parent) const
 //{
-//    if (row < 0 || count < 0)
-//    {
-//        return false;
-//    }
-
-//    beginInsertRows(QModelIndex(), 2, 2);
-
-//    rCount += 1;
-
-//    endInsertRows();
-
-//    return true;
-
+//    return cCount;
 //}
 
-bool ItemTableModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    beginRemoveRows(parent,row,row + count - 1);
-    for (int i = 0; i < count; i ++)
-    {
-        items_to_remove.append(items.at(row + i));
-    }
-    endRemoveRows();
 
-    removeItems();
-}
+
+//bool ItemModel::removeRows(int row, int count, const QModelIndex &parent)
+//{
+//    beginRemoveRows(parent,row,row + count - 1);
+//    for (int i = 0; i < count; i ++)
+//    {
+//        items_to_remove.append(items.at(row + i));
+//    }
+//    endRemoveRows();
+
+//    removeItems();
+//}
 
 /*
  * F:
- *  Qt::ItemFlags ItemTableModel::flags(const QModelIndex &index) const
+ *  Qt::ItemFlags ItemModel::flags(const QModelIndex &index) const
  * I:
  * &index - ссылка на элемент модели
  * O:
@@ -137,7 +122,7 @@ bool ItemTableModel::removeRows(int row, int count, const QModelIndex &parent)
  *  то возвращается флаг запрета на редактирование;
  *  в остальных случаях возвращается флаг разрешения на редактирование
  */
-Qt::ItemFlags ItemTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags ItemModel::flags(const QModelIndex &index) const
 {
     if (index.column() == 0)
     {
@@ -149,7 +134,7 @@ Qt::ItemFlags ItemTableModel::flags(const QModelIndex &index) const
 
 /*
  * F:
- *  QVariant ItemTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+ *  QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
  * I:
  *  int section - номер столбца
  *  Qt::Orientation orientation - расположение заголовка: вертикальное или горизонтальное
@@ -160,7 +145,7 @@ Qt::ItemFlags ItemTableModel::flags(const QModelIndex &index) const
  *  Функция задает названия столбцов согласно названиям полей класса Item,
  *  названием строки является порядковый номер строки в моделе
  */
-QVariant ItemTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     QVariant res;
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
@@ -200,7 +185,7 @@ QVariant ItemTableModel::headerData(int section, Qt::Orientation orientation, in
 
 /*
  * F:
- *  bool ItemTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+ *  bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
  * I:
  *  &index - индекс текущего элемента модели
  *  &value - данные, которые заносятся в ячейку таблицы
@@ -216,7 +201,7 @@ QVariant ItemTableModel::headerData(int section, Qt::Orientation orientation, in
  *  несколько полей, то в список items_to_save элемент списка items с индексом равным номеру
  *  строки занесется один раз
  */
-bool ItemTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role != Qt::EditRole || !index.isValid())
     {
@@ -281,7 +266,7 @@ bool ItemTableModel::setData(const QModelIndex &index, const QVariant &value, in
 
 /*
  * F:
- *  void ItemTableModel::setItems()
+ *  void ItemModel::setItems()
  * I:
  *  --
  * O:
@@ -291,7 +276,7 @@ bool ItemTableModel::setData(const QModelIndex &index, const QVariant &value, in
  *  согдалсно количеству строк и столбцов в таблице БД. выбираются все данные таблицы item
  *  из БД и формируется список элементов items
  */
-void ItemTableModel::setItems()
+void ItemModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line FROM gydro.item ORDER BY id", DatabaseAccessor::getDb());
 
@@ -314,7 +299,7 @@ void ItemTableModel::setItems()
 
 /*
  * F:
- *  void ItemTableModel::saveItems()
+ *  void ItemModel::saveItems()
  * I:
  *  --
  * O:
@@ -322,7 +307,28 @@ void ItemTableModel::setItems()
  * D:
  *  Функция перезаписывает в БД все объекты из списка items_to_save и опустошает его
  */
-void ItemTableModel::saveItems()
+void ItemModel::saveItems()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+
+    QString sql = QString("INSERT INTO gydro.item (name, type_id, min_value, error_line)");
+    sql += ("VALUES(:name,:type_id,:min_value,:error_line)");
+    query->prepare(sql);
+
+    while(!items_to_save.isEmpty())
+    {
+        query->bindValue(":name", items_to_save.first()->getName());
+        query->bindValue(":type_id", items_to_save.first()->getTypeId());
+        query->bindValue(":min_value", items_to_save.first()->getMinValue());
+        query->bindValue(":error_line",items_to_save.first()->getErrorLine());
+        query->exec();
+        qDebug()<<"Error on save item: "<< query->lastError().text();
+
+        items_to_save.removeFirst();
+    }
+    delete query;
+}
+void ItemModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
@@ -330,66 +336,54 @@ void ItemTableModel::saveItems()
     sql += ("SET name = :name, type_id = :type_id, min_value = :min_value, error_line = :error_line ");
     sql += ("WHERE id = :id");
     query->prepare(sql);
-    qDebug()<<"Size of list_to_save: " <<items_to_save.size();
-    while(!items_to_save.isEmpty())
-    {
-        query->bindValue(":id",items_to_save.first()->getId());
-        query->bindValue(":name", items_to_save.first()->getName());
-        query->bindValue(":type_id", items_to_save.first()->getTypeId());
-        query->bindValue(":min_value", items_to_save.first()->getMinValue());
-        query->bindValue(":error_line",items_to_save.first()->getErrorLine());
+    unsigned int i_id = 0;
 
+    while(!items_to_update.isEmpty())
+    {
+        // Определение id параметра пробы
+        // Если параметр пробы был уже БД и система знает его id
+        if (items_to_update.first()->getId() > 0)
+        {
+            i_id = items_to_update.first()->getId();
+        }
+        //Если параметр пробы, был недавно добавлен и его редктировали
+        else
+        {
+            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
+            q->prepare("SELECT id FROM gydro.item");
+            q->exec();
+            q->seek(items_to_update.first()->getPosition());
+            i_id = q->value("id").toUInt();
+        }
+
+        query->bindValue(":id", i_id);
+        query->bindValue(":name", items_to_update.first()->getName());
+        query->bindValue(":type_id", items_to_update.first()->getTypeId());
+        query->bindValue(":min_value", items_to_update.first()->getMinValue());
+        query->bindValue(":error_line",items_to_update.first()->getErrorLine());
         query->exec();
-        items_to_save.removeFirst();
+
+        items_to_update.removeFirst();
     }
-    qDebug()<<"Size of list_to_save at the end: " <<items_to_save.size();
+    qDebug()<<"Size of list_to_save at the end: " <<items_to_update.size();
     delete query;
 }
-void ItemTableModel::removeItems()
+void ItemModel::removeItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     query->prepare("DELETE FROM gydro.item WHERE id = :item_id");
-    qDebug() << "Items_to_remove befor: "<< items_to_remove.size();
-    while(!items_to_remove.empty())
+
+    while(!items_to_delete.empty())
     {
-        query->bindValue(":item_id",items_to_remove.first()->getId());
+        query->bindValue(":item_id",items_to_delete.first()->getId());
         query->exec();
         qDebug()<<query->lastError().text();
 
-        items_to_remove.removeFirst();
+        items_to_delete.removeFirst();
     }
-    qDebug() << "Items_to_remove after: "<< items_to_remove.size();
 
     delete query;
 }
-
-void ItemTableModel::actionSave_clicked()
-{
-    insertRows(4, 1);
-}
-void ItemTableModel::on_removeButton_clicked()
-{
-    removeRows(3,1);
-}
-
-/*
- * F:
- *  void ItemTableModel::saveItems()
- * I:
- *  --
- * O:
- *  --
- * D:
- *  Функция срабатывает при нажатии на кнопку "Сохранить" в Редакторе
- */
-void ItemTableModel::on_saveButton_clicked()
-{
-    saveItems();
-}
-
-void ItemTableModel::on_pushButton_exit_clicked()
-{
-    saveItems();
-    removeItems();
-}
+void ItemModel::setItemsToDelete(int *mass)
+{}
 

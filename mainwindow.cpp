@@ -3,11 +3,15 @@
 #include <editor.h>
 #include <QWidget>
 #include <tablemodel.h>
-#include <itemtablemodel.h>
+#include <itemmodel.h>
 #include <samplemodel.h>
 #include <QDebug>
 #include <QItemSelectionModel>
 #include <QItemSelection>
+#include <QFileDialog>
+//#include <xlsx/xlsxdocument.h>
+//#include <xlsx/xlsxcellrange.h>
+#include <importer.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,26 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tableView->setModel(model);
 
+
     sel_model = new QItemSelectionModel(model);
-//    model-
 
     ui->tableView->setSelectionModel(sel_model);
     ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-//    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-//    QModelIndex top_left;
-//    QModelIndex bottom_right;
-//    QItemSelection row_selection;
-
-//    top_left = model->index(0,0);
-//    bottom_right = model->index(4,0);
-
-//    row_selection.select(top_left,bottom_right);
-
-//    sel_model->select(row_selection,QItemSelectionModel::Select | QItemSelectionModel::Rows);
-//    connect(sel_model,SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(changeSelection(QModelIndex,QModelIndex)));
-//    ui->tableView->;
-//    qDebug()<<"Is Selected: "<<sel_model->isRowSelected(2,QModelIndex());
-
 }
 
 MainWindow::~MainWindow()
@@ -51,10 +40,16 @@ MainWindow::~MainWindow()
     delete model;
     delete ui;
 }
+
 /*
- * I: --
- * O: --
- * D: Вызывает открытие окна редактора знаний
+ * F:
+ *  void MainWindow::on_action_editorTool_triggered()
+ * I:
+ *  --
+ * O:
+ *  --
+ * D:
+ *  Вызывает открытие окна редактора знаний
  */
 void MainWindow::on_action_editorTool_triggered()
 {
@@ -62,12 +57,27 @@ void MainWindow::on_action_editorTool_triggered()
     dlg->exec();
     delete dlg;
 }
+
+
 void MainWindow::on_actionSave_triggered()
 {
     qDebug() << "Slot MainWindow::on_actionSave_clicked()";
-    emit(actionSave());
+    model->saveItems();
+    model->updateItems();
+    model->removeItems();
+//    emit(actionSave());
 }
 
+/*
+ * F:
+ *  void MainWindow::keyPressEvent(QKeyEvent *key_event)
+ * I:
+ *  *key_event - указатель на событие связанное с нажатием клавиши клавиатуры
+ * O:
+ *  --
+ * D:
+ *  Если была нажата клашиша delete и есть выделенные строки таблицы, то выделенные строки удаляются
+ */
 void MainWindow::keyPressEvent(QKeyEvent *key_event)
 {
     if (key_event->matches(QKeySequence::Delete) && sel_model->selectedRows().size() > 0)
@@ -87,4 +97,35 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
 
         model->setItemsToDelete(sample_num);
     }
+}
+
+void MainWindow::on_action_importExcel_triggered()
+{
+    QString url = QFileDialog::getOpenFileName();
+    if (url == "")
+    {
+        return;
+    }
+
+    Importer doc(url);
+    qDebug()<<"params size in main: "<< model->getParams()->size();
+    doc.setParams(model->getParams());
+    doc.import();
+
+//    QXlsx::Document doc(url);
+//    QXlsx::CellRange cell_range;
+//    cell_range = doc.dimension();
+//    cell_range.columnCount()
+//    QStringList list;
+//    qDebug()<<"Cell A1: "<< doc.dimension().columnCount();//.read(1,1);
+//    for (int i = 1; i < doc.dimension().lastColumn(); i ++)
+//    {
+//        list.append(doc.read(1,i).toString());
+//    }
+
+//    while (!list.empty())
+//    {
+//        qDebug()<<"name: "<<list.first();
+//        list.removeFirst();
+//    }
 }

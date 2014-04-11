@@ -40,7 +40,7 @@
     <property name="title">
      <string>Сервис</string>
     </property>
-    <addaction name="action_Excel"/>
+    <addaction name="action_importExcel"/>
     <addaction name="action_Excel_2"/>
     <addaction name="separator"/>
     <addaction name="action_3"/>
@@ -75,7 +75,7 @@
     <string>Открыть редактор</string>
    </property>
   </action>
-  <action name="action_Excel">
+  <action name="action_importExcel">
    <property name="text">
     <string>Импорт Excel</string>
    </property>

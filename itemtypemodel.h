@@ -17,6 +17,8 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     void setItems();
     void saveItems();
+    void updateItems();
+    void removeItems();
 
     QList<ItemType*> items_to_save;
 private:

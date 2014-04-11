@@ -21,13 +21,13 @@ SOURCES += main.cpp\
     tablemodel.cpp \
     databaseaccessor.cpp \
     item.cpp \
-    singletablemodel.cpp \
-    itemtablemodel.cpp \
     itemtypemodel.cpp \
     itemtype.cpp \
     sample.cpp \
     samplemodel.cpp \
-    iteminsample.cpp
+    iteminsample.cpp \
+    itemmodel.cpp \
+    importer.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -36,13 +36,13 @@ HEADERS  += mainwindow.h \
     tablemodel.h \
     databaseaccessor.h \
     item.h \
-    singletablemodel.h \
-    itemtablemodel.h \
     itemtypemodel.h \
     itemtype.h \
     sample.h \
     samplemodel.h \
-    iteminsample.h
+    iteminsample.h \
+    itemmodel.h \
+    importer.h
 
 FORMS    += mainwindow.ui \
     editor.ui
