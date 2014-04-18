@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     samplemodel.cpp \
     iteminsample.cpp \
     itemmodel.cpp \
-    importer.cpp
+    importer.cpp \
+    dbcreator.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     samplemodel.h \
     iteminsample.h \
     itemmodel.h \
-    importer.h
+    importer.h \
+    dbcreator.h
 
 FORMS    += mainwindow.ui \
     editor.ui

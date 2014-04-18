@@ -276,10 +276,10 @@ void SampleModel::setItems()
     QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
     QSqlQuery *column_count_query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM gydro.sample");
+    query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM sample");
     query->exec();
 
-    column_count_query->prepare("SELECT count(id)c FROM gydro.item");
+    column_count_query->prepare("SELECT count(id)c FROM item");
     column_count_query->exec();
 
     column_count_query->next();
@@ -298,7 +298,7 @@ void SampleModel::setItems()
         s->setDate(query->value("sample_date").toDate());
         s->setComment(query->value("comment").toString());
 
-        q->prepare("SELECT item_id, value FROM gydro.item_sample WHERE sample_id = :s_id");
+        q->prepare("SELECT item_id, value FROM item_sample WHERE sample_id = :s_id");
         q->bindValue(":s_id",query->value("id"));
         q->exec();
 
@@ -321,7 +321,7 @@ void SampleModel::setHeaders()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    query->prepare("SELECT id, name, type_id FROM gydro.item ORDER BY type_id");
+    query->prepare("SELECT id, name, type_id FROM item ORDER BY type_id");
     query->exec();
 
     headers.append(QString("id"));
