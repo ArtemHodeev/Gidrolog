@@ -35,18 +35,25 @@ QVariant ItemTypeModel::data(const QModelIndex &index, int role) const
     }
 
     QVariant res;
-    switch(index.column())
+    if (index.row() < rCount - 1)
     {
-    case 0:
-        res = items.at(index.row())->getId();
-        break;
-    case 1:
-        res = items.at(index.row())->getName();
-        break;
-    case 2:
-        res = items.at(index.row())->getPriority();
-        break;
-    };
+        switch(index.column())
+        {
+        case 0:
+            res = items.at(index.row())->getId();
+            break;
+        case 1:
+            res = items.at(index.row())->getName();
+            break;
+        case 2:
+            res = items.at(index.row())->getPriority();
+            break;
+        };
+    }
+    else
+    {
+        res = QVariant("");
+    }
 
     return res;
 }
@@ -105,20 +112,60 @@ bool ItemTypeModel::setData(const QModelIndex &index, const QVariant &value, int
     {
         return false;
     }
+    ItemType *i = new ItemType();
+
+    if (value == QVariant(""))
+    {
+        return true;
+    }
 
     switch(index.column())
     {
     case 1:
-        items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
+        i->setName(value.toString());
         break;
     case 2:
-        items.at(index.row())->setPriority(value != "" ? value.toUInt() : index.data().toUInt());
+        i->setPriority(value.toUInt());
+        items.at(index.row())->setPriority(value != "" ?  : index.data().toUInt());
         break;
     }
-    if (!items_to_save.contains(items.at(index.row())))
+
+    if (index.row() < rCount - 1)
     {
-        items_to_save.append(items.at(index.row()));
+        items.insert(index.row(), i);
     }
+    else
+    {
+        items.append(i);
+    }
+//    if (index.row() < rCount - 1)
+//    {
+//        switch(index.column())
+//        {
+//        case 1:
+//            items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
+//            break;
+//        case 2:
+//            items.at(index.row())->setPriority(value != "" ? value.toUInt() : index.data().toUInt());
+//            break;
+//        }
+//        if (!items_to_save.contains(items.at(index.row())))
+//        {
+//            items_to_save.append(items.at(index.row()));
+//        }
+//    }
+//    else
+//    {
+//        switch(index.column())
+//        {
+//        case 1:
+//            items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
+//            break;
+//        case 2:
+//            items.at(index.row())->setPriority(value != "" ? value.toUInt() : index.data().toUInt());
+//            break;
+//        }
+//    }
     emit(dataChanged(index,index));
     return true;
 }
@@ -203,11 +250,11 @@ QVariant ItemTypeModel::headerData(int section, Qt::Orientation orientation, int
 void ItemTypeModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    query->prepare("SELECT id, name, priority FROM gydro.item_type");
+    query->prepare("SELECT id, name, priority FROM item_type");
     query->exec();
 
     //Определение размеров таблицы rCount, cCount (см. tablemodel.h)
-    rCount = query->size();
+    rCount = query->size() + 1 ;
     cCount = query->record().count();
 
     while(query->next())
@@ -238,7 +285,7 @@ void ItemTypeModel::setItems()
 void ItemTypeModel::saveItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    query->prepare("UPDATE gydro.item_type SET name = :name, priority = :priority WHERE id = :id");
+    query->prepare("UPDATE item_type SET name = :name, priority = :priority WHERE id = :id");
     while (!items_to_save.isEmpty())
     {
         query->bindValue(":id", items_to_save.first()->getId());

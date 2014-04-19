@@ -208,59 +208,53 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
         return false;
     }
 
+    if (value == QVariant(""))
+    {
+        return true;
+    }
+
+    Item *i;
     if (index.row() < rCount - 1)
     {
-        switch(index.column())
-        {
-        case 1:
-            items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
-            break;
-        case 2:
-            items.at(index.row())->setTypeId(value != "" ? value.toUInt() : index.data().toUInt());
-            break;
-        case 3:
-            items.at(index.row())->setMinValue(value != "" ? value.toDouble() : index.data().toDouble());
-            break;
-        case 4:
-            items.at(index.row())->setErrorLine(value != "" ? value.toDouble() : index.data().toDouble());
-            break;
-        };
-
-        // Добавление строки в список изменений в бд
-        if (!items_to_save.contains(items.at(index.row())))
-        {
-            items_to_save.append(items.at(index.row()));
-        }
-
-        emit(dataChanged(index,index));
+        i = items.at(index.row());
     }
     else
     {
-        if (value != "")
-        {
-            Item *i = new Item();
-            switch(index.column())
-            {
-            case 1:
-                i->setName(value.toString());
-                break;
-            case 2:
-                i->setTypeId(value.toUInt());
-                break;
-            case 3:
-                i->setMinValue(value.toDouble());
-                break;
-            case 4:
-                i->setErrorLine(value.toDouble());
-                break;
-            };
-
-            items.append(i);
-            items_to_save.append(i);
-            insertRows(rCount,1);
-        }
-
+        i = new Item();
     }
+
+    switch(index.column())
+    {
+    case 1:
+        i->setName(value.toString());
+        break;
+    case 2:
+        i->setTypeId(value.toUInt());
+        break;
+    case 3:
+        i->setMinValue(value.toDouble());
+        break;
+    case 4:
+        i->setErrorLine(value.toDouble());
+        break;
+    };
+
+    i->setPosition(index.row());
+    items.insert(i->getPosition(),i);
+
+    if (index.row() < rCount - 1)
+    {
+        if (items_to_update.contains(i) != true)
+        {
+            items_to_update.append(i);
+        }
+    }
+    else
+    {
+        items_to_save.append(i);
+        insertRows(rCount,1);
+    }
+
     return true;
 }
 
@@ -278,7 +272,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
  */
 void ItemModel::setItems()
 {
-    QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line FROM gydro.item ORDER BY id", DatabaseAccessor::getDb());
+    QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line FROM item ORDER BY id", DatabaseAccessor::getDb());
 
     rCount = query->size() + 1;
     cCount = query->record().count();
@@ -311,7 +305,7 @@ void ItemModel::saveItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    QString sql = QString("INSERT INTO gydro.item (name, type_id, min_value, error_line)");
+    QString sql = QString("INSERT INTO item (name, type_id, min_value, error_line)");
     sql += ("VALUES(:name,:type_id,:min_value,:error_line)");
     query->prepare(sql);
 
@@ -332,7 +326,7 @@ void ItemModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    QString sql = QString("UPDATE gydro.item ");
+    QString sql = QString("UPDATE item ");
     sql += ("SET name = :name, type_id = :type_id, min_value = :min_value, error_line = :error_line ");
     sql += ("WHERE id = :id");
     query->prepare(sql);
@@ -350,7 +344,7 @@ void ItemModel::updateItems()
         else
         {
             QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-            q->prepare("SELECT id FROM gydro.item");
+            q->prepare("SELECT id FROM item");
             q->exec();
             q->seek(items_to_update.first()->getPosition());
             i_id = q->value("id").toUInt();
@@ -371,7 +365,7 @@ void ItemModel::updateItems()
 void ItemModel::removeItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    query->prepare("DELETE FROM gydro.item WHERE id = :item_id");
+    query->prepare("DELETE FROM item WHERE id = :item_id");
 
     while(!items_to_delete.empty())
     {

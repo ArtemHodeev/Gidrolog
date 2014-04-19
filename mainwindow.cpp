@@ -94,6 +94,7 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
              ind ++;
         }
         sample_num[ind] = -1;
+        qDebug()<<"In mainwindow: "<<sample_num;
 
         model->setItemsToDelete(sample_num);
     }

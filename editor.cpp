@@ -17,9 +17,9 @@ Editor::Editor(QWidget *parent) :
     model = new ItemModel();
 //    ui->pushButton_itemAdd->si
     model->setItems();
-    connect(this,SIGNAL(save_clicked()),model,SLOT(on_saveButton_clicked()));
-    connect(this,SIGNAL(remove_clicked()),model,SLOT(on_removeButton_clicked()));
-    connect(this,SIGNAL(exit_action()),model,SLOT(on_pushButton_exit_clicked()));
+//    connect(this,SIGNAL(save_clicked()),model,SLOT(on_saveButton_clicked()));
+//    connect(this,SIGNAL(remove_clicked()),model,SLOT(on_removeButton_clicked()));
+//    connect(this,SIGNAL(exit_action()),model,SLOT(on_pushButton_exit_clicked()));
     ui->tableView_itemInSystem->setModel(model);
 }
 
