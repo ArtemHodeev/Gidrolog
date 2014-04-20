@@ -109,9 +109,18 @@ void MainWindow::on_action_importExcel_triggered()
     }
 
     Importer doc(url);
-    qDebug()<<"params size in main: "<< model->getParams()->size();
+//    qDebug()<<"params size in main: "<< model->getParams()->size();
     doc.setParams(model->getParams());
     doc.import();
+//    qDebug()<<"Params size in main after : "<<model->getParams()->size();
+
+    model->setHeaders();
+//qDebug()<<"cCount: "<<model->columnCount(QModelIndex());
+//    model->insertColumns(5,3);
+//    model->in
+//    emit(model->headerDataChanged(Qt::Horizontal,0,model->getParams()->size()));
+//    emit(model->dataChanged();)
+//    qDebug()<<"Params size in main befor : "<<model->getParams()->size();
 
 //    QXlsx::Document doc(url);
 //    QXlsx::CellRange cell_range;

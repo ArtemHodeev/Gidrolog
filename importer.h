@@ -13,8 +13,9 @@ class Importer
     QHash<QString, unsigned int> unknow_params; // неизвестные системе параметров.
     QHash<QString, unsigned int> unknow_locations; // неизвестные системе места отбора
     QHash<QString, unsigned int> unknow_water_types; // неизвестные системе типы водных масс
-    //  QHash нужен для того, чтобы знать какие параметры из файла пользователь не хочет
-    //  добавлять в систему
+    QHash<unsigned int, unsigned int> params_from_file; // параметры из файла.
+//      Первый праметр - номер параметра в файле, второй - id параметра в БД
+
     QXlsx::Document *file;
 
 public:
@@ -24,8 +25,10 @@ public:
     void setParams(QHash<QString,unsigned int> *new_params);
     void setLocations(QHash<QString, unsigned int> *locations);
     void setWaterTypes(QHash<QString, unsigned int> *water_types);
-    void import();
-    Sample *getSample();
+    QVector<Sample*> import();
+    Sample *getSample(int num);
+//    Sample *getSample();
+
 private:
     void checkHeaders();
     void checkLocations();

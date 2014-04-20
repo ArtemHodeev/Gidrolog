@@ -41,7 +41,7 @@ bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 
     // вставка строк: вставить одну строку с номера row -1, по номер row -1
     beginInsertRows(QModelIndex(), row - 1, row - 1);
-    rCount += 1;
+    rCount += count;
     endInsertRows();
 
     return true;

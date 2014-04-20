@@ -71,19 +71,13 @@ QVariant SampleModel::headerData(int section, Qt::Orientation orientation, int r
     QVariant res;
     if (orientation == Qt::Horizontal)
     {
+//        qDebug()<<"Section: "<<section;
         res = QVariant(headers[section]);
     }
     else
     {
         res = (section < rCount - 1) ? QVariant(section + 1) : QVariant("+");
-//        if (section < rCount - 1)
-//        {
-//            res = QVariant(section + 1);
-//        }
-//        else
-//        {
-//            res = QVariant("+");
-//        }
+
     }
 
     return res;
@@ -227,7 +221,29 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
     return true;
 }
+bool  SampleModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+{
+    if (orientation == Qt::Vertical || role != Qt::EditRole || value == QVariant(""))
+    {
+        return false;
+    }
+    qDebug()<<"Section: "<<section;
+    headers.insert(section, value.toString());
 
+    return true;
+}
+bool SampleModel::insertColumns(int column, int count, const QModelIndex &parent)
+{
+    if (column < 0 || count < 0)
+    {
+        return false;
+    }
+//cCount += count;
+    // вставка строк: вставить одну строку с номера row -1, по номер row -1
+    beginInsertColumns(QModelIndex(), column - 1, column + count - 1);
+    cCount += count - 1 ;
+    endInsertColumns();
+}
 QHash<QString, unsigned int>* SampleModel::getParams()
 {
     return params;
@@ -287,12 +303,14 @@ void SampleModel::setHeaders()
 
     query->prepare("SELECT id, name, type_id FROM item ORDER BY type_id");
     query->exec();
-
-    headers.append(QString("id"));
-    headers.append(QString("Место взятия"));
-    headers.append(QString("Дата взятия"));
-    headers.append(QString("Тип водной массы"));
-    headers.append(QString("Комментарий"));
+    if(headers.size() == 0)
+    {
+        headers.append(QString("id"));
+        headers.append(QString("Место взятия"));
+        headers.append(QString("Дата взятия"));
+        headers.append(QString("Тип водной массы"));
+        headers.append(QString("Комментарий"));
+    }
 
     cCount = query->size() + 5;
     QString name = QString("");
@@ -300,9 +318,16 @@ void SampleModel::setHeaders()
     while (query->next())
     {
         name = query->value("name").toString().trimmed();
-        headers.append(name);
+//        qDebug()<<"Header: "<<name;
+//        qDebug()<<"Header length: "<<name.length();
+        if (headers.contains(name) == false)
+        {
+            headers.append(name);
+        }
         params->insert(name, query->value("id").toUInt());
     }
+//    qDebug()<<"Headers size: "<<headers.size();
+    emit(headerDataChanged(Qt::Horizontal,0,cCount - 1));
 }
 void SampleModel::updateItems()
 {
@@ -391,6 +416,7 @@ void SampleModel::saveItems()
         query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd"));
         query->bindValue(":comment", items_to_save.first()->getComment());
         query->exec();
+        qDebug()<<"Last id: "<<query->lastInsertId();
         qDebug()<<"Error on sample saving: "<< query->lastError();
         qDebug()<<"last query: "<< query->executedQuery();
         items_to_save.removeFirst();
