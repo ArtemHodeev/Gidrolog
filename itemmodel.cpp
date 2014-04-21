@@ -240,7 +240,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
     };
 
     i->setPosition(index.row());
-    items.insert(i->getPosition(),i);
+    items.insert(index.row(),i);
 
     if (index.row() < rCount - 1)
     {

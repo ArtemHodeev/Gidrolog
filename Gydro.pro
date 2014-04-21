@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     iteminsample.cpp \
     itemmodel.cpp \
     importer.cpp \
-    dbcreator.cpp
+    dbcreator.cpp \
+    watertype.cpp \
+    watertypemodel.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -44,7 +46,9 @@ HEADERS  += mainwindow.h \
     iteminsample.h \
     itemmodel.h \
     importer.h \
-    dbcreator.h
+    dbcreator.h \
+    watertype.h \
+    watertypemodel.h
 
 FORMS    += mainwindow.ui \
     editor.ui
