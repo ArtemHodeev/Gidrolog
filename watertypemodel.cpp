@@ -86,7 +86,7 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
     default:
         break;
     }
-    wt->setPosition(index.row());
+
 //    items.insert(index.row(), wt);
 
     if (index.row() < rCount - 1)
@@ -100,6 +100,7 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
     }
     else
     {
+        wt->setPosition(index.row());
         items.append(wt);
         items_to_save.append(wt);
         insertRows(rCount,1);
@@ -129,11 +130,14 @@ void WaterTypeModel::setItems()
     rCount = query->size() + 1;
     cCount = query->record().count();
     qDebug()<<"Error on retriving water_type: "<<query->lastError().text();
+    int pos = 0;
     while (query->next())
     {
         WaterType *wt = new WaterType();
         wt->setId(query->value("id").toUInt());
         wt->setName(query->value("name").toString());
+        wt->setPosition(pos);
+        pos ++;
 
         items.append(wt);
     }
@@ -147,11 +151,13 @@ void WaterTypeModel::saveItems()
     QString sql = "";
     sql = "INSERT INTO water_type(name) VALUES (:name)";
     query->prepare(sql);
-
-    while(items_to_save.empty() != true)
+    qDebug()<<"Items_to_save size: "<<items_to_save.size();
+    while(items_to_save.isEmpty() != true)
     {
+        qDebug()<<"Save";
         query->bindValue(":name", items_to_save.first()->getName());
         query->exec();
+        qDebug()<<"Error on saving items: "<<query->lastError().text();
 
         items_to_save.removeFirst();
     }
@@ -165,7 +171,7 @@ void WaterTypeModel::updateItems()
     unsigned int wt_id;
     sql = "UPDATE water_type SET name = :name WHERE id = :wt_id";
     query->prepare(sql);
-
+    qDebug()<<"Items_to_update size: "<<items_to_update.size();
     while (items_to_update.empty() != true)
     {
         if (items_to_update.first()->getId() != 0)
@@ -197,24 +203,27 @@ void WaterTypeModel::removeItems()
     unsigned int wt_id;
     sql = "DELETE FROM water_type WHERE id = :wt_id";
     query->prepare(sql);
+     qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
     while (items_to_delete.empty() != true)
     {
         if (items_to_delete.first()->getId() != 0)
         {
             wt_id = items_to_delete.first()->getId();
+            query->bindValue(":wt_id", wt_id);
+            query->exec();
         }
-        else
-        {
-            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-            q->exec("SELECT id FROM water_type");
-            q->seek(items_to_delete.first()->getPosition());
-            wt_id = q->value("id").toUInt();
-            delete q;
-        }
+//        else
+//        {
+//            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
+//            q->exec("SELECT id FROM water_type");
+//            q->seek(items_to_delete.first()->getPosition());
+//            wt_id = q->value("id").toUInt();
+//            delete q;
+//        }
 
-        query->bindValue(":wt_id", wt_id);
-        query->exec();
-        qDebug()<<"Error on deleting: "<<query->lastError().text();
+//        query->bindValue(":wt_id", wt_id);
+//        query->exec();
+//        qDebug()<<"Error on deleting: "<<query->lastError().text();
 
         items_to_delete.removeFirst();
     }
@@ -229,36 +238,45 @@ void WaterTypeModel::removeItems()
  *
 
 */
-void WaterTypeModel::setItemsToDelete(int *mass)
+void WaterTypeModel::setItemsToDelete(unsigned int *mass)
 {
-    qDebug()<<"Deleting";
-    int *cur = mass;
-
     int count = 0;
-    int first = cur[count];
+    unsigned int first = mass[count];
+    unsigned int index = -1;
 
-
-    while(cur[count] != -1)
+    while(mass[count] != -1)
     {
-        items_to_delete.append(items[cur[count]]);
-        int update_index = items_to_update.indexOf(items[cur[count]]);
-        int save_index = items_to_save.indexOf(items[cur[count]]);
-
-        // Если удаляема проба есть в списках на добавление новых проб или обновление,
-        // то ее сразу удалить из этих списков.
-        if (update_index >= 0)
+        index= findItemInPosition(mass[count]);
+        if (index != -1)
         {
-            items_to_update.removeAt(update_index);
-        }
-        if (save_index >= 0)
-        {
-            items_to_save.removeAt(save_index);
+            items_to_delete.append(items[index]);
+            int update_index = items_to_update.indexOf(items[index]);
+            int save_index = items_to_save.indexOf(items[index]);
+
+            // Если удаляема проба есть в списках на добавление новых проб или обновление,
+            // то ее сразу удалить из этих списков.
+            if (update_index >= 0)
+            {
+                items_to_update.removeAt(update_index);
+            }
+            if (save_index >= 0)
+            {
+                items_to_save.removeAt(save_index);
+            }
+
+            items.remove(index);
         }
 
-        items.remove(cur[count],1);
         count ++;
     }
-//    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
-//    removeRows(first,count);
+    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
+    removeRows(first,count);
 }
 
+int WaterTypeModel::findItemInPosition(unsigned int pos)
+{
+    int i = -1;
+    while (items[++i]->getPosition() != pos && i < items.size());
+
+    return (items[i]->getPosition() == pos) ? i : -1;
+}

@@ -16,8 +16,9 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+    int findItemInPosition(unsigned int pos);
     void setItems();
-    void setItemsToDelete(int *mass);
+    void setItemsToDelete(unsigned int *mass);
     void saveItems();
     void updateItems();
     void removeItems();

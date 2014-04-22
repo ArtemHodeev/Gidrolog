@@ -17,9 +17,9 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
-    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex());
+//    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex());
     QHash<QString, unsigned int> *getParams();
-
+    int findItemInPosition(unsigned int pos);
 //    unsigned int getVaule(QString param_name) const;
     void setItems();
     void setItemsToDelete(int *mass);

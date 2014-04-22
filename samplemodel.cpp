@@ -232,18 +232,18 @@ bool  SampleModel::setHeaderData(int section, Qt::Orientation orientation, const
 
     return true;
 }
-bool SampleModel::insertColumns(int column, int count, const QModelIndex &parent)
-{
-    if (column < 0 || count < 0)
-    {
-        return false;
-    }
-//cCount += count;
-    // вставка строк: вставить одну строку с номера row -1, по номер row -1
-    beginInsertColumns(QModelIndex(), column - 1, column + count - 1);
-    cCount += count - 1 ;
-    endInsertColumns();
-}
+//bool SampleModel::insertColumns(int column, int count, const QModelIndex &parent)
+//{
+//    if (column < 0 || count < 0)
+//    {
+//        return false;
+//    }
+
+//    // вставка строк: вставить одну строку с номера row -1, по номер row -1
+//    beginInsertColumns(QModelIndex(), column - 1, column + count - 1);
+//    cCount += count - 1 ;
+//    endInsertColumns();
+//}
 QHash<QString, unsigned int>* SampleModel::getParams()
 {
     return params;
@@ -253,16 +253,11 @@ void SampleModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-
+    int pos = 0;
 
     query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM sample");
     query->exec();
-//    QSqlQuery *column_count_query = new QSqlQuery(DatabaseAccessor::getDb());
-//    column_count_query->prepare("SELECT count(id)c FROM item");
-//    column_count_query->exec();
 
-//    column_count_query->next();
-//    cCount = column_count_query->value("c").toInt() + query->record().count() -1;
     rCount = query->size() + 1;
 
     while (query->next())
@@ -276,6 +271,7 @@ void SampleModel::setItems()
         s->setWaterId(query->value("water_type_id").toUInt());
         s->setDate(query->value("sample_date").toDate());
         s->setComment(query->value("comment").toString());
+        s->setPosition(pos);
 
         q->prepare("SELECT item_id, value FROM item_sample WHERE sample_id = :s_id");
         q->bindValue(":s_id",query->value("id"));
@@ -289,7 +285,7 @@ void SampleModel::setItems()
 
             temp_params->insert(q->value("item_id").toUInt(),item_in_sample);
         }
-
+        pos ++;
         s->setComponents(temp_params);
         items.append(s);
     }
@@ -318,15 +314,14 @@ void SampleModel::setHeaders()
     while (query->next())
     {
         name = query->value("name").toString().trimmed();
-//        qDebug()<<"Header: "<<name;
-//        qDebug()<<"Header length: "<<name.length();
+
         if (headers.contains(name) == false)
         {
             headers.append(name);
         }
         params->insert(name, query->value("id").toUInt());
     }
-//    qDebug()<<"Headers size: "<<headers.size();
+
     emit(headerDataChanged(Qt::Horizontal,0,cCount - 1));
 }
 void SampleModel::updateItems()
@@ -476,28 +471,42 @@ void SampleModel::removeItems()
 void SampleModel::setItemsToDelete(int *mass)
 {
     int count = 0;
-    int first = mass[count];
+    unsigned int first = mass[count];
+    unsigned int index = -1;
 
     while(mass[count] != -1)
     {
-        items_to_delete.append(items[mass[count]]);
-        int update_index = items_to_update.indexOf(items[mass[count]]);
-        int save_index = items_to_save.indexOf(items[mass[count]]);
-
-        // Если удаляема проба есть в списках на добавление новых проб или обновление,
-        // то ее сразу удалить из этих списков.
-        if (update_index >= 0)
+        index= findItemInPosition(mass[count]);
+        if (index != -1)
         {
-            items_to_update.removeAt(update_index);
-        }
-        if (save_index >= 0)
-        {
-            items_to_save.removeAt(save_index);
+            items_to_delete.append(items[index]);
+            int update_index = items_to_update.indexOf(items[index]);
+            int save_index = items_to_save.indexOf(items[index]);
+
+            // Если удаляема проба есть в списках на добавление новых проб или обновление,
+            // то ее сразу удалить из этих списков.
+            if (update_index >= 0)
+            {
+                items_to_update.removeAt(update_index);
+            }
+            if (save_index >= 0)
+            {
+                items_to_save.removeAt(save_index);
+            }
+
+            items.remove(index);
         }
 
-        items.removeAt(mass[count]);
         count ++;
     }
+//    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
     removeRows(first,count);
+}
+int SampleModel::findItemInPosition(unsigned int pos)
+{
+    int i = -1;
+    while (items[++i]->getPosition() != pos && i < items.size());
+
+    return (items[i]->getPosition() == pos) ? i : -1;
 }
 

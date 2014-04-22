@@ -18,7 +18,8 @@ public:
     void saveItems();
     void updateItems();
     void removeItems();
-    void setItemsToDelete(int *mass);
+    void setItemsToDelete(unsigned int *mass);
+    int findItemInPosition(unsigned int pos);
 private:
     QVector<WaterType*> items;
     QVector<WaterType*> items_to_delete;

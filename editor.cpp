@@ -81,28 +81,29 @@ Editor::~Editor()
 //}
 void Editor::keyPressEvent(QKeyEvent *key_event)
 {
-    qDebug()<<"Event";
-    qDebug()<<"Sel_rows count: "<<sel_model->selectedRows().size();
+//    qDebug()<<"Event";
+//    qDebug()<<"Sel_rows count: "<<sel_model->selectedRows().size();
     if (key_event->matches(QKeySequence::Delete) && sel_model->selectedRows().size() > 0)
     {
-        qDebug()<<"Event: delete";
+//        qDebug()<<"Event: delete";
         QModelIndexList list = sel_model->selectedRows();
         QModelIndexList::iterator i;
 
-        int *sel_rows = new int[sel_model->selectedRows().size() + 1];
+        unsigned int *sel_rows = new unsigned int[sel_model->selectedRows().size() + 1];
         int ind = 0;
         for (i = list.begin(); i < list.end(); i ++)
         {
 
              sel_rows[ind] = i->row();
-             qDebug()<<"row num: "<<sel_rows[ind];
+//             qDebug()<<"row num: "<<sel_rows[ind];
              ind ++;
         }
         sel_rows[ind] = -1;
-        qDebug()<<"In mainwindow: "<<sel_rows;
+//        qDebug()<<"In mainwindow: "<<sel_rows;
 
         model->setItemsToDelete(sel_rows);
-//        delete sel_rows;
+//        model->removeItems();
+        delete sel_rows;
     }
 }
 void Editor::on_pushButton_exit_pressed()

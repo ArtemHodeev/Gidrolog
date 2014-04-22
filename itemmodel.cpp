@@ -276,6 +276,7 @@ void ItemModel::setItems()
 
     rCount = query->size() + 1;
     cCount = query->record().count();
+    int pos = 0;
     while (query->next())
     {
         Item *item = new Item();
@@ -284,7 +285,8 @@ void ItemModel::setItems()
         item->setTypeId(query->value("type_id").toUInt());
         item->setMinValue(query->value("min_value").toDouble());
         item->setErrorLine(query->value("error_line").toDouble());
-
+        item->setPosition(pos);
+        pos ++;
         items.append(item);
 //        delete item;
     }
@@ -378,6 +380,46 @@ void ItemModel::removeItems()
 
     delete query;
 }
-void ItemModel::setItemsToDelete(int *mass)
-{}
+void ItemModel::setItemsToDelete(unsigned int *mass)
+{
+    int count = 0;
+    unsigned int first = mass[count];
+    unsigned int index = -1;
+
+    while(mass[count] != -1)
+    {
+        index= findItemInPosition(mass[count]);
+        if (index != -1)
+        {
+            items_to_delete.append(items[index]);
+            int update_index = items_to_update.indexOf(items[index]);
+            int save_index = items_to_save.indexOf(items[index]);
+
+            // Если удаляема проба есть в списках на добавление новых проб или обновление,
+            // то ее сразу удалить из этих списков.
+            if (update_index >= 0)
+            {
+                items_to_update.removeAt(update_index);
+            }
+            if (save_index >= 0)
+            {
+                items_to_save.removeAt(save_index);
+            }
+
+            items.remove(index);
+        }
+
+        count ++;
+    }
+//    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
+    removeRows(first,count);
+}
+
+int ItemModel::findItemInPosition(unsigned int pos)
+{
+    int i = -1;
+    while (items[++i]->getPosition() != pos && i < items.size());
+
+    return (items[i]->getPosition() == pos) ? i : -1;
+}
 

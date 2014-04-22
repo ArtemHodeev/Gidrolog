@@ -58,9 +58,11 @@ bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
     endRemoveRows();
 }
 
-void TableModel::setItemsToDelete(int *mass)
+void TableModel::setItemsToDelete(unsigned int *mass)
 {
-
 }
-
+int TableModel::findItemInPosition(unsigned int pos)
+{
+    return -1;
+}
 

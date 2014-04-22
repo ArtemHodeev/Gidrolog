@@ -23,15 +23,15 @@ private:
     Ui::Editor *ui;
 public slots:
     void on_listWidget_editorMenu_clicked();
-    void on_saveButton_clicked();
+//    void on_saveButton_clicked();
 signals:
-    void save_clicked();
-    void remove_clicked();
+//    void save_clicked();
+//    void remove_clicked();
     void exit_action();
 private slots:
-    void on_pushButton_itemAdd_clicked();
-    void on_pushButton_exit_clicked();
-    void on_pushButton_itemRemove_clicked();
+//    void on_pushButton_itemAdd_clicked();
+//    void on_pushButton_exit_clicked();
+//    void on_pushButton_itemRemove_clicked();
     void on_pushButton_exit_pressed();
 };
 
