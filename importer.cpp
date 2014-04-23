@@ -130,7 +130,7 @@ void Importer::checkHeaders()
         query->bindValue(":name", iter.key());
         query->bindValue(":type_id", 1);
         query->exec();
-//        qDebug()<<"last error: "<<query->lastError().text();
+        qDebug()<<"last error: "<<query->lastError().text();
         unsigned int last_id = query->lastInsertId().toUInt();
 
         params_from_file.insert(iter.value(),last_id);
@@ -142,5 +142,30 @@ void Importer::checkHeaders()
 //    for (it = params_from_file.begin(); it != params_from_file.end(); it ++ )
 //    {
 //        qDebug()<<"Number: "<<it.key()<<"| Id: "<<it.value();
+//    }
+}
+void Importer::checkWaterTypes()
+{
+    for (int i = 2; i <= file->dimension().rowCount(); i ++)
+    {
+        QString water_type_name = file->read(i,3).toString();
+
+        if (water_types->contains(water_type_name) != true)
+        {
+            unknow_water_types.insert(water_type_name,i);
+        }
+
+    }
+//    QHash<QString,unsigned int>::iterator iter;
+//    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+//    QString sql = "";
+
+//    sql = "INSERT INTO water_type (name) VALUES (:name)";
+//    query->prepare(sql);
+//    for (iter = unknow_water_types.begin(); iter != unknow_water_types.end(); iter ++)
+//    {
+//        query->bindValue(":name", iter.key());
+//        query->exec();
+//        water_types->insert(iter.key(), query->lastInsertId());
 //    }
 }

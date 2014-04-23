@@ -249,6 +249,11 @@ QHash<QString, unsigned int>* SampleModel::getParams()
     return params;
 }
 
+QHash<QString, unsigned int>* SampleModel::getWaterTypes()
+{
+    return water_types;
+}
+
 void SampleModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
@@ -452,9 +457,12 @@ void SampleModel::removeItems()
         //удаление всех параметров пробы
         for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
         {
+            qDebug()<<"s_id: "<<s_id;
+            qDebug()<<"i_id: "<<i.key();
             query->bindValue(":s_id", s_id);
             query->bindValue(":i_id", i.key());
             query->exec();
+            qDebug()<<"Error on delete sample: "<<query->lastError().text();
         }
 
         // удаление пробы

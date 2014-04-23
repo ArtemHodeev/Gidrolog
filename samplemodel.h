@@ -19,6 +19,7 @@ public:
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
 //    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex());
     QHash<QString, unsigned int> *getParams();
+    QHash<QString, unsigned int> *getWaterTypes();
     int findItemInPosition(unsigned int pos);
 //    unsigned int getVaule(QString param_name) const;
     void setItems();
@@ -39,6 +40,8 @@ private:
     QVector<ItemInSample*> params_to_delete;// параметры проб, которые будут удалены из БД: значение стало -1
     QHash<QString, unsigned int> *params;// все какие есть параметры в БДQ.
 //                                          QString - имя параметра, unsigned int - id параметра из БД
+    QHash<QString, unsigned int> *water_types; // все типы водных масс из БД
+//                                                QSqtring - имя типа водной массы, unsigned int - id из БД
     QVector<QString> headers; // заголовки столбцов
 
 };

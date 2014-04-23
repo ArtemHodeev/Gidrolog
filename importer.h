@@ -14,6 +14,7 @@ class Importer
     QHash<QString, unsigned int> unknow_locations; // неизвестные системе места отбора
     QHash<QString, unsigned int> unknow_water_types; // неизвестные системе типы водных масс
     QHash<unsigned int, unsigned int> params_from_file; // параметры из файла.
+    QHash<unsigned int, unsigned int> water_types_from_file; // типы водных масс из файла
 //      Первый праметр - номер параметра в файле, второй - id параметра в БД
 
     QXlsx::Document *file;
