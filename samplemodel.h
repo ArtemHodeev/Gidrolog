@@ -16,18 +16,25 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
-    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
+//    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
 //    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex());
     QHash<QString, unsigned int> *getParams();
     QHash<QString, unsigned int> *getWaterTypes();
+    QHash<QString, unsigned int> *getLocations();
+    void setHeaders();
+    void resetModel(QVector<Sample *> sample_mass);
+    void setWaterTypes();
+    void setLocation();
+    void setSamples(QVector<Sample*> sample_mass);
     int findItemInPosition(unsigned int pos);
 //    unsigned int getVaule(QString param_name) const;
     void setItems();
     void setItemsToDelete(int *mass);
+    void deleteAllSamples();
     void saveItems();
     void updateItems();
     void removeItems();
-    void setHeaders();
+
 //    void setHeaders(QVector<QString> names);
 
 private:
@@ -42,6 +49,7 @@ private:
 //                                          QString - имя параметра, unsigned int - id параметра из БД
     QHash<QString, unsigned int> *water_types; // все типы водных масс из БД
 //                                                QSqtring - имя типа водной массы, unsigned int - id из БД
+    QHash<QString, unsigned int> *locations;
     QVector<QString> headers; // заголовки столбцов
 
 };

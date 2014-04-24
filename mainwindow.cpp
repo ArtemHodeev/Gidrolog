@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     model->setItems();
     model->setHeaders();
+    model->setWaterTypes();
+    model->setLocation();
 
     ui->tableView->setModel(model);
 
@@ -110,33 +112,16 @@ void MainWindow::on_action_importExcel_triggered()
     }
 
     Importer doc(url);
-//    qDebug()<<"params size in main: "<< model->getParams()->size();
+
     doc.setParams(model->getParams());
-    doc.import();
-//    qDebug()<<"Params size in main after : "<<model->getParams()->size();
+    doc.setWaterTypes(model->getWaterTypes());
+    doc.setLocations(model->getLocations());
 
-    model->setHeaders();
-//qDebug()<<"cCount: "<<model->columnCount(QModelIndex());
-//    model->insertColumns(5,3);
-//    model->in
-//    emit(model->headerDataChanged(Qt::Horizontal,0,model->getParams()->size()));
-//    emit(model->dataChanged();)
-//    qDebug()<<"Params size in main befor : "<<model->getParams()->size();
+    QVector<Sample*> sam = doc.import();
 
-//    QXlsx::Document doc(url);
-//    QXlsx::CellRange cell_range;
-//    cell_range = doc.dimension();
-//    cell_range.columnCount()
-//    QStringList list;
-//    qDebug()<<"Cell A1: "<< doc.dimension().columnCount();//.read(1,1);
-//    for (int i = 1; i < doc.dimension().lastColumn(); i ++)
-//    {
-//        list.append(doc.read(1,i).toString());
-//    }
+    model->resetModel(sam);
+//    model->setHeaders();
+//    model->setSamples(sam);
+//    emit(model->modelReset());
 
-//    while (!list.empty())
-//    {
-//        qDebug()<<"name: "<<list.first();
-//        list.removeFirst();
-//    }
 }

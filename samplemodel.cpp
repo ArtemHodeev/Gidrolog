@@ -9,6 +9,8 @@ SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
     params = new QHash<QString, unsigned int>();
+    water_types = new QHash<QString, unsigned int>();
+    locations = new QHash<QString, unsigned int>();
 }
 SampleModel::~SampleModel()
 {
@@ -221,29 +223,17 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
     return true;
 }
-bool  SampleModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
-{
-    if (orientation == Qt::Vertical || role != Qt::EditRole || value == QVariant(""))
-    {
-        return false;
-    }
-    qDebug()<<"Section: "<<section;
-    headers.insert(section, value.toString());
-
-    return true;
-}
-//bool SampleModel::insertColumns(int column, int count, const QModelIndex &parent)
+//bool  SampleModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
 //{
-//    if (column < 0 || count < 0)
+//    if (orientation == Qt::Vertical || role != Qt::EditRole || value == QVariant(""))
 //    {
 //        return false;
 //    }
+//    headers.insert(section, value.toString());
 
-//    // вставка строк: вставить одну строку с номера row -1, по номер row -1
-//    beginInsertColumns(QModelIndex(), column - 1, column + count - 1);
-//    cCount += count - 1 ;
-//    endInsertColumns();
+//    return true;
 //}
+
 QHash<QString, unsigned int>* SampleModel::getParams()
 {
     return params;
@@ -254,6 +244,73 @@ QHash<QString, unsigned int>* SampleModel::getWaterTypes()
     return water_types;
 }
 
+QHash<QString, unsigned int>* SampleModel::getLocations()
+{
+    return locations;
+}
+
+void SampleModel::setWaterTypes()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    QString name = "";
+    unsigned int id;
+    sql = "SELECT id, name FROM water_type";
+    query->exec(sql);
+
+    while(query->next())
+    {
+        id = query->value("id").toUInt();
+        name = query->value("name").toString();
+        water_types->insert(name,id);
+    }
+
+    delete query;
+}
+void SampleModel::setLocation()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    QString name = "";
+    unsigned int id;
+    sql = "SELECT id, name FROM location";
+    query->exec(sql);
+
+    while(query->next())
+    {
+        id = query->value("id").toUInt();
+        name = query->value("name").toString();
+        locations->insert(name,id);
+    }
+
+    delete query;
+}
+void SampleModel::deleteAllSamples()
+{
+    int *mass = new int[items.size() + 1];
+
+    for (int i = 0; i < items.size(); i ++)
+    {
+        mass[i] = i;
+    }
+    mass[items.size()] = -1;
+    setItemsToDelete(mass);
+    delete mass;
+}
+void SampleModel::setSamples(QVector<Sample *> sample_mass)
+{
+//    items.clear();
+    deleteAllSamples();
+    for (int i = 0; i < sample_mass.size(); i ++)
+    {
+        items.append(sample_mass[i]);
+        items_to_save.append(sample_mass[i]);
+        items_to_update.append(sample_mass[i]);
+        rCount ++;
+    }
+//    emit(modelReset());
+
+}
 void SampleModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
@@ -296,6 +353,15 @@ void SampleModel::setItems()
     }
     delete query;
     delete q;
+}
+void SampleModel::resetModel(QVector<Sample *> sample_mass)
+{
+    beginResetModel();
+    setHeaders();
+    setSamples(sample_mass);
+
+    endResetModel();
+    qDebug()<<"items size: "<<items.size();
 }
 
 void SampleModel::setHeaders()

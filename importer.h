@@ -24,8 +24,8 @@ public:
     Importer(QString file_path);
     ~Importer();
     void setParams(QHash<QString,unsigned int> *new_params);
-    void setLocations(QHash<QString, unsigned int> *locations);
-    void setWaterTypes(QHash<QString, unsigned int> *water_types);
+    void setLocations(QHash<QString, unsigned int> *new_locations);
+    void setWaterTypes(QHash<QString, unsigned int> *new_types);
     QVector<Sample*> import();
     Sample *getSample(int num);
 //    Sample *getSample();
