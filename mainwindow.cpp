@@ -9,9 +9,9 @@
 #include <QItemSelectionModel>
 #include <QItemSelection>
 #include <QFileDialog>
-//#include <xlsx/xlsxdocument.h>
-//#include <xlsx/xlsxcellrange.h>
+#include <confirmimport.h>
 #include <importer.h>
+#include <comboboxdelegate.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,7 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tableView->setModel(model);
 
+    ComboboxDelegate *water_delegeate = new ComboboxDelegate() ;
+    ComboboxDelegate *location_delegate = new ComboboxDelegate();
 
+    location_delegate->setItems(model->getLocations());
+    water_delegeate->setItems(model->getWaterTypes());
+
+    ui->tableView->setItemDelegateForColumn(1,location_delegate);
+    ui->tableView->setItemDelegateForColumn(3,water_delegeate);
     sel_model = new QItemSelectionModel(model);
 
     ui->tableView->setSelectionModel(sel_model);
@@ -124,4 +131,11 @@ void MainWindow::on_action_importExcel_triggered()
 //    model->setSamples(sam);
 //    emit(model->modelReset());
 
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QDialog *dlg = new ConfirmImport();
+    dlg->exec();
+    delete dlg;
 }

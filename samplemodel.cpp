@@ -18,50 +18,91 @@ SampleModel::~SampleModel()
 }
 QVariant SampleModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || role != Qt::DisplayRole)
+    if (!index.isValid() )
     {
         return QVariant();
     }
-    // Вывод данных на экран
-    QVariant res = QVariant("");
-    if (index.row() < rCount - 1 )
+    if (role == Qt::EditRole)
     {
-        switch (index.column()) {
-        case 0:
-            res = QVariant(items.at(index.row())->getId());
-            break;
-        case 1:
-            res = QVariant(items.at(index.row())->getLocationId());
-            break;
-        case 2:
-            res = QVariant(items.at(index.row())->getDate());
-            break;
-        case 3:
-            res = QVariant(items.at(index.row())->getWaterId());
-            break;
-        case 4:
-            res = QVariant(items.at(index.row())->getComment());
-            break;
-
-        default:
-            // Вывод значений параметров пробы
-            QString param_name = headers[index.column()];
-            unsigned int param_id = params->value(param_name);
-            double param_value = -1;
-
-            if (items[index.row()]->getComponents()->contains(param_id) == true)
-            {
-                param_value = items[index.row()]->getComponents()->value(param_id).getValue();
-            }
-
-            //если в пробе есть параметр с id равынм param_id,
-            //то взять  и отобразить его значение, если нет, то отобразить Н/О
-            res = param_value < 0 ? QVariant("Н/О") : QVariant(param_value);
-            break;
-        }
+        return index.data();
     }
 
-    return res;
+    else if(role == Qt::DisplayRole)
+    {
+        // Вывод данных на экран
+        QVariant res = QVariant("");
+        unsigned int loc_id;
+        QString loc_name = "";
+        if (index.row() < rCount - 1 )
+        {
+            switch (index.column()) {
+            case 0:
+                res = QVariant(items.at(index.row())->getId());
+                break;
+            case 1:
+                //            Место отбора
+            {
+                loc_id = items.at(index.row())->getLocationId();
+                loc_name = locations->key(loc_id);
+                res = QVariant(loc_name);
+                break;
+            }
+            case 2:
+                //            Дата
+            {
+                res = QVariant(items.at(index.row())->getDate());
+                break;
+            }
+            case 3:
+                //            Тип водной массы
+            {
+                loc_id = items.at(index.row())->getWaterId();
+                loc_name = water_types->key(loc_id);
+                res = QVariant(loc_name);
+                break;
+            }
+            case 4:
+                //            Комментарий
+            {
+                res = QVariant(items.at(index.row())->getComment());
+                break;
+            }
+            default:
+                //            Параметр
+            {
+                // Вывод значений параметров пробы
+                QString param_name = headers[index.column()];
+                unsigned int param_id = params->value(param_name);
+                double param_value = -1;
+
+                if (items[index.row()]->getComponents()->contains(param_id) == true)
+                {
+                    param_value = items[index.row()]->getComponents()->value(param_id).getValue();
+                }
+
+                //если в пробе есть параметр с id равынм param_id,
+                //то взять  и отобразить его значение, если нет, то отобразить Н/О
+                res = param_value < 0 ? QVariant("Н/О") : QVariant(param_value);
+                break;
+            }
+            }
+        }
+
+        return res;
+    }
+//    else if (role == Qt::CheckStateRole)
+//    {
+//        if (index.column() == 0)
+//        {
+//            return true;
+//        }
+//        else{
+//        return QVariant();}
+//    }
+    else
+    {
+        return QVariant();
+    }
 }
 
 QVariant SampleModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -73,13 +114,11 @@ QVariant SampleModel::headerData(int section, Qt::Orientation orientation, int r
     QVariant res;
     if (orientation == Qt::Horizontal)
     {
-//        qDebug()<<"Section: "<<section;
         res = QVariant(headers[section]);
     }
     else
     {
         res = (section < rCount - 1) ? QVariant(section + 1) : QVariant("+");
-
     }
 
     return res;
@@ -102,7 +141,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     }
     if (value == QVariant(""))
     {
-        return true;
+        return false;
     }
 
     bool sign = false;
@@ -113,24 +152,30 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     switch(index.column())
     {
     case 1:
+//        Место отбора
     {
-        i->setLocationId(value.toUInt());
+        unsigned int loc_id = locations->value(value.toString());
+        i->setLocationId(loc_id);
         sign = true;
         break;
     }
     case 2:
+//        Дата
     {
         QDate d = QDate::fromString(value.toString(),"yyyy-MM-dd");
         i->setDate(d);
         sign = true;
         break;
     }
+//        Тип водной массы
     case 3:
     {
-        i->setWaterId(value.toUInt());
+        unsigned int loc_id = water_types->value(value.toString());
+        i->setWaterId(loc_id);
         sign = true;
         break;
     }
+//        Комментарий
     case 4:
     {
         if (index.model()->index(index.row(),1).data() == 0 ||
@@ -205,7 +250,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     //Проба создается, если заполенены место отбора, дата отбора и тип водной массы
     if (sign == true)
     {
-        items.insert(i->getPosition(),i);
+        items[index.row()] = i;
 
         if (index.row() < rCount - 1)
         {
@@ -223,16 +268,6 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
     return true;
 }
-//bool  SampleModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
-//{
-//    if (orientation == Qt::Vertical || role != Qt::EditRole || value == QVariant(""))
-//    {
-//        return false;
-//    }
-//    headers.insert(section, value.toString());
-
-//    return true;
-//}
 
 QHash<QString, unsigned int>* SampleModel::getParams()
 {

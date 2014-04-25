@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     importer.cpp \
     dbcreator.cpp \
     watertype.cpp \
-    watertypemodel.cpp
+    watertypemodel.cpp \
+    confirmimport.cpp \
+    comboboxdelegate.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -48,7 +50,10 @@ HEADERS  += mainwindow.h \
     importer.h \
     dbcreator.h \
     watertype.h \
-    watertypemodel.h
+    watertypemodel.h \
+    confirmimport.h \
+    comboboxdelegate.h
 
 FORMS    += mainwindow.ui \
-    editor.ui
+    editor.ui \
+    confirmimport.ui

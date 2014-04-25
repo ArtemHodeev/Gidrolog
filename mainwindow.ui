@@ -65,6 +65,7 @@
    </attribute>
    <addaction name="action_editorTool"/>
    <addaction name="actionSave"/>
+   <addaction name="actionOpen"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">
@@ -119,6 +120,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Open</string>
    </property>
   </action>
  </widget>
