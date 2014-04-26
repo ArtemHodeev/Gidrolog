@@ -250,10 +250,9 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     //Проба создается, если заполенены место отбора, дата отбора и тип водной массы
     if (sign == true)
     {
-        items[index.row()] = i;
-
         if (index.row() < rCount - 1)
         {
+            items[index.row()] = i;
             if (items_to_update.contains(i) != true)
             {
                 items_to_update.append(i);
@@ -261,6 +260,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
         }
         else
         {
+            items.append(i);
             items_to_save.append(i);
             insertRows(rCount,1);
         }
@@ -334,7 +334,6 @@ void SampleModel::deleteAllSamples()
 }
 void SampleModel::setSamples(QVector<Sample *> sample_mass)
 {
-//    items.clear();
     deleteAllSamples();
     for (int i = 0; i < sample_mass.size(); i ++)
     {
@@ -343,7 +342,6 @@ void SampleModel::setSamples(QVector<Sample *> sample_mass)
         items_to_update.append(sample_mass[i]);
         rCount ++;
     }
-//    emit(modelReset());
 
 }
 void SampleModel::setItems()
@@ -447,42 +445,29 @@ void SampleModel::updateItems()
 
         QHash<unsigned int, ItemInSample>::iterator i;
         unsigned int s_id = 0;
+        s_id = items_to_update.first()->getId();
+        qDebug()<<"s_id: "<<s_id;
         QString sql = "";
 
         for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
         {
-            // Если проба новая, т.е. системе не известен ее id из БД, то найти эту пробу.
-            if (items_to_update.first()->getId() == 0 && i->getChanged() != 3)
+            switch(i->getChanged())
             {
-                QSqlQuery *sample_id_query = new QSqlQuery(DatabaseAccessor::getDb());
-                sql = "INSERT INTO item_sample (sample_id, item_id, value) VALUES (:s_id, :i_id, :value)";
-
-                sample_id_query->prepare("SELECT id FROM sample");
-                sample_id_query->exec();
-                sample_id_query->seek(items_to_update.first()->getPosition());
-
-                s_id = sample_id_query->value("id").toUInt();
-                delete sample_id_query;
+            case 0:
+               continue;
+            case 1:
+               sql = "INSERT INTO item_sample (sample_id, item_id, value) VALUES (:s_id, :i_id, :value)";
+               break;
+            case 2:
+               sql = "UPDATE item_sample SET (value = :value) WHERE sample_id = :s_id AND item_id = :i_id";
+               break;
+            case 3:
+               sql = "DELETE FROM item_sample WHERE sample_id = :s_id AND item_id = :i_id";
+               break;
+            default:
+               break;
             }
-
-            else
-            {
-                switch(i->getChanged())
-                {
-                case 1:
-                    sql = "INSERT INTO item_sample (sample_id, item_id, value) VALUES (:s_id, :i_id, :value)";
-                    break;
-                case 2:
-                    sql = "UPDATE item_sample SET (value = :value) WHERE sample_id = :s_id AND item_id = :i_id";
-                    break;
-                case 3:
-                    sql = "DELETE FROM item_sample WHERE sample_id = :s_id AND item_id = :i_id";
-                    break;
-                default:
-                    break;
-                }
-                s_id = items_to_update.first()->getId();
-            }
+            i->setChanged(0);
 
             query->prepare(sql);
             query->bindValue(":s_id", s_id);
@@ -501,6 +486,7 @@ void SampleModel::saveItems()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
     QString sql = "";
+    int pos = -1;
     qDebug()<<"Size of items_to_save: "<<items_to_save.size();
 
     //Сохраняется информаци о пробе, без указания: какие параметры  в ней содержатся.
@@ -517,12 +503,11 @@ void SampleModel::saveItems()
         query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd"));
         query->bindValue(":comment", items_to_save.first()->getComment());
         query->exec();
-        qDebug()<<"Last id: "<<query->lastInsertId();
-        qDebug()<<"Error on sample saving: "<< query->lastError();
-        qDebug()<<"last query: "<< query->executedQuery();
+
+        pos = findItemInPosition(items_to_save.first()->getPosition());
+        items[pos]->setId(query->lastInsertId().toUInt());
         items_to_save.removeFirst();
     }
-
 }
 void SampleModel::removeItems()
 {
@@ -539,18 +524,8 @@ void SampleModel::removeItems()
         // Определение id удаляемой пробы
         // Если проба была недавно добавлена в системе и сохранена,
         // то в БД у нее появляется id, но система о нем еще не знает
-        if (s->getId() == 0)
-        {
-            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-            q->prepare("Select id FROM sample");
-            q->exec();
-            q->seek(s->getPosition());
-            s_id = q->value("id").toUInt();
-        }
-        else
-        {
-            s_id = s->getId();
-        }
+
+        s_id = s->getId();
 
         sql = "DELETE FROM item_sample WHERE sample_id = :s_id AND item_id = :i_id";
         query->prepare(sql);
@@ -558,8 +533,6 @@ void SampleModel::removeItems()
         //удаление всех параметров пробы
         for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
         {
-            qDebug()<<"s_id: "<<s_id;
-            qDebug()<<"i_id: "<<i.key();
             query->bindValue(":s_id", s_id);
             query->bindValue(":i_id", i.key());
             query->exec();
