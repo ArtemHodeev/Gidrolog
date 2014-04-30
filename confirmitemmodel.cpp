@@ -144,6 +144,7 @@ bool ConfirmItemModel::setData(const QModelIndex &index, const QVariant &value, 
     };
 
     i->setPosition(index.row());
+
 //    items.insert(index.row(),i);
 
 //    if (index.row() < rCount - 1)
@@ -152,6 +153,7 @@ bool ConfirmItemModel::setData(const QModelIndex &index, const QVariant &value, 
         {
             items_to_save.append(i);
         }
+
 //    }
 //    else
 //    {
@@ -167,7 +169,7 @@ bool ConfirmItemModel::setData(const QModelIndex &index, const QVariant &value, 
 //        break;
 //    }
     }//switch(role)
-
+    emit(on_itemChanged());
     return true;
 }
 void ConfirmItemModel::setItems(QVector<Item*> new_items)
@@ -201,3 +203,18 @@ void ConfirmItemModel::saveItems()
     }
     delete query;
 }
+bool ConfirmItemModel::hasEmptyType()
+{
+    bool sign = false;
+    for (int i = 0; i < rCount; i ++)
+    {
+//        QModelIndex index(i,3);
+        if (items[i]->getTypeId() == 0)
+        {
+            sign = true;
+            break;
+        }
+    }
+    return sign;
+}
+

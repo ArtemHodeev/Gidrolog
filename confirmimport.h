@@ -5,7 +5,8 @@
 #include <itemmodel.h>
 #include <tablemodel.h>
 #include <confirmitemmodel.h>
-
+#include <confirmwatertypemodel.h>
+#include <confirmlocationmodel.h>
 namespace Ui {
 class ConfirmImport;
 }
@@ -17,22 +18,24 @@ class ConfirmImport : public QDialog
 public:
     explicit ConfirmImport(QWidget *parent = 0);
     ~ConfirmImport();
-    void setParamModel(TableModel *model);
-    void setWaterModel(TableModel *model);
+    void setParamModel(ConfirmItemModel *model);
+    void setWaterModel(ConfirmWaterTypeModel *model);
+    void setLocationModel(ConfirmLocationModel *model);
     void setModels();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_pushButton_save_clicked();
 
 private:
     Ui::ConfirmImport *ui;
     bool param_sign;
     bool water_sign;
-    TableModel *param_model;
-    TableModel *water_model;
-
-
-
+    bool location_sign;
+    ConfirmItemModel *param_model;
+    ConfirmWaterTypeModel *water_model;
+    ConfirmLocationModel *location_model;
+public slots:
+    void on_itemChanged_emited();
 };
 
 #endif // CONFIRMIMPORT_H

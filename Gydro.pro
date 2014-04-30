@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     confirmitemmodel.cpp \
     confirmwatertypemodel.cpp \
     location.cpp \
-    locationmodel.cpp
+    locationmodel.cpp \
+    confirmlocationmodel.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -66,7 +67,8 @@ HEADERS  += mainwindow.h \
     confirmitemmodel.h \
     confirmwatertypemodel.h \
     location.h \
-    locationmodel.h
+    locationmodel.h \
+    confirmlocationmodel.h
 
 FORMS    += mainwindow.ui \
     editor.ui \

@@ -5,9 +5,9 @@ Location::Location()
 {
     id = 0;
     name = "";
-    width = -1;
-    length = -1;
-    deep = -1;
+    width = 0;
+    length = 0;
+    deep = 0;
     position = -1;
 }
 Location::Location(const Location &other)

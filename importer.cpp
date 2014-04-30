@@ -7,6 +7,7 @@
 #include <databaseaccessor.h>
 #include <item.h>
 #include <watertype.h>
+#include <location.h>
 #include <names.h>
 #include <QDialog>
 #include <confirmimport.h>
@@ -14,6 +15,7 @@
 #include <itemmodel.h>
 #include <confirmwatertypemodel.h>
 #include <confirmitemmodel.h>
+#include <confirmlocationmodel.h>
 
 Importer::Importer()
 {
@@ -72,6 +74,22 @@ void Importer::confirm()
         ConfirmWaterTypeModel *model = new ConfirmWaterTypeModel();
         model->setItems(p);
         c_i->setWaterModel(model);
+    }
+    if (unknow_locations.isEmpty() != true)
+    {
+        QVector<Location*> l;
+        QHash<QString, unsigned int>::iterator i;
+        for ( i = unknow_locations.begin(); i != unknow_locations.end(); i ++)
+        {
+            Location* loc = new Location();
+            loc->setName(i.key());
+            l.append(loc);
+        }
+
+        ConfirmLocationModel *model = new ConfirmLocationModel();
+        model->setItems(l);
+        c_i->setLocationModel(model);
+
     }
 //    c_i->setModels();
     dlg = c_i;
@@ -265,13 +283,13 @@ void Importer::checkLocations()
     QString sql = "";
     unsigned int last_id;
     sql = "INSERT INTO location (name) VALUES (:name)";
-    query->prepare(sql);
-    for (iter = unknow_locations.begin(); iter != unknow_locations.end(); iter ++)
-    {
-        query->bindValue(":name", iter.key());
-        query->exec();
-        last_id = query->lastInsertId().toUInt();
-//        locations->insert(iter.key(), last_id);
-        Names::locations->insert(iter.key(), last_id);
-    }
+//    query->prepare(sql);
+//    for (iter = unknow_locations.begin(); iter != unknow_locations.end(); iter ++)
+//    {
+//        query->bindValue(":name", iter.key());
+//        query->exec();
+//        last_id = query->lastInsertId().toUInt();
+////        locations->insert(iter.key(), last_id);
+//        Names::locations->insert(iter.key(), last_id);
+//    }
 }
