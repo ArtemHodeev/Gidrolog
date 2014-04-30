@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     watertypecombobox.cpp \
     locationcombobox.cpp \
     confirmitemmodel.cpp \
-    confirmwatertypemodel.cpp
+    confirmwatertypemodel.cpp \
+    location.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -62,7 +63,8 @@ HEADERS  += mainwindow.h \
     watertypecombobox.h \
     locationcombobox.h \
     confirmitemmodel.h \
-    confirmwatertypemodel.h
+    confirmwatertypemodel.h \
+    location.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
