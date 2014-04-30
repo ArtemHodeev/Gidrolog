@@ -1,4 +1,5 @@
 #include "location.h"
+#include <QDebug>
 
 Location::Location()
 {
@@ -9,8 +10,17 @@ Location::Location()
     deep = -1;
     position = -1;
 }
+Location::Location(const Location &other)
+{
+    this->id = other.getId();
+    this->name = other.getName();
+    this->width = other.getWidth();
+    this->length = other.getLength();
+    this->position = other.getPosition();
+}
 Location::~Location()
 {
+    qDebug()<<"destruct location";
 }
 
 unsigned int Location::getId() const

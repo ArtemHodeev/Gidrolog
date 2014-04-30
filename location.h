@@ -6,6 +6,7 @@ class Location
 {
 public:
     Location();
+    Location(const Location &other);
     ~Location();
     unsigned int getId() const;
     QString getName() const;

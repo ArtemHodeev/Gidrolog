@@ -83,19 +83,17 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
     default:
         break;
     }
-
+    wt->setPosition(index.row());
     if (index.row() < rCount - 1)
     {
         items[index.row()] = wt;
         if (items_to_update.contains(wt) != true)
         {
-            qDebug()<<"add to update";
             items_to_update.append(wt);
         }
     }
     else
     {
-        wt->setPosition(index.row());
         items.append(wt);
         items_to_save.append(wt);
         insertRows(rCount,1);
@@ -165,15 +163,13 @@ void WaterTypeModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
-    unsigned int wt_id;
 
     sql = "UPDATE water_type SET name = :name WHERE id = :wt_id";
     query->prepare(sql);
 
     while (items_to_update.empty() != true)
     {
-        wt_id = items_to_update.first()->getId();
-        query->bindValue(":wt_id", wt_id);
+        query->bindValue(":wt_id", items_to_update.first()->getId());
         query->bindValue(":name", items_to_update.first()->getName());
         query->exec();
 

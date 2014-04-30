@@ -7,6 +7,7 @@
 #include <itemmodel.h>
 #include <itemtypemodel.h>
 #include <watertypemodel.h>
+#include <locationmodel.h>
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -38,6 +39,8 @@ void Editor::on_listWidget_editorMenu_clicked()
 //        Критерии
     case 2:
 //        Объекты (Места взятия)
+        model = new LocationModel();
+        break;
     case 3:
         model = new WaterTypeModel();
         break;
