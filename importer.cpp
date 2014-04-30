@@ -38,10 +38,11 @@ Importer::~Importer()
     delete locations;
     delete water_types;
 }
-void Importer::confirm()
+bool Importer::confirm()
 {
-    ConfirmImport *c_i = new ConfirmImport();
     QDialog *dlg = new ConfirmImport();
+    ConfirmImport *c_i = new ConfirmImport();
+    bool canceled = false;
     bool sign = false;
 
     if (unknow_params.isEmpty() != true)
@@ -56,9 +57,9 @@ void Importer::confirm()
         }
         ConfirmItemModel *model = new ConfirmItemModel();
         model->setItems(p);
-//        QTableView *view = new QTableView();
-//        view->setModel(model);
         c_i->setParamModel(model);
+
+//        delete model;
         sign = true;
     }
     if (unknow_water_types.isEmpty() != true)
@@ -74,6 +75,9 @@ void Importer::confirm()
         ConfirmWaterTypeModel *model = new ConfirmWaterTypeModel();
         model->setItems(p);
         c_i->setWaterModel(model);
+
+//        delete model;
+        sign = true;
     }
     if (unknow_locations.isEmpty() != true)
     {
@@ -89,60 +93,68 @@ void Importer::confirm()
         ConfirmLocationModel *model = new ConfirmLocationModel();
         model->setItems(l);
         c_i->setLocationModel(model);
-
+        sign = true;
+//        delete model;
     }
-//    c_i->setModels();
-    dlg = c_i;
-    dlg->exec();
+    if (sign == true)
+    {
+        dlg = c_i;
+        dlg->exec();
+        canceled = c_i->isCanceled();
+    }
     delete dlg;
+    return canceled;
+//    delete c_i;
+}
+void Importer::createParamsFromFile()
+{
+    for (int i = 5; i <= file->dimension().columnCount(); i ++)
+    {
+        QString param_name = file->read(1,i).toString();
+        params_from_file.insert(i,Names::params->value(param_name));
+    }
 }
 QVector<Sample*> Importer::import()
 {
     checkHeaders();
     checkWaterTypes();
     checkLocations();
-    confirm();
-//    qDebug()<<"unknow_params size: "<<unknow_params.size();
-    QVector<Sample*> s;// = new Sample()[file->dimension().rowCount()];
+    QVector<Sample*> s;
+    bool sign = confirm();
 
-//       for (int i = 2; i <= file->dimension().rowCount(); i ++)
-//       {
-//           Sample *s1 = getSample(i);
-//           s.append(s1);
-//       }
-//           Sample s1;// = getSample(2);
-//       QHash<unsigned int, ItemInSample>::iterator param_iterator;
-//       for(int i = 0; i < s.size(); i ++){
-//           qDebug()<<"location: "<<s[i]->getLocationId();
-//            qDebug()<<"date: "<<s[i]->getDate();
-//             qDebug()<<"type: "<<s[i]->getWaterId();
-//              qDebug()<<"comment: "<<s[i]->getComment();
-//              qDebug()<<"components size: "<< s[i]->getComponents()->size();
-//              qDebug()<<"==============================";
-//       }
+    if (sign != true)
+    {
+        createParamsFromFile();
 
+        for (int i = 2; i <= file->dimension().rowCount(); i ++)
+        {
+            Sample *s1 = getSample(i);
+            s.append(s1);
+        }
+    }
     return s;
 }
 Sample* Importer::getSample(int num)
 {
     Sample *s = new Sample();
-//    QXlsx::Cell cell;
 
-    QString water_type_name;
+    QString water_name;
     unsigned int water_id;
     QString location_name;
+
     unsigned int location_id;
 
     location_name = file->read(num,1).toString();
-    location_id = locations->value(location_name);
-    water_type_name = file->read(num,3).toString();
-    water_id = water_types->value(water_type_name);
+    location_id = Names::locations->value(location_name);
+
+    water_name = file->read(num,3).toString();
+    water_id = Names::water_types->value(water_name);
 
     s->setLocationId(location_id);
     s->setDate(file->read(num,2).toDate());
     s->setWaterId(water_id);
     s->setComment(file->read(num,4).toString());
-    s->setPosition(num - 1);
+    s->setPosition(num - 2);
 
     QHash<unsigned int, ItemInSample> *components = new  QHash<unsigned int, ItemInSample>();
     QHash<unsigned int, unsigned int>::iterator param_iterator; // первый аргумент - номер параметра из файла; второй - id параметра в БД
@@ -150,9 +162,14 @@ Sample* Importer::getSample(int num)
     for (int i = 5; i <= file->dimension().columnCount(); i ++)
     {
         ItemInSample item_in_sample;
+        double val = file->read(num,i).toDouble();
         param_iterator = params_from_file.find(i);
         item_in_sample.setItemId(param_iterator.value());
-        item_in_sample.setValue(file->read(num,i).toDouble());
+        item_in_sample.setValue(val);
+        if (val >= 0)
+        {
+            item_in_sample.setChanged(1);
+        }
 
         components->insert(param_iterator.value(), item_in_sample);
     }
@@ -162,18 +179,15 @@ Sample* Importer::getSample(int num)
 }
 void Importer::setParams(QHash<QString,unsigned int> *new_params)
 {
-//    qDebud
     QHash<QString, unsigned int>::iterator i;
     for (i = new_params->begin(); i != new_params->end(); i ++)
     {
-//        qDebug()<<"key: "<< i.key() <<"  value: " << i.value();
         params->insert(i.key(),i.value());
     }
 }
 void Importer::setWaterTypes(QHash<QString, unsigned int> *new_types)
 {
     QHash<QString, unsigned int>::iterator i;
-    qDebug()<<"Water_type size: "<< new_types->size();
     for (i = new_types->begin(); i != new_types->end(); i ++)
     {
         water_types->insert(i.key(),i.value());
@@ -183,7 +197,6 @@ void Importer::setWaterTypes(QHash<QString, unsigned int> *new_types)
 void Importer::setLocations(QHash<QString, unsigned int> *new_locations)
 {
     QHash<QString, unsigned int>::iterator i;
-    qDebug()<<"loactions size: "<< new_locations->size();
     for (i = new_locations->begin(); i != new_locations->end(); i ++)
     {
         locations->insert(i.key(),i.value());
@@ -195,48 +208,11 @@ void Importer::checkHeaders()
     for (int i = 5; i <= file->dimension().columnCount(); i ++)
     {
         QString param_name = file->read(1,i).toString();
-//        qDebug()<<"param_name: "<< param_name;
-//        qDebug()<<"Length: "<<param_name.length();
         if (Names::params->contains(param_name) == false)
         {
             unknow_params.insert(param_name,i);
         }
-        else
-        {
-            params_from_file.insert(i,Names::params->value(param_name));
-        }
     }
-
-    // Сохранение всех неизвестных параметров из файла.
-    // В бующем должен быть выбор: какие параметры сохранить.
-    // Должна быть отдельная функция.
-    QHash<QString,unsigned int>::iterator iter;
-    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    QString sql = "";
-
-//    sql = "INSERT INTO item (name, type_id) VALUES (:name, :type_id)";
-//    query->prepare(sql);
-    for (iter = unknow_params.begin(); iter != unknow_params.end(); iter ++ )
-    {
-//        query->bindValue(":name", iter.key());
-//        query->bindValue(":type_id", 1);
-//        query->exec();
-//        qDebug()<<"last error: "<<query->lastError().text();
-//        unsigned int last_id = query->lastInsertId().toUInt();
-        Item *i = new Item();
-        i->setName(iter.key());
-//        params_from_file.insert(iter.value(),last_id);
-//        params->insert(iter.key(), last_id);
-//        Names::params->insert(iter.key(), last_id);
-
-
-    }
-//    qDebug()<<"Params size in inporter: "<<params->size();
-//    QHash<unsigned int, unsigned int>::iterator it;
-//    for (it = params_from_file.begin(); it != params_from_file.end(); it ++ )
-//    {
-//        qDebug()<<"Number: "<<it.key()<<"| Id: "<<it.value();
-//    }
 }
 void Importer::checkWaterTypes()
 {
@@ -248,23 +224,7 @@ void Importer::checkWaterTypes()
         {
             unknow_water_types.insert(water_type_name,i);
         }
-
     }
-    QHash<QString,unsigned int>::iterator iter;
-    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    QString sql = "";
-    unsigned int last_id;
-    sql = "INSERT INTO water_type (name) VALUES (:name)";
-//    query->prepare(sql);
-//    for (iter = unknow_water_types.begin(); iter != unknow_water_types.end(); iter ++)
-//    {
-//        query->bindValue(":name", iter.key());
-//        query->exec();
-//        last_id = query->lastInsertId().toUInt();
-////        water_types->insert(iter.key(), last_id);
-//        Names::water_types->insert(iter.key(), last_id);
-//        qDebug()<<"names: "<<Names::water_types->value(iter.key());
-//    }
 }
 void Importer::checkLocations()
 {
@@ -278,18 +238,4 @@ void Importer::checkLocations()
         }
 
     }
-    QHash<QString,unsigned int>::iterator iter;
-    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    QString sql = "";
-    unsigned int last_id;
-    sql = "INSERT INTO location (name) VALUES (:name)";
-//    query->prepare(sql);
-//    for (iter = unknow_locations.begin(); iter != unknow_locations.end(); iter ++)
-//    {
-//        query->bindValue(":name", iter.key());
-//        query->exec();
-//        last_id = query->lastInsertId().toUInt();
-////        locations->insert(iter.key(), last_id);
-//        Names::locations->insert(iter.key(), last_id);
-//    }
 }

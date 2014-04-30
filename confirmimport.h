@@ -21,13 +21,17 @@ public:
     void setParamModel(ConfirmItemModel *model);
     void setWaterModel(ConfirmWaterTypeModel *model);
     void setLocationModel(ConfirmLocationModel *model);
-    void setModels();
+    bool isCanceled();
 
 private slots:
     void on_pushButton_save_clicked();
 
+
+    void on_pushButton_cancel_clicked();
+
 private:
     Ui::ConfirmImport *ui;
+    bool cancel;
     bool param_sign;
     bool water_sign;
     bool location_sign;

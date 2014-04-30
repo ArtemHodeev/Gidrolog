@@ -125,8 +125,10 @@ void MainWindow::on_action_importExcel_triggered()
     doc.setLocations(model->getLocations());
 
     QVector<Sample*> sam = doc.import();
-
-    model->resetModel(sam);
+    if (sam.size() != 0)
+    {
+        model->resetModel(sam);
+    }
 //    model->setHeaders();
 //    model->setSamples(sam);
 //    emit(model->modelReset());

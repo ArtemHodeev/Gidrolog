@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QDebug>
 #include <databaseaccessor.h>
+#include <names.h>
 
 ConfirmWaterTypeModel::ConfirmWaterTypeModel(QObject *parent):
     WaterTypeModel(parent)
@@ -85,6 +86,7 @@ void ConfirmWaterTypeModel::saveItems()
     {
         query->bindValue(":name",items.first()->getName());
         query->exec();
+        Names::water_types->insert(items.first()->getName(),query->lastInsertId().toUInt());
         items.removeFirst();
     }
     delete query;

@@ -14,21 +14,20 @@ ConfirmImport::ConfirmImport(QWidget *parent) :
     ui->params_widget->setHidden(true);
     ui->location_widget->setHidden(true);
     ui->water_widget->setHidden(true);
-    ui->pushButton_save->setEnabled(false);
+
+    cancel = false;
     param_sign = false;
     water_sign = false;
     location_sign = false;
 }
 void ConfirmImport::setParamModel(ConfirmItemModel *model)
 {
-//    param_model = new ConfirmItem();
     param_model = new ConfirmItemModel();
     param_model = model;
     connect(param_model,SIGNAL(on_itemChanged()),this,SLOT(on_itemChanged_emited()));
-
+    ui->pushButton_save->setEnabled(false);
     ui->params_widget->setHidden(false);
     ui->params_tableView->setModel(model);
-//    if (location_model->hasEmptyType());
     param_sign = true;
 }
 void ConfirmImport::setWaterModel(ConfirmWaterTypeModel *model)
@@ -38,8 +37,6 @@ void ConfirmImport::setWaterModel(ConfirmWaterTypeModel *model)
     ui->water_widget->setHidden(false);
     ui->water_tableView->setModel(water_model);
     water_sign = true;
-//    ui->params_tableView->setModel();
-
 }
 void ConfirmImport::setLocationModel(ConfirmLocationModel *model)
 {
@@ -50,20 +47,7 @@ void ConfirmImport::setLocationModel(ConfirmLocationModel *model)
 
     location_sign = true;
 }
-void ConfirmImport::setModels()
-{
-//    if (param_model)
-//    {
-//        ui->params_widget->setHidden(false);
-//        ui->params_tableView->setModel(param_model);
-//    }
-//    if (water_model)
-//    {
-//        ui->water_widget->setHidden(false);
-//        ui->water_tableView->setModel(water_model);
-//    }
-//    ui->params_widget->sh
-}
+
 ConfirmImport::~ConfirmImport()
 {
     if (param_sign ==true)
@@ -78,7 +62,7 @@ ConfirmImport::~ConfirmImport()
     {
         delete location_model;
     }
-
+    qDebug()<<"destructure of ConfirmImport";
     delete ui;
 }
 
@@ -96,15 +80,19 @@ void ConfirmImport::on_pushButton_save_clicked()
     {
         location_model->saveItems();
     }
-
 }
 
 void ConfirmImport::on_itemChanged_emited()
 {
-//    if ( == true)
-//    {
     bool enable = !param_model->hasEmptyType();
-        ui->pushButton_save->setEnabled(enable);
-//    }
-//    else
+    ui->pushButton_save->setEnabled(enable);
+}
+
+void ConfirmImport::on_pushButton_cancel_clicked()
+{
+    cancel = true;
+}
+bool ConfirmImport::isCanceled()
+{
+    return cancel;
 }

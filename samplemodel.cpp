@@ -402,7 +402,6 @@ void SampleModel::resetModel(QVector<Sample *> sample_mass)
     setSamples(sample_mass);
 
     endResetModel();
-    qDebug()<<"items size: "<<items.size();
 }
 
 void SampleModel::setHeaders()
@@ -434,15 +433,12 @@ void SampleModel::setHeaders()
         params->insert(name, query->value("id").toUInt());
         Names::params->insert(name,query->value("id").toUInt());
     }
-
-//    emit(headerDataChanged(Qt::Horizontal,0,cCount - 1));
 }
 
 void SampleModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    qDebug()<<"Size of items_to_update: "<<items_to_update.size();
     while (!items_to_update.empty())
     {
         query->prepare("UPDATE sample SET location_id = :location, water_type_id = :water_id, sample_date = :date, comment = :comment WHERE id = :id");
@@ -456,7 +452,6 @@ void SampleModel::updateItems()
         QHash<unsigned int, ItemInSample>::iterator i;
         unsigned int s_id = 0;
         s_id = items_to_update.first()->getId();
-        qDebug()<<"s_id: "<<s_id;
         QString sql = "";
 
         for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
@@ -498,7 +493,6 @@ void SampleModel::saveItems()
 
     QString sql = "";
     int pos = -1;
-    qDebug()<<"Size of items_to_save: "<<items_to_save.size();
 
     sql = "INSERT INTO sample (sample_set_id, location_id, sample_date, water_type_id, comment) ";
     sql += "VALUES (:sample_set_id,:location_id,:date,:water_id,:comment)";
@@ -527,7 +521,6 @@ void SampleModel::removeItems()
     QString sql = "";
     unsigned int s_id = 0;
 
-    qDebug()<<"Size of items_to_delete: "<<items_to_delete.size();
     while(!items_to_delete.empty())
     {
         Sample *s = items_to_delete.first();
@@ -544,7 +537,6 @@ void SampleModel::removeItems()
             query->bindValue(":s_id", s_id);
             query->bindValue(":i_id", i.key());
             query->exec();
-            qDebug()<<"Error on delete sample: "<<query->lastError().text();
         }
 
         // удаление пробы
@@ -552,7 +544,6 @@ void SampleModel::removeItems()
         query->prepare(sql);
         query->bindValue(":s_id", s_id);
         query->exec();
-        qDebug()<<"Error on delete sample: "<<query->lastError().text();
 
         items_to_delete.removeFirst();
     }
@@ -589,7 +580,6 @@ void SampleModel::setItemsToDelete(int *mass)
 
         count ++;
     }
-//    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
     removeRows(first,count);
 }
 int SampleModel::findItemInPosition(unsigned int pos)

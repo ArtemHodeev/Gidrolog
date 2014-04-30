@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <databaseaccessor.h>
 #include <QDebug>
+#include <names.h>
 
 ConfirmLocationModel::ConfirmLocationModel(QObject *parent) :
     LocationModel(parent)
@@ -138,6 +139,8 @@ void ConfirmLocationModel::saveItems()
         query->bindValue(":length",items.first()->getLength());
         query->bindValue(":deep", items.first()->getDeep());
         query->exec();
+
+        Names::locations->insert(items.first()->getName(),query->lastInsertId().toUInt());
         items.removeFirst();
     }
     delete query;

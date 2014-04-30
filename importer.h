@@ -36,7 +36,8 @@ private:
     void checkHeaders();
     void checkLocations();
     void checkWaterTypes();
-    void confirm();
+    bool confirm();
+    void createParamsFromFile();
 
 //    QVector<QString> getValue();
 
