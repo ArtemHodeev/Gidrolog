@@ -5,6 +5,7 @@
 #include <item.h>
 #include <QCloseEvent>
 #include <tablemodel.h>
+//#include <item.h>
 
 class ItemModel : public TableModel
 {
@@ -12,19 +13,21 @@ class ItemModel : public TableModel
 public:
     explicit ItemModel(QObject *parent = 0);
     ~ItemModel();
-    QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
+    virtual void saveItems();
     int findItemInPosition(unsigned int pos);
     void setItems();
     void setItemsToDelete(unsigned int *mass);
-    void saveItems();
+
+
     void updateItems();
     void removeItems();
 
 
-private:
+protected:
     QVector<Item*> items_to_update;
     QVector<Item*> items_to_delete;
     QVector<Item*> items_to_save;

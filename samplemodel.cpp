@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QMessageBox>
+#include <names.h>
+
 SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
@@ -15,6 +17,8 @@ SampleModel::SampleModel(QObject *parent) :
 SampleModel::~SampleModel()
 {
     delete params;
+    delete water_types;
+    delete locations;
 }
 QVariant SampleModel::data(const QModelIndex &index, int role) const
 {
@@ -298,6 +302,7 @@ void SampleModel::setWaterTypes()
         id = query->value("id").toUInt();
         name = query->value("name").toString();
         water_types->insert(name,id);
+        Names::water_types->insert(name,id);
     }
 
     delete query;
@@ -316,6 +321,7 @@ void SampleModel::setLocation()
         id = query->value("id").toUInt();
         name = query->value("name").toString();
         locations->insert(name,id);
+        Names::locations->insert(name,id);
     }
 
     delete query;
@@ -391,6 +397,8 @@ void SampleModel::resetModel(QVector<Sample *> sample_mass)
 {
     beginResetModel();
     setHeaders();
+    setWaterTypes();
+    setLocation();
     setSamples(sample_mass);
 
     endResetModel();
@@ -424,10 +432,12 @@ void SampleModel::setHeaders()
             headers.append(name);
         }
         params->insert(name, query->value("id").toUInt());
+        Names::params->insert(name,query->value("id").toUInt());
     }
 
-    emit(headerDataChanged(Qt::Horizontal,0,cCount - 1));
+//    emit(headerDataChanged(Qt::Horizontal,0,cCount - 1));
 }
+
 void SampleModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
@@ -467,6 +477,7 @@ void SampleModel::updateItems()
             default:
                break;
             }
+
             i->setChanged(0);
 
             query->prepare(sql);
@@ -489,14 +500,15 @@ void SampleModel::saveItems()
     int pos = -1;
     qDebug()<<"Size of items_to_save: "<<items_to_save.size();
 
+    sql = "INSERT INTO sample (sample_set_id, location_id, sample_date, water_type_id, comment) ";
+    sql += "VALUES (:sample_set_id,:location_id,:date,:water_id,:comment)";
+    query->prepare(sql);
+
     //Сохраняется информаци о пробе, без указания: какие параметры  в ней содержатся.
     //Параметры пробы могут быть сохранены только при обновлении пробы
+
     while (!items_to_save.empty())
     {
-        sql = "INSERT INTO sample (sample_set_id, location_id, sample_date, water_type_id, comment) ";
-        sql += "VALUES (:sample_set_id,:location_id,:date,:water_id,:comment)";
-        query->prepare(sql);
-
         query->bindValue(":sample_set_id",1);
         query->bindValue(":location_id",items_to_save.first()->getLocationId());
         query->bindValue(":water_id", items_to_save.first()->getWaterId());
@@ -513,17 +525,13 @@ void SampleModel::removeItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
+    unsigned int s_id = 0;
 
     qDebug()<<"Size of items_to_delete: "<<items_to_delete.size();
     while(!items_to_delete.empty())
     {
         Sample *s = items_to_delete.first();
         QHash<unsigned int, ItemInSample>::iterator i;
-        unsigned int s_id = 0;
-
-        // Определение id удаляемой пробы
-        // Если проба была недавно добавлена в системе и сохранена,
-        // то в БД у нее появляется id, но система о нем еще не знает
 
         s_id = s->getId();
 

@@ -7,6 +7,7 @@
 
 class Importer
 {
+//    Q_OBJECT
     QHash<QString, unsigned int> *params; // параметры проб известные системе
     QHash<QString, unsigned int> *locations; // места отбора проб известные системе
     QHash<QString, unsigned int> *water_types; // типы водных масс известные системе
@@ -15,6 +16,7 @@ class Importer
     QHash<QString, unsigned int> unknow_water_types; // неизвестные системе типы водных масс
     QHash<unsigned int, unsigned int> params_from_file; // параметры из файла.
     QHash<unsigned int, unsigned int> water_types_from_file; // типы водных масс из файла
+
 //      Первый праметр - номер параметра в файле, второй - id параметра в БД
 
     QXlsx::Document *file;
@@ -34,6 +36,7 @@ private:
     void checkHeaders();
     void checkLocations();
     void checkWaterTypes();
+    void confirm();
 
 //    QVector<QString> getValue();
 

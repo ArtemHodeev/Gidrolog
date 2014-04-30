@@ -12,6 +12,9 @@
 #include <confirmimport.h>
 #include <importer.h>
 #include <comboboxdelegate.h>
+#include <watertypecombobox.h>
+#include <locationcombobox.h>
+#include <names.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,11 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tableView->setModel(model);
 
-    ComboboxDelegate *water_delegeate = new ComboboxDelegate() ;
-    ComboboxDelegate *location_delegate = new ComboboxDelegate();
-
-    location_delegate->setItems(model->getLocations());
-    water_delegeate->setItems(model->getWaterTypes());
+    ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
+    ComboboxDelegate *location_delegate = new LocationCombobox();
 
     ui->tableView->setItemDelegateForColumn(1,location_delegate);
     ui->tableView->setItemDelegateForColumn(3,water_delegeate);

@@ -16,11 +16,7 @@ Editor::Editor(QWidget *parent) :
 
     ui->stackedWidget->setCurrentIndex(0);
     model = new ItemModel();
-//    ui->pushButton_itemAdd->si
     model->setItems();
-//    connect(this,SIGNAL(save_clicked()),model,SLOT(on_saveButton_clicked()));
-//    connect(this,SIGNAL(remove_clicked()),model,SLOT(on_removeButton_clicked()));
-//    connect(this,SIGNAL(exit_action()),model,SLOT(on_pushButton_exit_clicked()));
 
     ui->tableView_itemInSystem->setModel(model);
     sel_model = new QItemSelectionModel(model);
@@ -65,27 +61,11 @@ Editor::~Editor()
     delete model;
 }
 
-//void Editor::on_pushButton_itemAdd_clicked()
-//{
-//    emit(save_clicked());
-//}
 
-//void Editor::on_pushButton_exit_clicked()
-//{
-////    emit(exit_action());
-//}
-
-//void Editor::on_pushButton_itemRemove_clicked()
-//{
-//    emit(remove_clicked());
-//}
 void Editor::keyPressEvent(QKeyEvent *key_event)
 {
-//    qDebug()<<"Event";
-//    qDebug()<<"Sel_rows count: "<<sel_model->selectedRows().size();
     if (key_event->matches(QKeySequence::Delete) && sel_model->selectedRows().size() > 0)
     {
-//        qDebug()<<"Event: delete";
         QModelIndexList list = sel_model->selectedRows();
         QModelIndexList::iterator i;
 
@@ -95,14 +75,11 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
         {
 
              sel_rows[ind] = i->row();
-//             qDebug()<<"row num: "<<sel_rows[ind];
              ind ++;
         }
         sel_rows[ind] = -1;
-//        qDebug()<<"In mainwindow: "<<sel_rows;
 
         model->setItemsToDelete(sel_rows);
-//        model->removeItems();
         delete sel_rows;
     }
 }

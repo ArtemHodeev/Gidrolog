@@ -9,41 +9,9 @@
 ComboboxDelegate::ComboboxDelegate(QObject *parent) :
     QItemDelegate(parent)
 {
-    items = new QHash<QString,unsigned int>();
-//    locations = new QHash<QString,unsigned int>();
-//    Items.push_back("Test0");
-//      Items.push_back("Test1");
-//      Items.push_back("Test2");
-//      Items.push_back("Test3");
-//      Items.push_back("Test4");
-//      Items.push_back("Test5");
-//      Items.push_back("Test6");
-//      Items.push_back("Test7");
-//      Items.push_back("Test8");
 }
-void ComboboxDelegate::setItems(QHash<QString,unsigned int> *new_params)
-{
-    QHash<QString,unsigned int>::iterator i;
-    for (i = new_params->begin(); i != new_params->end(); i++)
-    {
-        items->insert(i.key(),i.value());
-    }
-}
-
 ComboboxDelegate::~ComboboxDelegate()
 {
-    delete items;
-}
-QWidget *ComboboxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/* option */, const QModelIndex & index ) const
-{
-    qDebug()<<"createEditor";
-    QComboBox* editor = new QComboBox(parent);
-    QHash<QString,unsigned int>::iterator i;
-    for (i = items->begin(); i != items->end(); i++)
-    {
-        editor->addItem(i.key());
-    }
-    return editor;
 }
 
 void ComboboxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const

@@ -75,9 +75,6 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
 
     WaterType *wt;
     wt = (index.row() < rCount - 1) ? items[index.row()] : new WaterType();
-    qDebug()<<"index: "<<index.row();
-    qDebug()<<"id: "<<wt->getId();
-    qDebug()<<"name: "<<wt->getName();
 
     switch (index.column()) {
     case 1:
@@ -86,8 +83,6 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
     default:
         break;
     }
-
-//    items.insert(index.row(), wt);
 
     if (index.row() < rCount - 1)
     {
@@ -127,10 +122,11 @@ void WaterTypeModel::setItems()
     sql = "SELECT id, name FROM water_type";
     query->prepare(sql);
     query->exec();
+
     rCount = query->size() + 1;
     cCount = query->record().count();
-    qDebug()<<"Error on retriving water_type: "<<query->lastError().text();
     int pos = 0;
+
     while (query->next())
     {
         WaterType *wt = new WaterType();
@@ -141,7 +137,6 @@ void WaterTypeModel::setItems()
 
         items.append(wt);
     }
-    qDebug()<<"Items size: "<<items.size();
     delete query;
 }
 
@@ -149,15 +144,17 @@ void WaterTypeModel::saveItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
+    int pos = -1;
+
     sql = "INSERT INTO water_type(name) VALUES (:name)";
     query->prepare(sql);
-    qDebug()<<"Items_to_save size: "<<items_to_save.size();
+
     while(items_to_save.isEmpty() != true)
     {
-        qDebug()<<"Save";
         query->bindValue(":name", items_to_save.first()->getName());
         query->exec();
-        qDebug()<<"Error on saving items: "<<query->lastError().text();
+        pos = findItemInPosition(items_to_save.first()->getPosition());
+        items[pos]->setId(query->lastInsertId().toUInt());
 
         items_to_save.removeFirst();
     }
@@ -169,24 +166,13 @@ void WaterTypeModel::updateItems()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
     unsigned int wt_id;
+
     sql = "UPDATE water_type SET name = :name WHERE id = :wt_id";
     query->prepare(sql);
-    qDebug()<<"Items_to_update size: "<<items_to_update.size();
+
     while (items_to_update.empty() != true)
     {
-        if (items_to_update.first()->getId() != 0)
-        {
-            wt_id = items_to_update.first()->getId();
-        }
-        else
-        {
-            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-            q->exec("SELECT id FROM water_type");
-            q->seek(items_to_update.first()->getPosition());
-            wt_id = q->value("id").toUInt();
-            delete q;
-        }
-
+        wt_id = items_to_update.first()->getId();
         query->bindValue(":wt_id", wt_id);
         query->bindValue(":name", items_to_update.first()->getName());
         query->exec();
@@ -201,43 +187,22 @@ void WaterTypeModel::removeItems()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
     unsigned int wt_id;
+
     sql = "DELETE FROM water_type WHERE id = :wt_id";
     query->prepare(sql);
-     qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
+
     while (items_to_delete.empty() != true)
     {
-        if (items_to_delete.first()->getId() != 0)
-        {
-            wt_id = items_to_delete.first()->getId();
-            query->bindValue(":wt_id", wt_id);
-            query->exec();
-        }
-//        else
-//        {
-//            QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
-//            q->exec("SELECT id FROM water_type");
-//            q->seek(items_to_delete.first()->getPosition());
-//            wt_id = q->value("id").toUInt();
-//            delete q;
-//        }
-
-//        query->bindValue(":wt_id", wt_id);
-//        query->exec();
-//        qDebug()<<"Error on deleting: "<<query->lastError().text();
+        wt_id = items_to_delete.first()->getId();
+        query->bindValue(":wt_id", wt_id);
+        query->exec();
 
         items_to_delete.removeFirst();
     }
     delete query;
 }
 
-/*
- *Функция удаляет элемент из items и сокращает его размер, а указание: какие строки удалять не меняется
- * т.е. нужно удалить строки 7 и 8, а всего строк (items.size()) 8. после удаления 7ой строки вектро items
- * сократится и в нем уже не будет строки 8. Решение проблеммы: замена QVector на QHash или QMap, либо каждый раз
- * проверять для каждого элемента items поле position.
- *
 
-*/
 void WaterTypeModel::setItemsToDelete(unsigned int *mass)
 {
     int count = 0;

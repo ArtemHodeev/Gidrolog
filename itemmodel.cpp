@@ -270,6 +270,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
  *  согдалсно количеству строк и столбцов в таблице БД. выбираются все данные таблицы item
  *  из БД и формируется список элементов items
  */
+
 void ItemModel::setItems()
 {
     QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line FROM item ORDER BY id", DatabaseAccessor::getDb());

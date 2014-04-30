@@ -32,7 +32,12 @@ SOURCES += main.cpp\
     watertype.cpp \
     watertypemodel.cpp \
     confirmimport.cpp \
-    comboboxdelegate.cpp
+    comboboxdelegate.cpp \
+    names.cpp \
+    watertypecombobox.cpp \
+    locationcombobox.cpp \
+    confirmitemmodel.cpp \
+    confirmwatertypemodel.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -52,7 +57,12 @@ HEADERS  += mainwindow.h \
     watertype.h \
     watertypemodel.h \
     confirmimport.h \
-    comboboxdelegate.h
+    comboboxdelegate.h \
+    names.h \
+    watertypecombobox.h \
+    locationcombobox.h \
+    confirmitemmodel.h \
+    confirmwatertypemodel.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
