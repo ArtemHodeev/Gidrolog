@@ -10,15 +10,13 @@ public:
     DBCreator(QSqlDatabase db);
     ~DBCreator();
     void checkSchema();
-//    DatabaseAccessor();
+
 private:
     void checkTables();
-//    bool createSchema();
     bool createSchema(QStringList tables);
     bool createTable(QString table_name);
-//    bool createDb();
     QSqlDatabase db;
-    QVector<QString> table_names;
+    QVector<QString> table_names; // все необходимые для работы системы таблицы БД
 };
 
 #endif // DBCREATOR_H

@@ -6,26 +6,20 @@ class DatabaseAccessor
 {
 
 public:
-    static QString dbName;
-    static QString dbHost;
-    static QString dbUser;
-    static QString dbPassword;
-    static int dbPort;
+    static QString dbName; // название БД
+    static QString dbHost; // название хоста
+    static QString dbUser; // имя пользователя
+    static QString dbPassword; // пароль пользователя
+    static int dbPort; // порт БД
 
     static QSqlDatabase getDb();
-
 
 private:
     DatabaseAccessor();
     DatabaseAccessor& operator=(const DatabaseAccessor&);
     DatabaseAccessor(const DatabaseAccessor&);
-//    void checkTables();
-////    bool createSchema();
-//    bool createSchema(QStringList tables);
-//    bool createTable(QString table_name);
-////    bool createDb();
-    static QSqlDatabase db;
 
+    static QSqlDatabase db; // открытая БД
 };
 
 #endif // DATABASEACCESSOR_H

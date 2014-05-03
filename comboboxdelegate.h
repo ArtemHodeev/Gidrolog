@@ -3,7 +3,7 @@
 
 #include <QAbstractItemDelegate>
 #include <QItemDelegate>
-#include <QHash>
+//#include <QHash>
 
 class ComboboxDelegate : public QItemDelegate
 {
@@ -11,7 +11,7 @@ class ComboboxDelegate : public QItemDelegate
 public:
     explicit ComboboxDelegate(QObject *parent = 0);
     ~ComboboxDelegate();
-    void setItems(QHash<QString, unsigned int> *new_params);
+//    void setItems(QHash<QString, unsigned int> *new_params);
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;

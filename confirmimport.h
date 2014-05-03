@@ -2,8 +2,6 @@
 #define CONFIRMIMPORT_H
 
 #include <QDialog>
-#include <itemmodel.h>
-#include <tablemodel.h>
 #include <confirmitemmodel.h>
 #include <confirmwatertypemodel.h>
 #include <confirmlocationmodel.h>
@@ -25,19 +23,17 @@ public:
 
 private slots:
     void on_pushButton_save_clicked();
-
-
     void on_pushButton_cancel_clicked();
 
 private:
     Ui::ConfirmImport *ui;
-    bool cancel;
-    bool param_sign;
-    bool water_sign;
-    bool location_sign;
-    ConfirmItemModel *param_model;
-    ConfirmWaterTypeModel *water_model;
-    ConfirmLocationModel *location_model;
+    bool cancel; // флаг: была ли надата кнопка отмены
+    bool param_sign; // флаг: существует ли модель компонентов
+    bool water_sign; // флаг: существует ли модель типов водных масс
+    bool location_sign; // флаг: существует ли модель мест взятия
+    ConfirmItemModel *param_model; // Модель компонентов
+    ConfirmWaterTypeModel *water_model; // модель типов водных масс
+    ConfirmLocationModel *location_model; // модель мест взятия
 public slots:
     void on_itemChanged_emited();
 };

@@ -23,23 +23,38 @@ DBCreator::DBCreator(QSqlDatabase db)
 }
 DBCreator::~DBCreator()
 {}
+
+/*
+ * F:
+ *  void DBCreator::checkTables()
+ * I:
+ *  --
+ * O:
+ *  --
+ * D:
+ *  Функция проверяет: какие таблицы есть в схеме БД, а каких нет. Те таблицы, которые отсутствуют в схеме
+ *  функция запоминает и вызывает функцию createSchema для этих таблиц.
+*/
 void DBCreator::checkTables()
 {
     QSqlQuery *query = new QSqlQuery(db);
-    QString sql = "show tables";
-
+    QString sql = "";
     QString name = "";
     QStringList unknow_table_names;
-
-    query->prepare(sql);
-    query->exec();
     QStringList tables_in_db;
 
+    sql = "show tables";
+    query->prepare(sql);
+    query->exec();
+
+    // получение всх таблиц схемы БД
     while(query->next())
     {
         name = query->value("Tables_in_gydro").toString();
         tables_in_db.append(name);
     }
+
+    // Определение недостающих таблиц
     for(int i = 0; i < table_names.size(); i ++)
     {
         if (tables_in_db.contains(table_names[i]) != true)
@@ -51,16 +66,28 @@ void DBCreator::checkTables()
     createSchema(unknow_table_names);
     delete query;
 }
+
+/*
+ * F:
+ *  void DBCreator::checkSchema()
+ * I:
+ *  --
+ * O:
+ *  --
+ * D:
+ *  Функция проверяет: существует ли указанная БД. Если БД не существует, то функция создает ее.
+ *  Функция делает указанныю при в настройках БД активной. После выбора активной БД, функция вызывает
+ *  функция запоминает и вызывает функцию createSchema для этих таблиц.
+*/
 void DBCreator::checkSchema()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-
     QString sql = "";
+    bool sign = false;
+
     sql = "show databases";
     query->exec();
 
-    //Если схемы  gydro нет
-    bool sign = false;
     while(query->next())
     {
         if (query->value("Database").toString().compare("gydro") == 0)
@@ -68,6 +95,8 @@ void DBCreator::checkSchema()
             sign = true;
         }
     }
+
+    //Если БД  gydro нет, то создать ее
     if (sign == false)
     {
         sql = "CREATE DATABASE gydro";
@@ -75,11 +104,23 @@ void DBCreator::checkSchema()
         query->exec();
     }
 
+    //Сделать БД "gydro" активной
     query->exec("USE gydro");
 
     checkTables();
     delete query;
 }
+
+/*
+ * F:
+ *  void DBCreator::createSchema(QStringList tables)
+ * I:
+ *  QStringList tables - список названий таблиц
+ * O:
+ *  true/false - (особой роли пока не играет)
+ * D:
+ *  Функция вызывает для каждой таблицы из tables функцию createTable
+*/
 bool DBCreator::createSchema(QStringList tables)
 {
     QString query_sql = "";
@@ -100,6 +141,18 @@ bool DBCreator::createSchema(QStringList tables)
         }
     return res;
 }
+
+/*
+ * F:
+ *  bool DBCreator::createTable(QString table_name)
+ * I:
+ *  QString table_name - название таблицы, которую нужно создать
+ * O:
+ *  true - если таблица создана
+ *  false - если таблица не создана
+ * D:
+ *  Функция создает таблицу table_name со всеми ключами.
+*/
 bool DBCreator::createTable(QString table_name)
 {
     QString query_sql = "";

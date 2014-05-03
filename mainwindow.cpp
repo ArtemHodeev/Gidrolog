@@ -22,23 +22,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //создание модели
     model = new SampleModel();
-    QObject::connect(this,SIGNAL(actionSave()), model,SLOT(on_actionSave_triggered()));
 
+    // Создание обработчика действий по нажатию на кнопку "Сохранить"
+    QObject::connect(model,SIGNAL(actionSave()), this,SLOT(on_actionSave_triggered()));
+
+    // наполнение модели данными
     model->setItems();
     model->setHeaders();
     model->setWaterTypes();
     model->setLocation();
 
+    //отображение модели
     ui->tableView->setModel(model);
 
+    //Создание делегатов combobox для ввода типов водных масс и мест взятия
     ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
     ComboboxDelegate *location_delegate = new LocationCombobox();
 
     ui->tableView->setItemDelegateForColumn(1,location_delegate);
     ui->tableView->setItemDelegateForColumn(3,water_delegeate);
-    sel_model = new QItemSelectionModel(model);
 
+    //Установление модели для выделения элементов
+    sel_model = new QItemSelectionModel(model);
     ui->tableView->setSelectionModel(sel_model);
     ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
@@ -67,14 +74,21 @@ void MainWindow::on_action_editorTool_triggered()
     delete dlg;
 }
 
-
+/*
+ * F:
+ *  void MainWindow::on_actionSave_triggered()
+ * I:
+ *  --
+ * O:
+ *  --
+ * D:
+ *  сохранение изменений модели в БД
+ */
 void MainWindow::on_actionSave_triggered()
 {
-    qDebug() << "Slot MainWindow::on_actionSave_clicked()";
     model->saveItems();
     model->updateItems();
     model->removeItems();
-//    emit(actionSave());
 }
 
 /*
@@ -91,25 +105,39 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
 {
     if (key_event->matches(QKeySequence::Delete) && sel_model->selectedRows().size() > 0)
     {
-        QModelIndexList list = sel_model->selectedRows();
-        QModelIndexList::iterator i;
-
-        int *sample_num = new int[sel_model->selectedRows().size() + 1];
-
+        QModelIndexList list; // список выделенных строк
+        QModelIndexList::iterator i; // итератор по списку выделенных строк
         int ind = 0;
+        int *sample_num; // массив, элементы которого номера выделенных строк
+
+        list = sel_model->selectedRows();
+        sample_num = new int[sel_model->selectedRows().size() + 1];
+
+        //Определение номеров выделенных строк
         for (i = list.begin(); i < list.end(); i ++)
         {
              sample_num[ind] = i->row();
              ind ++;
         }
         sample_num[ind] = -1;
-        qDebug()<<"In mainwindow: "<<sample_num;
 
         model->setItemsToDelete(sample_num);
         delete sample_num;
     }
 }
 
+/*
+ * F:
+ *  void MainWindow::on_action_importExcel_triggered()
+ * I:
+ *  --
+ * O:
+ *  --
+ * D:
+ *  Функция вызывает проводник для выбора файла, из которго предполагается импорт проб. Если файл был выбран,
+ *  то функция запускает создает объект типа Importer, который извлекает пробы из файла. После импорта проб
+ *  модель устанавливается заново с новыми данными.
+ */
 void MainWindow::on_action_importExcel_triggered()
 {
     QString url = QFileDialog::getOpenFileName();
@@ -118,26 +146,19 @@ void MainWindow::on_action_importExcel_triggered()
         return;
     }
 
+    // Подготовка для импорта проб
     Importer doc(url);
 
     doc.setParams(model->getParams());
     doc.setWaterTypes(model->getWaterTypes());
     doc.setLocations(model->getLocations());
 
+    // Импорт проб
     QVector<Sample*> sam = doc.import();
+
+    //Если есть импортированные пробы, то переустановить модель
     if (sam.size() != 0)
     {
         model->resetModel(sam);
     }
-//    model->setHeaders();
-//    model->setSamples(sam);
-//    emit(model->modelReset());
-
-}
-
-void MainWindow::on_actionOpen_triggered()
-{
-    QDialog *dlg = new ConfirmImport();
-    dlg->exec();
-    delete dlg;
 }

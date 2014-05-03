@@ -18,8 +18,8 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *key_event);
 private:
-    TableModel *model;
-    QItemSelectionModel *sel_model;
+    TableModel *model;// модель данных таблицы
+    QItemSelectionModel *sel_model;// модель для выделения строк
     Ui::Editor *ui;
 public slots:
     void on_listWidget_editorMenu_clicked();

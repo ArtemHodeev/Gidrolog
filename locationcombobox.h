@@ -7,6 +7,7 @@ class LocationCombobox : public ComboboxDelegate
     Q_OBJECT
 public:
     explicit LocationCombobox(QObject *parent = 0);
+    ~LocationCombobox();
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
