@@ -7,6 +7,7 @@
 #include <itemmodel.h>
 #include <watertypemodel.h>
 #include <locationmodel.h>
+#include <factormodel.h>
 
 namespace Ui {
 class Editor;
@@ -25,15 +26,20 @@ private:
     TableModel *water_model;
     TableModel *location_model;
     TableModel *current_model;
-    QItemSelectionModel *sel_item_model;// модель для выделения строк
-    QItemSelectionModel *sel_location_model;// модель для выделения строк
-    QItemSelectionModel *sel_water_model;// модель для выделения строк
+    FactorModel *factor_model;
+
+//    QItemSelectionModel *sel_item_model;// модель для выделения строк
+//    QItemSelectionModel *sel_location_model;// модель для выделения строк
+//    QItemSelectionModel *sel_water_model;// модель для выделения строк
     QItemSelectionModel *sel_model;// модель для выделения строк
     Ui::Editor *ui;
     bool water_sign;
     bool location_sign;
+    bool factor_sign;
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
+    void setFactor();
+//    void setFactorValues();
 
 public slots:
     void on_listWidget_editorMenu_clicked();

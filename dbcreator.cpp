@@ -255,7 +255,7 @@ bool DBCreator::createTable(QString table_name)
             query_sql +="( ";
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
             query_sql += "name varchar(128) DEFAULT '', ";
-            query_sql += "value double precision DEFAULT 0, ";
+            query_sql += "value double precision DEFAULT 100, ";
             query_sql += "PRIMARY KEY (id) ";
             query_sql += ")";
             set_val = true;

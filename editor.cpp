@@ -8,6 +8,9 @@
 #include <itemtypemodel.h>
 #include <watertypemodel.h>
 #include <locationmodel.h>
+#include <QVariant>
+#include <comboboxdelegate.h>
+#include <watertypecombobox.h>
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -17,6 +20,7 @@ Editor::Editor(QWidget *parent) :
 
     water_sign = false;
     location_sign = false;
+    factor_sign = false;
     item_model = new ItemModel();
 
     //Первичная установка моделеи данных раздела компоненты
@@ -49,9 +53,28 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->stackedWidget->setCurrentIndex(0);
         break;
     case 1:
+    {
 //        Критерии
+        if (factor_sign == false)
+        {
+            factor_model = new FactorModel();
+            factor_model->setItems();
+            factor_sign = true;
+        }
+        ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
+        QString corell = QVariant(factor_model->getCorell()).toString();
+        QString lost = QVariant(factor_model->getLostCount()).toString();
+        QString error = QVariant(factor_model->getErrorCount()).toString();
+
+        ui->lineEdit_maxCorrel->setText(corell);
+        ui->lineEdit_countOfLost->setText(lost);
+        ui->lineEdit_maxErrorCount->setText(error);
+        ui->comboBox->addItems(factor_model->getWaterTypes());
+        ui->comboBox->setCurrentText(factor_model->getAnaliticName());
+//        ui->lineEdit_analitic_type->setText(QString(factor_model->getAnaliticId()));
         ui->stackedWidget->setCurrentIndex(1);
         break;
+    }
     case 2:
 //        Объекты (Места взятия)
         if (location_sign == false)
@@ -145,6 +168,11 @@ void Editor::on_pushButton_exit_pressed()
     {
         saveModel(water_model);
     }
+    if (factor_sign == true)
+    {
+        setFactor();
+        factor_model->saveItems();
+    }
 }
 void Editor::saveModel(TableModel *model)
 {
@@ -179,4 +207,13 @@ void Editor::setUi(int index, TableModel *model)
 
     ui->tableView_itemInSystem->setSelectionModel(sel_model);
     ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
+}
+void Editor::setFactor()
+{
+    float lost = ui->lineEdit_countOfLost->text().toFloat();
+    float error = ui->lineEdit_maxErrorCount->text().toFloat();
+    float corell = ui->lineEdit_maxCorrel->text().toFloat();
+    QString type_name = ui->comboBox->currentText();
+    factor_model->setItems(lost,error,corell,type_name);
+//    unsigned int
 }

@@ -81,7 +81,7 @@
    <item row="0" column="1" colspan="2">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -162,9 +162,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="lineEdit_analitic_type"/>
-       </item>
        <item row="7" column="2">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
@@ -181,7 +178,7 @@
        <item row="1" column="0" colspan="2">
         <widget class="QLabel" name="label_analitic_type">
          <property name="text">
-          <string>Анализируемый тип водных масс</string>
+          <string>Анализируемый тип водной массы</string>
          </property>
         </widget>
        </item>
@@ -207,6 +204,9 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="1" column="2">
+        <widget class="QComboBox" name="comboBox"/>
        </item>
       </layout>
      </widget>
