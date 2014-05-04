@@ -21,8 +21,6 @@ public:
     int findItemInPosition(unsigned int pos);
     void setItems();
     void setItemsToDelete(int *mass);
-
-
     void updateItems();
     void removeItems();
 
@@ -36,10 +34,6 @@ protected:
 signals:
 
 public slots:
-//    void actionSave_clicked();
-//    void on_saveButton_clicked();
-//    void on_pushButton_exit_clicked();
-//    void on_removeButton_clicked();
 };
 
 #endif // ItemModel_H

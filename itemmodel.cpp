@@ -68,50 +68,6 @@ QVariant ItemModel::data(const QModelIndex &index, int role) const
 
 /*
  * F:
- *  int ItemModel::rowCount(const QModelIndex &parent) const
- * I:
- *  &parent - ссылка объект роделя модели, по умолчанию ссылка на NULL
- * O:
- *  Число строк в таблице модели
- * D:
- *
- */
-//int ItemModel::rowCount(const QModelIndex &parent) const
-//{
-//    return rCount;
-//}
-
-/*
- * F:
- *  int ItemModel::columnCount(const QModelIndex &parent) const
- * I:
- *  &parent - ссылка объект роделя модели, по умолчанию ссылка на NULL
- * O:
- *  Число столбцов в таблице модели
- * D:
- *
- */
-//int ItemModel::columnCount(const QModelIndex &parent) const
-//{
-//    return cCount;
-//}
-
-
-
-//bool ItemModel::removeRows(int row, int count, const QModelIndex &parent)
-//{
-//    beginRemoveRows(parent,row,row + count - 1);
-//    for (int i = 0; i < count; i ++)
-//    {
-//        items_to_remove.append(items.at(row + i));
-//    }
-//    endRemoveRows();
-
-//    removeItems();
-//}
-
-/*
- * F:
  *  Qt::ItemFlags ItemModel::flags(const QModelIndex &index) const
  * I:
  * &index - ссылка на элемент модели
@@ -289,7 +245,6 @@ void ItemModel::setItems()
         item->setPosition(pos);
         pos ++;
         items.append(item);
-//        delete item;
     }
     delete query;
 }
@@ -412,7 +367,6 @@ void ItemModel::setItemsToDelete(int *mass)
 
         count ++;
     }
-//    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
     removeRows(first,count);
 }
 
