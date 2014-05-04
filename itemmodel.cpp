@@ -381,7 +381,7 @@ void ItemModel::removeItems()
 
     delete query;
 }
-void ItemModel::setItemsToDelete(unsigned int *mass)
+void ItemModel::setItemsToDelete(int *mass)
 {
     int count = 0;
     unsigned int first = mass[count];

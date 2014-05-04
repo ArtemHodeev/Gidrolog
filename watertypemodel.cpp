@@ -199,7 +199,7 @@ void WaterTypeModel::removeItems()
 }
 
 
-void WaterTypeModel::setItemsToDelete(unsigned int *mass)
+void WaterTypeModel::setItemsToDelete(int *mass)
 {
     int count = 0;
     unsigned int first = mass[count];

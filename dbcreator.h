@@ -15,6 +15,7 @@ private:
     void checkTables();
     bool createSchema(QStringList tables);
     bool createTable(QString table_name);
+    void writeFactor();
     QSqlDatabase db;
     QVector<QString> table_names; // все необходимые для работы системы таблицы БД
 };

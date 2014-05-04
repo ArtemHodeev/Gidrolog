@@ -20,7 +20,7 @@ public:
     virtual void saveItems();
     int findItemInPosition(unsigned int pos);
     void setItems();
-    void setItemsToDelete(unsigned int *mass);
+    void setItemsToDelete(int *mass);
 
 
     void updateItems();

@@ -19,7 +19,7 @@ public:
     virtual void saveItems();
     void updateItems();
     void removeItems();
-    void setItemsToDelete(unsigned int *mass);
+    void setItemsToDelete(int *mass);
     int findItemInPosition(unsigned int pos);
 protected:
     QVector<WaterType*> items;

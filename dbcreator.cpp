@@ -20,6 +20,7 @@ DBCreator::DBCreator(QSqlDatabase db)
     table_names.append("sample");
     table_names.append("item_sample");
     table_names.append("factor");
+    table_names.append("analitic_type");
 }
 DBCreator::~DBCreator()
 {}
@@ -54,6 +55,7 @@ void DBCreator::checkTables()
         tables_in_db.append(name);
     }
 
+    // Последовательное выполнение циклов, позволяет создать таблицы без ошибок, если таблицы указаны в верном порядке в table_names
     // Определение недостающих таблиц
     for(int i = 0; i < table_names.size(); i ++)
     {
@@ -157,7 +159,7 @@ bool DBCreator::createTable(QString table_name)
 {
     QString query_sql = "";
     int ind = table_names.indexOf(table_name);
-
+    bool set_val = false; // Флаг: нужно ли заполнять таблицу factor значениямя
     switch (ind) {
     case 0:
         query_sql = "CREATE TABLE sample_set ";
@@ -256,6 +258,18 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "value double precision DEFAULT 0, ";
             query_sql += "PRIMARY KEY (id) ";
             query_sql += ")";
+            set_val = true;
+        break;
+    case 8:
+        query_sql = "CREATE TABLE analitic_type ";
+            query_sql +="( ";
+            query_sql += "id int NOT NULL AUTO_INCREMENT, ";
+            query_sql += "type_id int NOT NULL, ";
+            query_sql += "PRIMARY KEY (id), ";
+            query_sql += "FOREIGN KEY (type_id) ";
+            query_sql += " REFERENCES water_type(id) ";
+            query_sql += " ON UPDATE CASCADE ON DELETE CASCADE ";
+            query_sql += ")";
         break;
     default:
         break;
@@ -266,6 +280,20 @@ bool DBCreator::createTable(QString table_name)
     query->prepare(query_sql);
     res = query->exec();
 
+    if (set_val == true)
+    {
+        writeFactor();
+    }
     delete query;
     return res;
+}
+void DBCreator::writeFactor()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+//    QString sql = "";
+
+    query->exec("INSERT INTO factor(name) VALUES ('min_count')");
+    query->exec("INSERT INTO factor(name) VALUES ('max_corell')");
+    query->exec("INSERT INTO factor(name) VALUES ('max_error_count')");
+
 }

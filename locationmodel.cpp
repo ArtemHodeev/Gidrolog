@@ -255,7 +255,7 @@ int LocationModel::findItemInPosition(unsigned int pos)
     return (items[i]->getPosition() == pos) ? i : -1;
 }
 
-void LocationModel::setItemsToDelete(unsigned int *mass)
+void LocationModel::setItemsToDelete(int *mass)
 {
     int count = 0;
     int first = mass[0];
