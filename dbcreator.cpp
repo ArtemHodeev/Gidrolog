@@ -292,8 +292,8 @@ void DBCreator::writeFactor()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 //    QString sql = "";
 
-    query->exec("INSERT INTO factor(name) VALUES ('min_count')");
-    query->exec("INSERT INTO factor(name) VALUES ('max_corell')");
-    query->exec("INSERT INTO factor(name) VALUES ('max_error_count')");
+    query->exec("INSERT INTO factor(name) VALUES ('lost_count')");
+    query->exec("INSERT INTO factor(name) VALUES ('corell')");
+    query->exec("INSERT INTO factor(name) VALUES ('error_count')");
 
 }
