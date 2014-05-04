@@ -15,6 +15,7 @@
 #include <watertypecombobox.h>
 #include <locationcombobox.h>
 #include <names.h>
+#include <calculator.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -161,4 +162,13 @@ void MainWindow::on_action_importExcel_triggered()
     {
         model->resetModel(sam);
     }
+}
+
+void MainWindow::on_action_prepare_triggered()
+{
+    Calculator calc;
+    calc.setItems(model->getSample());
+//    calc.setAnaliticId();
+
+    calc.getInfo();
 }

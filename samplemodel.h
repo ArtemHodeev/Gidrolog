@@ -25,7 +25,9 @@ public:
     void resetModel(QVector<Sample *> sample_mass);
     void setWaterTypes();
     void setLocation();
+    void setAnaliticId();
     void setSamples(QVector<Sample*> sample_mass);
+    QVector<Sample*> getSample();
     int findItemInPosition(unsigned int pos);
 //    unsigned int getVaule(QString param_name) const;
     void setItems();

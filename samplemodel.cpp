@@ -10,9 +10,11 @@
 SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
+
     params = new QHash<QString, unsigned int>();
     water_types = new QHash<QString, unsigned int>();
     locations = new QHash<QString, unsigned int>();
+    setAnaliticId();
 }
 SampleModel::~SampleModel()
 {
@@ -326,6 +328,17 @@ void SampleModel::setLocation()
 
     delete query;
 }
+void SampleModel::setAnaliticId()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    sql = "SELECT type_id FROM analitic_type LIMIT 1";
+    query->exec(sql);
+    if (query->first())
+    {
+        Names::analitic_id = query->value("type_id").toUInt();
+    }
+}
 void SampleModel::deleteAllSamples()
 {
     int *mass = new int[items.size() + 1];
@@ -590,3 +603,7 @@ int SampleModel::findItemInPosition(unsigned int pos)
     return (items[i]->getPosition() == pos) ? i : -1;
 }
 
+QVector<Sample*> SampleModel::getSample()
+{
+    return items;
+}

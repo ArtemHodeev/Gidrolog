@@ -159,25 +159,15 @@ QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int rol
  */
 bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole || !index.isValid())
+    if (role != Qt::EditRole || !index.isValid() || value == QVariant(""))
     {
         return false;
     }
 
-    if (value == QVariant(""))
-    {
-        return true;
-    }
+    int row = index.row();
 
     Item *i;
-    if (index.row() < rCount - 1)
-    {
-        i = items.at(index.row());
-    }
-    else
-    {
-        i = new Item();
-    }
+    i = (row < rCount -1) ? items[index.row()] : new Item();
 
     switch(index.column())
     {
@@ -195,11 +185,12 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
         break;
     };
 
-    i->setPosition(index.row());
-    items.insert(index.row(),i);
+    i->setPosition(row);
+//    items.insert(index.row(),i);
 
-    if (index.row() < rCount - 1)
+    if (row < rCount - 1)
     {
+        items[row] = i;
         if (items_to_update.contains(i) != true)
         {
             items_to_update.append(i);
@@ -207,6 +198,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
     }
     else
     {
+        items.append(i);
         items_to_save.append(i);
         insertRows(rCount,1);
     }

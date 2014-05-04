@@ -41,7 +41,9 @@ SOURCES += main.cpp\
     location.cpp \
     locationmodel.cpp \
     confirmlocationmodel.cpp \
-    factormodel.cpp
+    factormodel.cpp \
+    calculator.cpp \
+    iteminfo.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -70,7 +72,9 @@ HEADERS  += mainwindow.h \
     location.h \
     locationmodel.h \
     confirmlocationmodel.h \
-    factormodel.h
+    factormodel.h \
+    calculator.h \
+    iteminfo.h
 
 FORMS    += mainwindow.ui \
     editor.ui \

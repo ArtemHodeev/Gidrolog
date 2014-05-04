@@ -26,6 +26,8 @@ private slots:
     void on_actionSave_triggered();
     void on_action_importExcel_triggered();
 
+    void on_action_prepare_triggered();
+
 private:
     Ui::MainWindow *ui;
     SampleModel *model;// модель для проб

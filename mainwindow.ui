@@ -65,6 +65,7 @@
    </attribute>
    <addaction name="action_editorTool"/>
    <addaction name="actionSave"/>
+   <addaction name="action_prepare"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">
@@ -119,6 +120,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_prepare">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Подготовить</string>
+   </property>
+   <property name="toolTip">
+    <string>Очистить данные от шума и стандартизировать их</string>
    </property>
   </action>
  </widget>
