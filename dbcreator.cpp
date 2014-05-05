@@ -206,6 +206,7 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "type_id int NOT NULL, ";
             query_sql += "min_value double precision DEFAULT 0, ";
             query_sql += "error_line double precision DEFAULT 0, ";
+            query_sql += "display boolean DEFAULT true, ";
             query_sql += "PRIMARY KEY (id), ";
             query_sql += "FOREIGN KEY (type_id) ";
             query_sql +=   "REFERENCES item_type (id) ";

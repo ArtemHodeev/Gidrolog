@@ -239,11 +239,11 @@ Sample* Importer::getSample(int num)
 
         param_iterator = params_from_file.find(i);
         item_in_sample.setItemId(param_iterator.value());
-        item_in_sample.setValue(val);
 
         //Если парметр определялся в пробе, то его следует сохранить в пробе
         if (val >= 0)
         {
+            item_in_sample.setValue(val);
             item_in_sample.setChanged(1);
         }
 

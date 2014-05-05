@@ -406,6 +406,12 @@ void SampleModel::setItems()
     delete query;
     delete q;
 }
+void SampleModel::resetModel()
+{
+    beginResetModel();
+    setHeaders();
+    endResetModel();
+}
 void SampleModel::resetModel(QVector<Sample *> sample_mass)
 {
     beginResetModel();
@@ -421,7 +427,10 @@ void SampleModel::setHeaders()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    query->prepare("SELECT id, name, type_id FROM item ORDER BY type_id");
+    headers.clear();
+    Names::params->clear();
+
+    query->prepare("SELECT id, name, type_id FROM item WHERE display = true ORDER BY type_id");
     query->exec();
     if(headers.size() == 0)
     {
@@ -566,7 +575,7 @@ void SampleModel::setItemsToDelete(int *mass)
 {
     int count = 0;
     unsigned int first = mass[count];
-    unsigned int index = -1;
+    int index = -1;
 
     while(mass[count] != -1)
     {

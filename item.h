@@ -10,6 +10,7 @@ class Item
     double min_value;
     double error_line;
     int position;
+    bool display;
 
 public:
     Item();
@@ -20,12 +21,14 @@ public:
     void setMinValue(const double &minValue);
     void setErrorLine(const double &errorLine);
     void setPosition(const double &position);
+    void setDisplay(bool display);
     unsigned int getId() const;
     unsigned int getPosition() const;
     unsigned int getTypeId() const;
     QString getName() const;
     double getMinValue() const;
     double getErrorLine() const;
+    bool getDisplay() const;
 };
 
 #endif // ITEM_H

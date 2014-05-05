@@ -23,6 +23,7 @@ public:
     QHash<QString, unsigned int> *getLocations();
     void setHeaders();
     void resetModel(QVector<Sample *> sample_mass);
+    void resetModel();
     void setWaterTypes();
     void setLocation();
     void setAnaliticId();

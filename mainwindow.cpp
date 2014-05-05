@@ -73,6 +73,7 @@ void MainWindow::on_action_editorTool_triggered()
     Editor *dlg = new Editor();
     dlg->exec();
     delete dlg;
+    model->resetModel();
 }
 
 /*

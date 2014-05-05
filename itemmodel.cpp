@@ -186,7 +186,6 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
     };
 
     i->setPosition(row);
-//    items.insert(index.row(),i);
 
     if (row < rCount - 1)
     {
@@ -198,6 +197,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
     }
     else
     {
+//        i->setDisplay(true);
         items.append(i);
         items_to_save.append(i);
         insertRows(rCount,1);

@@ -7,6 +7,7 @@ Item::Item()
     type_id = 0;
     min_value = 0;
     error_line = 0;
+    display = true;
 }
 Item::~Item()
 {
@@ -36,6 +37,10 @@ double Item::getErrorLine() const
 {
     return error_line;
 }
+bool Item::getDisplay() const
+{
+    return display;
+}
 void Item::setId(const unsigned int &id)
 {
     this->id = id;
@@ -59,6 +64,10 @@ void Item::setErrorLine(const double &errorLine)
 void Item::setPosition(const double &position)
 {
     this->position = position;
+}
+void Item::setDisplay(bool display)
+{
+    this->display = display;
 }
 
 
