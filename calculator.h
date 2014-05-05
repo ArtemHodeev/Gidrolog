@@ -12,7 +12,7 @@ public:
     Calculator();
     ~Calculator();
     void setItems(QVector<Sample*> new_sample);
-    void setAnaliticId(unsigned int id);
+//    void setAnaliticId(unsigned int id);
     void getAnaliticItems();
     ItemInfo *checkItem(unsigned int item_id);
     QVector<ItemInfo*> getInfo();

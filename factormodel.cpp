@@ -145,6 +145,7 @@ void FactorModel::saveItems()
         query->bindValue(":type_id", analitic_id);
     }
     query->exec();
+    Names::analitic_id = analitic_id;
 }
 
 float FactorModel::getLostCount()

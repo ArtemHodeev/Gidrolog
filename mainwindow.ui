@@ -123,9 +123,6 @@
    </property>
   </action>
   <action name="action_prepare">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="text">
     <string>Подготовить</string>
    </property>

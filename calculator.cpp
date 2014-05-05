@@ -117,9 +117,8 @@ void Calculator::getAnaliticItems()
 ItemInfo* Calculator::checkItem(unsigned int item_id)
 {
     ItemInfo *info = new ItemInfo();
-    int lost = 0;
-    int error = 0;
-
+    float lost = 0;
+    float error = 0;
 
     info->setItemId(item_id);
 
@@ -150,9 +149,14 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
             }
         }
     }
-    qDebug()<<"Item: "<<Names::params->key(item_id);
-    qDebug()<<"lost: "<< lost;
-    qDebug()<<"error: "<<error;
+
+    // Получение информации о прорусках и ошибочных данных в процентах
+    lost = lost / analitic_sample.size() * 100;
+    error = error / analitic_sample.size() * 100;
+
+//    qDebug()<<"Item: "<<Names::params->key(item_id);
+//    qDebug()<<"lost: "<< lost ;//% analitic_sample.size();
+//    qDebug()<<"error: "<<error ;//% analitic_sample.size();
     info->setErrorCount(error);
     info->setLostCount(lost);
     return info;
@@ -172,8 +176,10 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
  */
 QVector<ItemInfo*> Calculator::getInfo()
 {
+    qDebug()<<"Analitic_sample size: "<< analitic_sample.size();
     QVector<ItemInfo*> list_info;
     QHash<QString, unsigned int>::iterator i;
+
     for ( i = Names::params->begin(); i != Names::params->end(); i ++)
     {
         ItemInfo *info = new ItemInfo();
@@ -181,13 +187,6 @@ QVector<ItemInfo*> Calculator::getInfo()
         info = checkItem(i.value());
         list_info.append(info);
     }
-//    for (int i = 0; i < list_info.size(); i ++)
-//    {
-//        qDebug()<<"item_id: "<<list_info[i]->getItemId();
-//        qDebug()<<"lost: "<<list_info[i]->getLostCount();
-//        qDebug()<<"error: "<<list_info[i]->getErrorCount();
-//        qDebug()<<"============================";
-//    }
-    qDebug()<<"List_info size: "<<list_info.size();
+
     return list_info;
 }

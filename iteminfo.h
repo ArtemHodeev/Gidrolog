@@ -8,16 +8,16 @@ public:
     ItemInfo(const ItemInfo &other);
     ~ItemInfo();
     void setItemId(unsigned int item_id);
-    void setLostCount(int lost_count);
-    void setErrorCount(int error_cout);
+    void setLostCount(float lost_count);
+    void setErrorCount(float error_cout);
     unsigned int getItemId() const;
-    int getLostCount() const;
-    int getErrorCount() const;
+    float getLostCount() const;
+    float getErrorCount() const;
 
 private:
     unsigned int item_id;
-    int lost_count;
-    int error_count;
+    float lost_count;
+    float error_count;
 };
 
 #endif // ITEMINFO_H

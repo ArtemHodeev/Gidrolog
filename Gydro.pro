@@ -43,7 +43,9 @@ SOURCES += main.cpp\
     confirmlocationmodel.cpp \
     factormodel.cpp \
     calculator.cpp \
-    iteminfo.cpp
+    iteminfo.cpp \
+    confirmcalculator.cpp \
+    confirmcalculatormodel.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -74,8 +76,11 @@ HEADERS  += mainwindow.h \
     confirmlocationmodel.h \
     factormodel.h \
     calculator.h \
-    iteminfo.h
+    iteminfo.h \
+    confirmcalculator.h \
+    confirmcalculatormodel.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
-    confirmimport.ui
+    confirmimport.ui \
+    confirmcalculator.ui

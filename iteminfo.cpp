@@ -23,12 +23,12 @@ void ItemInfo::setItemId(unsigned int item_id)
     this->item_id = item_id;
 }
 
-void ItemInfo::setLostCount(int lost_count)
+void ItemInfo::setLostCount(float lost_count)
 {
     this->lost_count = lost_count;
 }
 
-void ItemInfo::setErrorCount(int error_cout)
+void ItemInfo::setErrorCount(float error_cout)
 {
     this->error_count = error_cout;
 }
@@ -38,12 +38,12 @@ unsigned int ItemInfo::getItemId() const
     return item_id;
 }
 
-int ItemInfo::getLostCount() const
+float ItemInfo::getLostCount() const
 {
     return lost_count;
 }
 
-int ItemInfo::getErrorCount() const
+float ItemInfo::getErrorCount() const
 {
     return error_count;
 }

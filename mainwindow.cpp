@@ -16,6 +16,8 @@
 #include <locationcombobox.h>
 #include <names.h>
 #include <calculator.h>
+#include <confirmcalculatormodel.h>
+#include <confirmcalculator.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -168,8 +170,22 @@ void MainWindow::on_action_importExcel_triggered()
 void MainWindow::on_action_prepare_triggered()
 {
     Calculator calc;
+    ConfirmCalculatorModel *calc_model = new ConfirmCalculatorModel();
+    ConfirmCalculator *calc_dlg = new ConfirmCalculator();
+    QDialog *dlg ;//
+
+
     calc.setItems(model->getSample());
 //    calc.setAnaliticId();
+calc_model->setItems(calc.getInfo());
+calc_dlg->setModel(calc_model);
+dlg = calc_dlg;
+dlg->exec();
+delete dlg;
+delete calc_model;
+//delete calc_dlg;
 
-    calc.getInfo();
+//calc
+
+
 }
