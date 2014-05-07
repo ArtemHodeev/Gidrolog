@@ -229,7 +229,7 @@ int ItemTypeModel::findItemInPosition(unsigned int pos)
     return (items[i]->getPosition() == pos) ? i : -1;
 }
 
-void ItemTypeModel::setItemsToDelete(unsigned int *mass)
+void ItemTypeModel::setItemsToDelete(int *mass)
 {
     int count = 0;
     int first = mass[0];
