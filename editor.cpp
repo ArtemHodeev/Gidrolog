@@ -21,9 +21,10 @@ Editor::Editor(QWidget *parent) :
     water_sign = false;
     location_sign = false;
     factor_sign = false;
+    item_type_sign = false;
     item_model = new ItemModel();
 
-    //Первичная установка моделеи данных раздела компоненты
+    //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
     item_model->setItems();
     setUi(0,item_model);
@@ -100,7 +101,15 @@ void Editor::on_listWidget_editorMenu_clicked()
         break;
     case 4:
 //        Типы элементов
-//        model = new ItemTypeModel();
+        if (item_type_sign == false)
+        {
+            item_type_model = new ItemTypeModel();
+            item_type_model->setItems();
+            item_type_sign = true;
+        }
+//        current_model = water_model;
+        setUi(cur,item_type_model);
+        ui->stackedWidget->setCurrentIndex(0);
         break;
     };// switch(cur)
 }
@@ -117,6 +126,10 @@ Editor::~Editor()
     if (water_sign == true)
     {
         delete water_model;
+    }
+    if (item_type_sign == true)
+    {
+        delete item_type_model;
     }
 }
 
@@ -172,6 +185,10 @@ void Editor::on_pushButton_exit_pressed()
     {
         setFactor();
         factor_model->saveItems();
+    }
+    if (item_type_sign == true)
+    {
+        saveModel(item_type_model);
     }
 }
 void Editor::saveModel(TableModel *model)
