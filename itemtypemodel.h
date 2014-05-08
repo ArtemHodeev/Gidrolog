@@ -21,6 +21,7 @@ public:
     void setItemsToDelete( int *mass);
     int findItemInPosition(unsigned int pos);
 
+
 //    QList<ItemType*> items_to_save;
 //private:
 //    QList<ItemType*> items;

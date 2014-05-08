@@ -4,11 +4,13 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QDebug>
+#include <names.h>
 
 
 ItemTypeModel::ItemTypeModel(QObject *parent) :
     TableModel(parent)
 {
+
 }
 
 
@@ -262,3 +264,4 @@ void ItemTypeModel::setItemsToDelete(int *mass)
     }
     removeRows(first,count);
 }
+

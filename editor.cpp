@@ -11,6 +11,7 @@
 #include <QVariant>
 #include <comboboxdelegate.h>
 #include <watertypecombobox.h>
+#include <itemtypecombobox.h>
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -24,10 +25,16 @@ Editor::Editor(QWidget *parent) :
     item_type_sign = false;
     item_model = new ItemModel();
 
+
     //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
     item_model->setItems();
     setUi(0,item_model);
+
+    //Создание делегата combobox для ввода типов компонентов
+    ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
+    ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
+
 
 }
 /*
