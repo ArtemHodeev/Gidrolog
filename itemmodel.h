@@ -23,6 +23,8 @@ public:
     void setItemsToDelete(int *mass);
     void updateItems();
     void removeItems();
+    void setItemType();
+
 
 
 protected:
@@ -30,6 +32,8 @@ protected:
     QVector<Item*> items_to_delete;
     QVector<Item*> items_to_save;
     QVector<Item*> items; // список всех компонентов из БД
+
+    QHash<QString, unsigned int> *item_types; //
 
 signals:
 

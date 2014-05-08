@@ -1,3 +1,5 @@
+
+
 #include "locationmodel.h"
 #include <databaseaccessor.h>
 #include <QSqlQuery>
