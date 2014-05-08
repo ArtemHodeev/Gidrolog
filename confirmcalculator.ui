@@ -69,12 +69,28 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>518</x>
-     <y>341</y>
+     <x>543</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
      <x>369</x>
      <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ok</sender>
+   <signal>pressed()</signal>
+   <receiver>ConfirmCalculator</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>586</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>358</x>
+     <y>228</y>
     </hint>
    </hints>
   </connection>

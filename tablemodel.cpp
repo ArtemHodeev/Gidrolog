@@ -56,6 +56,19 @@ bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
     beginRemoveRows(parent, row, row + count - 1);
     rCount -= count;
     endRemoveRows();
+    return true;
+}
+
+bool TableModel::removeColumns(int column, int count, const QModelIndex &parent)
+{
+    if (column < 0 || count < 0)
+    {
+        return false;
+    }
+    beginRemoveColumns(parent, column, column + count - 1);
+    cCount -= count;
+    endRemoveColumns();
+    return true;
 }
 
 void TableModel::setItemsToDelete(int *mass)

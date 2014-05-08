@@ -11,7 +11,7 @@ class Calculator
 public:
     Calculator();
     ~Calculator();
-    void setItems(QVector<Sample*> new_sample);
+    void setItems(QVector<Sample*> new_items);
 //    void setAnaliticId(unsigned int id);
     void getAnaliticItems();
     ItemInfo *checkItem(unsigned int item_id);
@@ -19,6 +19,10 @@ public:
 //    QVector<>
 
 private:
+    float corell;
+    float lost_count;
+    float error_count;
+
     void setItemError();
     QVector<Sample*> items; // все пробы системы
 //    unsigned int analitic_id;

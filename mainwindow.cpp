@@ -34,9 +34,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // наполнение модели данными
     model->setItems();
     model->setHeaders();
-    model->setWaterTypes();
-    model->setLocation();
-
+//    model->setWaterTypes();
+//    model->setLocation();
+//    model->setParams();
     //отображение модели
     ui->tableView->setModel(model);
 
@@ -153,9 +153,9 @@ void MainWindow::on_action_importExcel_triggered()
     // Подготовка для импорта проб
     Importer doc(url);
 
-    doc.setParams(model->getParams());
-    doc.setWaterTypes(model->getWaterTypes());
-    doc.setLocations(model->getLocations());
+//    doc.setParams(model->getParams());
+//    doc.setWaterTypes(model->getWaterTypes());
+//    doc.setLocations(model->getLocations());
 
     // Импорт проб
     QVector<Sample*> sam = doc.import();
@@ -176,13 +176,18 @@ void MainWindow::on_action_prepare_triggered()
 
 
     calc.setItems(model->getSample());
-//    calc.setAnaliticId();
-calc_model->setItems(calc.getInfo());
-calc_dlg->setModel(calc_model);
-dlg = calc_dlg;
-dlg->exec();
-delete dlg;
-delete calc_model;
+    //    calc.setAnaliticId();
+    QVector<ItemInfo* >list = calc.getInfo();
+
+    qDebug()<<"info size: "<<list.size();
+    calc_model->setItems(list);
+    calc_dlg->setModel(calc_model);
+    dlg = calc_dlg;
+    dlg->exec();
+
+    delete dlg;
+    delete calc_model;
+    model->resetModel();
 //delete calc_dlg;
 
 //calc

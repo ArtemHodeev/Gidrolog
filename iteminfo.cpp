@@ -5,6 +5,7 @@ ItemInfo::ItemInfo()
     item_id = 0;
     lost_count = 0;
     error_count = 0;
+    position = -1;
 }
 
 ItemInfo::ItemInfo(const ItemInfo &other)
@@ -12,6 +13,7 @@ ItemInfo::ItemInfo(const ItemInfo &other)
     item_id = other.getItemId();
     lost_count = other.getLostCount();
     error_count = other.getErrorCount();
+    position = other.getPosition();
 }
 
 ItemInfo::~ItemInfo()
@@ -33,6 +35,11 @@ void ItemInfo::setErrorCount(float error_cout)
     this->error_count = error_cout;
 }
 
+void ItemInfo::setPosition(unsigned int position)
+{
+    this->position = position;
+}
+
 unsigned int ItemInfo::getItemId() const
 {
     return item_id;
@@ -46,4 +53,9 @@ float ItemInfo::getLostCount() const
 float ItemInfo::getErrorCount() const
 {
     return error_count;
+}
+
+unsigned int ItemInfo::getPosition() const
+{
+    return position;
 }

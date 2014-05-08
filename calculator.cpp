@@ -25,11 +25,11 @@ Calculator::~Calculator()
  * D:
  *   Функция устанавливает items.
  */
-void Calculator::setItems(QVector<Sample *> new_sample)
+void Calculator::setItems(QVector<Sample *> new_items)
 {
-    for (int i = 0; i < new_sample.size(); i ++)
+    for (int i = 0; i < new_items.size(); i ++)
     {
-        items.append(new_sample[i]);
+        items.append(new_items[i]);
     }
 
     getAnaliticItems();
@@ -64,20 +64,6 @@ void Calculator::setItemError()
 
     delete query;
 }
-///*
-// * F:
-// *   void Calculator::setItemError()
-// * I:
-// *   --
-// * O:
-// *   --
-// * D:
-// *   Функция извлекает из БД id компонентов и значения их ошибок измерения.
-// */
-//void Calculator::setAnaliticId(unsigned int id)
-//{
-//    analitic_id = id;
-//}
 
 /*
  * F:
@@ -139,7 +125,6 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
             ItemInSample item_in_sample = sample_iter.value();
             // Поиск значения ошибки измерения для компонента
             QHash<unsigned int, double>::iterator item_error_iter = item_error->find(item_id);
-//            qDebug()<<"Value: "<<item_error_iter.value();
 
             // Если значение компонента в пробе меньше чем удвоенное значение
             // ошибки измерения для компонента
@@ -154,9 +139,6 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     lost = lost / analitic_sample.size() * 100;
     error = error / analitic_sample.size() * 100;
 
-//    qDebug()<<"Item: "<<Names::params->key(item_id);
-//    qDebug()<<"lost: "<< lost ;//% analitic_sample.size();
-//    qDebug()<<"error: "<<error ;//% analitic_sample.size();
     info->setErrorCount(error);
     info->setLostCount(lost);
     return info;
@@ -176,17 +158,17 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
  */
 QVector<ItemInfo*> Calculator::getInfo()
 {
-    qDebug()<<"Analitic_sample size: "<< analitic_sample.size();
     QVector<ItemInfo*> list_info;
     QHash<QString, unsigned int>::iterator i;
+    ItemInfo *info;
 
     for ( i = Names::params->begin(); i != Names::params->end(); i ++)
     {
-        ItemInfo *info = new ItemInfo();
+        info = new ItemInfo();
 
         info = checkItem(i.value());
         list_info.append(info);
     }
-
+    delete info;
     return list_info;
 }

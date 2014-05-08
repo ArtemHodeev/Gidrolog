@@ -19,24 +19,24 @@
 
 Importer::Importer()
 {
-    params = new QHash<QString, unsigned int>();
-    locations = new QHash<QString, unsigned int>();
-    water_types = new QHash<QString, unsigned int>();
+//    params = new QHash<QString, unsigned int>();
+//    locations = new QHash<QString, unsigned int>();
+//    water_types = new QHash<QString, unsigned int>();
     file = new QXlsx::Document();
 }
 
 Importer::Importer(QString file_path)
 {
-    params = new QHash<QString, unsigned int>();
-    locations = new QHash<QString, unsigned int>();
-    water_types = new QHash<QString, unsigned int>();
+//    params = new QHash<QString, unsigned int>();
+//    locations = new QHash<QString, unsigned int>();
+//    water_types = new QHash<QString, unsigned int>();
     file = new QXlsx::Document(file_path);
 }
 Importer::~Importer()
 {
-    delete params;
-    delete locations;
-    delete water_types;
+//    delete params;
+//    delete locations;
+//    delete water_types;
 }
 
 /*
@@ -254,33 +254,33 @@ Sample* Importer::getSample(int num)
     return s;
 }
 
-// Возможно уже не нужна
-void Importer::setParams(QHash<QString,unsigned int> *new_params)
-{
-    QHash<QString, unsigned int>::iterator i;
-    for (i = new_params->begin(); i != new_params->end(); i ++)
-    {
-        params->insert(i.key(),i.value());
-    }
-}
-// Возможно уже не нужна
-void Importer::setWaterTypes(QHash<QString, unsigned int> *new_types)
-{
-    QHash<QString, unsigned int>::iterator i;
-    for (i = new_types->begin(); i != new_types->end(); i ++)
-    {
-        water_types->insert(i.key(),i.value());
-    }
-}
-// Возможно уже не нужна
-void Importer::setLocations(QHash<QString, unsigned int> *new_locations)
-{
-    QHash<QString, unsigned int>::iterator i;
-    for (i = new_locations->begin(); i != new_locations->end(); i ++)
-    {
-        locations->insert(i.key(),i.value());
-    }
-}
+//// Возможно уже не нужна
+//void Importer::setParams(QHash<QString,unsigned int> *new_params)
+//{
+//    QHash<QString, unsigned int>::iterator i;
+//    for (i = new_params->begin(); i != new_params->end(); i ++)
+//    {
+//        params->insert(i.key(),i.value());
+//    }
+//}
+//// Возможно уже не нужна
+//void Importer::setWaterTypes(QHash<QString, unsigned int> *new_types)
+//{
+//    QHash<QString, unsigned int>::iterator i;
+//    for (i = new_types->begin(); i != new_types->end(); i ++)
+//    {
+//        water_types->insert(i.key(),i.value());
+//    }
+//}
+//// Возможно уже не нужна
+//void Importer::setLocations(QHash<QString, unsigned int> *new_locations)
+//{
+//    QHash<QString, unsigned int>::iterator i;
+//    for (i = new_locations->begin(); i != new_locations->end(); i ++)
+//    {
+//        locations->insert(i.key(),i.value());
+//    }
+//}
 
 /*
  *F:

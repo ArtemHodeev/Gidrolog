@@ -11,16 +11,19 @@ SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
 
-    params = new QHash<QString, unsigned int>();
-    water_types = new QHash<QString, unsigned int>();
-    locations = new QHash<QString, unsigned int>();
+//    params = new QHash<QString, unsigned int>();
+//    water_types = new QHash<QString, unsigned int>();
+//    locations = new QHash<QString, unsigned int>();
+    setParams();
+    setWaterTypes();
+    setLocation();
     setAnaliticId();
 }
 SampleModel::~SampleModel()
 {
-    delete params;
-    delete water_types;
-    delete locations;
+//    delete params;
+//    delete water_types;
+//    delete locations;
 }
 QVariant SampleModel::data(const QModelIndex &index, int role) const
 {
@@ -49,7 +52,7 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
                 //            Место отбора
             {
                 loc_id = items.at(index.row())->getLocationId();
-                loc_name = locations->key(loc_id);
+                loc_name = Names::locations->key(loc_id);
                 res = QVariant(loc_name);
                 break;
             }
@@ -63,7 +66,7 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
                 //            Тип водной массы
             {
                 loc_id = items.at(index.row())->getWaterId();
-                loc_name = water_types->key(loc_id);
+                loc_name = Names::water_types->key(loc_id);
                 res = QVariant(loc_name);
                 break;
             }
@@ -78,7 +81,7 @@ QVariant SampleModel::data(const QModelIndex &index, int role) const
             {
                 // Вывод значений параметров пробы
                 QString param_name = headers[index.column()];
-                unsigned int param_id = params->value(param_name);
+                unsigned int param_id = Names::params->value(param_name);
                 double param_value = -1;
 
                 if (items[index.row()]->getComponents()->contains(param_id) == true)
@@ -160,7 +163,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     case 1:
 //        Место отбора
     {
-        unsigned int loc_id = locations->value(value.toString());
+        unsigned int loc_id = Names::locations->value(value.toString());
         i->setLocationId(loc_id);
         sign = true;
         break;
@@ -176,7 +179,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 //        Тип водной массы
     case 3:
     {
-        unsigned int loc_id = water_types->value(value.toString());
+        unsigned int loc_id = Names::water_types->value(value.toString());
         i->setWaterId(loc_id);
         sign = true;
         break;
@@ -211,7 +214,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
         else
         {
             QString param_name = headers[index.column()]; // распознавание имени столбца - имя параметра
-            unsigned int param_id = params->value(param_name); // распознавание id параметра
+            unsigned int param_id = Names::params->value(param_name); // распознавание id параметра
             ItemInSample item_in_sample;
 
             //Если у пробы добавился параметр.
@@ -275,20 +278,20 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     return true;
 }
 
-QHash<QString, unsigned int>* SampleModel::getParams()
-{
-    return params;
-}
+//QHash<QString, unsigned int>* SampleModel::getParams()
+//{
+//    return params;
+//}
 
-QHash<QString, unsigned int>* SampleModel::getWaterTypes()
-{
-    return water_types;
-}
+//QHash<QString, unsigned int>* SampleModel::getWaterTypes()
+//{
+//    return water_types;
+//}
 
-QHash<QString, unsigned int>* SampleModel::getLocations()
-{
-    return locations;
-}
+//QHash<QString, unsigned int>* SampleModel::getLocations()
+//{
+//    return locations;
+//}
 
 void SampleModel::setWaterTypes()
 {
@@ -303,7 +306,7 @@ void SampleModel::setWaterTypes()
     {
         id = query->value("id").toUInt();
         name = query->value("name").toString();
-        water_types->insert(name,id);
+//        water_types->insert(name,id);
         Names::water_types->insert(name,id);
     }
 
@@ -322,8 +325,27 @@ void SampleModel::setLocation()
     {
         id = query->value("id").toUInt();
         name = query->value("name").toString();
-        locations->insert(name,id);
+//        locations->insert(name,id);
         Names::locations->insert(name,id);
+    }
+
+    delete query;
+}
+void SampleModel::setParams()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    QString name = "";
+    unsigned int id;
+    sql = "SELECT id, name, type_id FROM item WHERE display = true ORDER BY type_id";
+    query->exec(sql);
+
+    while(query->next())
+    {
+        id = query->value("id").toUInt();
+        name = query->value("name").toString();
+//        locations->insert(name,id);
+        Names::params->insert(name,id);
     }
 
     delete query;
@@ -406,6 +428,7 @@ void SampleModel::setItems()
     delete query;
     delete q;
 }
+
 void SampleModel::resetModel()
 {
     beginResetModel();
@@ -418,6 +441,7 @@ void SampleModel::resetModel(QVector<Sample *> sample_mass)
     setHeaders();
     setWaterTypes();
     setLocation();
+    setParams();
     setSamples(sample_mass);
 
     endResetModel();
@@ -425,13 +449,9 @@ void SampleModel::resetModel(QVector<Sample *> sample_mass)
 
 void SampleModel::setHeaders()
 {
-    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    cCount = Names::params->size() + 5;
 
     headers.clear();
-    Names::params->clear();
-
-    query->prepare("SELECT id, name, type_id FROM item WHERE display = true ORDER BY type_id");
-    query->exec();
     if(headers.size() == 0)
     {
         headers.append(QString("id"));
@@ -441,19 +461,11 @@ void SampleModel::setHeaders()
         headers.append(QString("Комментарий"));
     }
 
-    cCount = query->size() + 5;
-    QString name = QString("");
+    QHash<QString, unsigned int>::iterator i;
 
-    while (query->next())
+    for (i = Names::params->begin(); i != Names::params->end(); i ++)
     {
-        name = query->value("name").toString().trimmed();
-
-        if (headers.contains(name) == false)
-        {
-            headers.append(name);
-        }
-        params->insert(name, query->value("id").toUInt());
-        Names::params->insert(name,query->value("id").toUInt());
+        headers.append(i.key());
     }
 }
 

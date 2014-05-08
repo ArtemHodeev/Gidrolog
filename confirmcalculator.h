@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <confirmcalculatormodel.h>
+#include <QItemSelectionModel>
+
 namespace Ui {
 class ConfirmCalculator;
 }
@@ -18,10 +20,12 @@ public:
     void setModel(ConfirmCalculatorModel *model);
 private slots:
     void on_pushButton_cancel_clicked();
+    void on_pushButton_ok_pressed();
 
 private:
     bool cancel;
     ConfirmCalculatorModel *model;
+    QItemSelectionModel *sel_model;
 //    QVector<ItemInfo>
     Ui::ConfirmCalculator *ui;
 };

@@ -2,6 +2,7 @@
 #define CONFIRMCALCULATORMODEL_H
 #include <tablemodel.h>
 #include <iteminfo.h>
+//#include <
 
 class ConfirmCalculatorModel : public TableModel
 {
@@ -18,13 +19,19 @@ public:
     void removeItems();
     void setItems();
     void setItems(QVector<ItemInfo*> other);
-    void setParams();
-    int findItemById(const unsigned int &item_id) const;
+    void setItemsToDelete(int *mass);
+//    void setParams();
+    void setFactors();
+    int findItemById(unsigned int &item_id) const;
+    int findItemInPosition(unsigned int pos);
 private:
     QVector<ItemInfo*> items; // все параметры с их информацией о прохождении метода грубого отсева
-    QHash<unsigned int, unsigned int> *params; // хэш, содержащий пары <номер столбца, id параметра>
+//    QHash<int, unsigned int> *params; // хэш, содержащий пары <номер столбца, id параметра>
     QVector<ItemInfo*> items_to_delete; // параметры которые следует убрать из обработки и не отображать на экране
-
+    float corell;
+    float lost_count;
+    float error_count;
+     void showItems();
 signals:
 
 public slots:
