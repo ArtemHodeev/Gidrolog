@@ -145,8 +145,11 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
         // Определяются номеров строк для удаления
         for (i = list.begin(); i < list.end(); i ++)
         {
-             sel_rows[ind] = i->row();
-             ind ++;
+            if (i->row() < current_model->rowCount(QModelIndex()) - 1)
+            {
+                sel_rows[ind] = i->row();
+                ind ++;
+            }
         }
         sel_rows[ind] = -1;
 

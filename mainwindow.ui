@@ -66,6 +66,7 @@
    <addaction name="action_editorTool"/>
    <addaction name="actionSave"/>
    <addaction name="action_prepare"/>
+   <addaction name="action_calcilate"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">
@@ -128,6 +129,14 @@
    </property>
    <property name="toolTip">
     <string>Очистить данные от шума и стандартизировать их</string>
+   </property>
+  </action>
+  <action name="action_calcilate">
+   <property name="text">
+    <string>Расчитать</string>
+   </property>
+   <property name="toolTip">
+    <string>Начать разделени гидрографа речного стока</string>
    </property>
   </action>
  </widget>

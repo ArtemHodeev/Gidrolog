@@ -120,8 +120,11 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
         //Определение номеров выделенных строк
         for (i = list.begin(); i < list.end(); i ++)
         {
-             sample_num[ind] = i->row();
-             ind ++;
+            if (i->row() < model->rowCount(QModelIndex()) - 1)
+            {
+                sample_num[ind] = i->row();
+                ind ++;
+            }
         }
         sample_num[ind] = -1;
 
