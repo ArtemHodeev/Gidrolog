@@ -17,6 +17,8 @@ public:
 //                                                QSqtring - имя типа водной массы, unsigned int - id из БД
     static QHash<QString, unsigned int> *locations;// все места взятия из БД
     //                                                QSqtring - имя места взятия, unsigned int - id из БД
+    static QHash<QString, unsigned int> *item_types;// все типы компонентов из БД
+    //                                                QSqtring - имя типа компонента, unsigned int - id из БД
     static unsigned int analitic_id;
 };
 

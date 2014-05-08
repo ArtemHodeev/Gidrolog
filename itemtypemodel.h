@@ -2,6 +2,7 @@
 #define ITEMTYPEMODEL_H
 #include <itemtype.h>
 #include <tablemodel.h>
+#include <QVector>
 
 class ItemTypeModel : public TableModel
 {
@@ -9,20 +10,28 @@ class ItemTypeModel : public TableModel
 public:
     explicit ItemTypeModel(QObject *parent = 0);
     ~ItemTypeModel();
-    QVariant data(const QModelIndex &index, int role) const;
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
     void setItems();
-    void saveItems();
+    virtual void saveItems();
     void updateItems();
     void removeItems();
+    void setItemsToDelete( int *mass);
+    int findItemInPosition(unsigned int pos);
 
-    QList<ItemType*> items_to_save;
+//    QList<ItemType*> items_to_save;
+//private:
+//    QList<ItemType*> items;
+
+protected:
+    QVector<ItemType*> items;
 private:
-    QList<ItemType*> items;
+    QVector<ItemType*> items_to_save;
+    QVector<ItemType*> items_to_update;
+    QVector<ItemType*> items_to_delete;
+
 };
 
 #endif // ITEMTYPEMODEL_H
