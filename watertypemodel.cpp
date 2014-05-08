@@ -4,6 +4,7 @@
 #include <QSqlRecord>
 #include <QDebug>
 #include <databaseaccessor.h>
+#include <names.h>
 
 WaterTypeModel::WaterTypeModel(QObject *parent):TableModel(parent)
 {
@@ -146,14 +147,16 @@ void WaterTypeModel::saveItems()
 
     sql = "INSERT INTO water_type(name) VALUES (:name)";
     query->prepare(sql);
-
+    unsigned int last_id = 0;
     while(items_to_save.isEmpty() != true)
     {
         query->bindValue(":name", items_to_save.first()->getName());
         query->exec();
         pos = findItemInPosition(items_to_save.first()->getPosition());
-        items[pos]->setId(query->lastInsertId().toUInt());
+        last_id = query->lastInsertId().toUInt();
+        items[pos]->setId(last_id);
 
+        Names::water_types->insert(items_to_save.first()->getName(), last_id);
         items_to_save.removeFirst();
     }
     delete query;
@@ -173,6 +176,8 @@ void WaterTypeModel::updateItems()
         query->bindValue(":name", items_to_update.first()->getName());
         query->exec();
 
+        Names::water_types->remove(items_to_update.first()->getName());
+        Names::water_types->insert(items_to_update.first()->getName(), items_to_update.first()->getId());
         items_to_update.removeFirst();
     }
     delete query;
@@ -192,7 +197,7 @@ void WaterTypeModel::removeItems()
         wt_id = items_to_delete.first()->getId();
         query->bindValue(":wt_id", wt_id);
         query->exec();
-
+        Names::water_types->remove(items_to_delete.first()->getName());
         items_to_delete.removeFirst();
     }
     delete query;
@@ -236,8 +241,11 @@ void WaterTypeModel::setItemsToDelete(int *mass)
 
 int WaterTypeModel::findItemInPosition(unsigned int pos)
 {
-    int i = -1;
-    while (items[++i]->getPosition() != pos && i < items.size());
+    int i = 0;
+    while (i < items.size() && items[i]->getPosition() != pos)
+    {
+        i ++;
+    }
 
-    return (items[i]->getPosition() == pos) ? i : -1;
+    return (i<items.size()) ? i : -1;
 }

@@ -4,6 +4,7 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QDebug>
+#include <names.h>
 
 
 LocationModel::LocationModel(QObject *parent) :
@@ -197,6 +198,7 @@ void LocationModel::saveItems()
         last_id = query->lastInsertId().toUInt();
         pos = findItemInPosition(items_to_save.first()->getPosition());
         items[pos]->setId(last_id);
+        Names::locations->insert(items_to_save.first()->getName(), last_id);
         items_to_save.removeFirst();
     }
     delete query;
@@ -222,6 +224,8 @@ void LocationModel::updateItems()
         query->bindValue(":deep", loc->getDeep());
         query->exec();
 
+        Names::locations->remove(loc->getName());
+        Names::locations->insert(loc->getName(), loc->getId());
         items_to_update.removeFirst();
     }
     delete loc;
@@ -241,6 +245,7 @@ void LocationModel::removeItems()
     {
         query->bindValue(":id", items_to_delete.first()->getId());
         query->exec();
+        Names::locations->remove(items_to_delete.first()->getName());
 
         items_to_delete.removeFirst();
     }
@@ -249,10 +254,13 @@ void LocationModel::removeItems()
 
 int LocationModel::findItemInPosition(unsigned int pos)
 {
-    int i = -1;
-    while (items[++i]->getPosition() != pos && i < items.size());
+    int i = 0;
+    while (i < items.size() && items[i]->getPosition() != pos)
+    {
+        i ++;
+    }
 
-    return (items[i]->getPosition() == pos) ? i : -1;
+    return (i<items.size()) ? i : -1;
 }
 
 void LocationModel::setItemsToDelete(int *mass)
