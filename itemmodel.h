@@ -22,8 +22,8 @@ public:
     void setItems();
     void setItemsToDelete(int *mass);
     void updateItems();
-    void removeItems();
     void setItemType();
+    void removeItems();
 
 
 

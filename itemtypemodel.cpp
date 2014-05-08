@@ -4,7 +4,6 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QDebug>
-#include <names.h>
 
 
 ItemTypeModel::ItemTypeModel(QObject *parent) :

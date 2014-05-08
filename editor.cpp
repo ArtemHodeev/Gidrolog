@@ -23,17 +23,23 @@ Editor::Editor(QWidget *parent) :
     location_sign = false;
     factor_sign = false;
     item_type_sign = false;
-    item_model = new ItemModel();
+
+    //item_model = new ItemModel();
+
+    item_type_model = new ItemTypeModel();
 
 
     //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
-    item_model->setItems();
-    setUi(0,item_model);
+ //   item_model->setItems();
+    item_type_model->setItems();
+//    setUi(0,item_model);
+    setUi(0,item_type_model);
 
-    //Создание делегата combobox для ввода типов компонентов
-    ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
-    ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
+
+
+
+
 
 
 }
@@ -56,10 +62,16 @@ void Editor::on_listWidget_editorMenu_clicked()
     switch(cur)
     {
     case 0:
-//        Компоненты
-        setUi(cur,item_model);
+    {
+////        Компоненты
+//        setUi(cur,item_model);
+//        ui->stackedWidget->setCurrentIndex(0);
+//        break;
+
+        setUi(cur, item_type_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
+    }
     case 1:
     {
 //        Критерии
@@ -107,24 +119,24 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->stackedWidget->setCurrentIndex(0);
         break;
     case 4:
-//        Типы элементов
+//            Типы элементов
         if (item_type_sign == false)
         {
-            item_type_model = new ItemTypeModel();
-            item_type_model->setItems();
+            item_model = new ItemModel();
+            item_model->setItems();
             item_type_sign = true;
         }
-//        current_model = water_model;
-        setUi(cur,item_type_model);
+        setUi(cur,item_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
-    };// switch(cur)
+    };
 }
 Editor::~Editor()
 {
     delete ui;
     delete sel_model;
-    delete item_model;
+//    delete item_model;
+    delete item_type_model;
 
     if (location_sign == true)
     {
@@ -136,7 +148,7 @@ Editor::~Editor()
     }
     if (item_type_sign == true)
     {
-        delete item_type_model;
+        delete item_model;
     }
 }
 
@@ -178,7 +190,7 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
 }
 void Editor::on_pushButton_exit_pressed()
 {
-    saveModel(item_model);
+    saveModel(item_type_model);
 
     if (location_sign == true)
     {
@@ -195,7 +207,7 @@ void Editor::on_pushButton_exit_pressed()
     }
     if (item_type_sign == true)
     {
-        saveModel(item_type_model);
+        saveModel(item_model);
     }
 }
 void Editor::saveModel(TableModel *model)
@@ -210,17 +222,27 @@ void Editor::setUi(int index, TableModel *model)
     switch (index)
     {
     case 0:
-        ui->label_page->setText("Компоненты");
+    {
+//        ui->label_page->setText("Компоненты");
+        ui->label_page->setText("Типы компонентов");
         break;
+    }
     case 2:
+    {
         ui->label_page->setText("Объекты");
         break;
+    }
     case 3:
         ui->label_page->setText("Типы водных масс");
         break;
     case 4:
-        ui->label_page->setText("Типы компонентов");
+    {
+        ui->label_page->setText("Компоненты");
+
+        ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
         break;
+    }
     default:
         break;
     }
@@ -229,8 +251,8 @@ void Editor::setUi(int index, TableModel *model)
     ui->tableView_itemInSystem->setModel(model);
     sel_model = new QItemSelectionModel(model);
 
-    ui->tableView_itemInSystem->setSelectionModel(sel_model);
-    ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    ui->tableView_itemTypeInSystem->setSelectionModel(sel_model);
+    ui->tableView_itemTypeInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 void Editor::setFactor()
 {
