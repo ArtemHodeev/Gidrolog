@@ -206,27 +206,29 @@ void LocationModel::saveItems()
 void LocationModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
-    QString sql = "";
-    Location *loc = new Location();
 
-    sql = "UPDATE location ";
-    sql += "SET (name = :name, width = :width, length = :length, deep = :deep) ";
-    sql += "WHERE id = :id";
+    QString sql = QString("UPDATE location ");
+    sql += ("SET name = :name, width = :width, length = :length, deep = :deep") ;
+    sql += ("WHERE id = :id");
     query->prepare(sql);
 
     while (items_to_update.isEmpty() != true)
     {
-        loc = items_to_update.first();
-        query->bindValue("id", loc->getId());
-        query->bindValue(":name", loc->getName());
-        query->bindValue(":width", loc->getWidth());
-        query->bindValue(":length", loc->getLength());
-        query->bindValue(":deep", loc->getDeep());
+        query->bindValue(":id", items_to_update.first()->getId());
+        qDebug()<<items_to_update.first()->getId();
+        query->bindValue(":name", items_to_update.first()->getName());
+        qDebug()<<items_to_update.first()->getName();
+        query->bindValue(":width", items_to_update.first()->getWidth());
+        qDebug()<<items_to_update.first()->getWidth();
+        query->bindValue(":length", items_to_update.first()->getLength());
+        qDebug()<<items_to_update.first()->getLength();
+        query->bindValue(":deep", items_to_update.first()->getDeep());
+        qDebug()<<items_to_update.first()->getDeep();
         query->exec();
+
 
         items_to_update.removeFirst();
     }
-    delete loc;
     delete query;
 }
 

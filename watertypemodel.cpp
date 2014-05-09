@@ -164,12 +164,12 @@ void WaterTypeModel::updateItems()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
 
-    sql = "UPDATE water_type SET name = :name WHERE id = :wt_id";
+    sql = "UPDATE water_type SET name = :name WHERE id = :id";
     query->prepare(sql);
 
     while (items_to_update.empty() != true)
     {
-        query->bindValue(":wt_id", items_to_update.first()->getId());
+        query->bindValue(":id", items_to_update.first()->getId());
         query->bindValue(":name", items_to_update.first()->getName());
         query->exec();
 

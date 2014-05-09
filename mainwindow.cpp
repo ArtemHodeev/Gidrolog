@@ -18,6 +18,7 @@
 #include <calculator.h>
 #include <confirmcalculatormodel.h>
 #include <confirmcalculator.h>
+#include <spinboxdelegate.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

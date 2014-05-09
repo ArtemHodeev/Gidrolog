@@ -32,6 +32,8 @@ Editor::Editor(QWidget *parent) :
     ui->stackedWidget->setCurrentIndex(0);
  //   item_model->setItems();
     item_type_model->setItems();
+
+
 //    setUi(0,item_model);
     setUi(0,item_type_model);
 
@@ -223,8 +225,10 @@ void Editor::setUi(int index, TableModel *model)
     case 0:
     {
         ui->label_page->setText("Типы компонентов");
-        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
-        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
+//        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
+
+//        ui->tableView->setItemDelegateForColumn(4, type_delegate);
+
         break;
     }
     case 2:
