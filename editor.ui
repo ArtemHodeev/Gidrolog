@@ -53,7 +53,7 @@
      </property>
      <item>
       <property name="text">
-       <string>Компоненты</string>
+       <string>Типы компонентов</string>
       </property>
      </item>
      <item>
@@ -73,7 +73,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Типы компонентов</string>
+       <string>Компоненты</string>
       </property>
      </item>
     </widget>

@@ -251,8 +251,8 @@ void Editor::setUi(int index, TableModel *model)
     ui->tableView_itemInSystem->setModel(model);
     sel_model = new QItemSelectionModel(model);
 
-    ui->tableView_itemTypeInSystem->setSelectionModel(sel_model);
-    ui->tableView_itemTypeInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    ui->tableView_itemInSystem->setSelectionModel(sel_model);
+    ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 void Editor::setFactor()
 {
