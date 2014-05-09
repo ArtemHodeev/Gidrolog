@@ -171,14 +171,10 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     case 2:
 //        Дата
     {
-        QDateTime d = QDateTime::fromString(value.toString(),"yyyy-MM-dd hh:mm");
-        qDebug()<<"date: "<<d.isNull();
-        qDebug()<< "date:"<<d;
-        d = value.toDateTime();
-        qDebug()<<"new date: "<<d.isNull();
-        qDebug()<< "date:"<<d;
-        qDebug()<<"value:"<<value;
-        qDebug()<<"value to datetime : "<< value.toDateTime();
+//        QDateTime d = QDateTime::fromString(value.toString(),"yyyy-MM-dd hh:mm");
+
+//        d = value.toDateTime();
+
         i->setDate(value.toDateTime());
         sign = true;
         break;
@@ -285,21 +281,6 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     return true;
 }
 
-//QHash<QString, unsigned int>* SampleModel::getParams()
-//{
-//    return params;
-//}
-
-//QHash<QString, unsigned int>* SampleModel::getWaterTypes()
-//{
-//    return water_types;
-//}
-
-//QHash<QString, unsigned int>* SampleModel::getLocations()
-//{
-//    return locations;
-//}
-
 void SampleModel::setWaterTypes()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
@@ -313,7 +294,6 @@ void SampleModel::setWaterTypes()
     {
         id = query->value("id").toUInt();
         name = query->value("name").toString();
-//        water_types->insert(name,id);
         Names::water_types->insert(name,id);
     }
 
@@ -332,7 +312,6 @@ void SampleModel::setLocation()
     {
         id = query->value("id").toUInt();
         name = query->value("name").toString();
-//        locations->insert(name,id);
         Names::locations->insert(name,id);
     }
 
@@ -351,7 +330,6 @@ void SampleModel::setParams()
     {
         id = query->value("id").toUInt();
         name = query->value("name").toString();
-//        locations->insert(name,id);
         Names::params->insert(name,id);
     }
 
@@ -489,7 +467,6 @@ void SampleModel::updateItems()
         query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd hh:mm"));
         query->bindValue(":comment",items_to_update.first()->getComment());
         query->exec();
-        qDebug()<<"error: "<<query->lastError().text();
 
         QHash<unsigned int, ItemInSample>::iterator i;
         unsigned int s_id = 0;
