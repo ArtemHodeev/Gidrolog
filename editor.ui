@@ -25,8 +25,11 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="whatsThis">
+      <string/>
+     </property>
      <property name="text">
-      <string>Завершить</string>
+      <string comment="Сохранить и выйти" extracomment="Сохранить и выйти">Завершить</string>
      </property>
     </widget>
    </item>

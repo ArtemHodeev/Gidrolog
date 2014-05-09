@@ -28,21 +28,28 @@ private:
     TableModel *current_model;
     FactorModel *factor_model;
 
-//    QItemSelectionModel *sel_item_model;// модель для выделения строк
-//    QItemSelectionModel *sel_location_model;// модель для выделения строк
-//    QItemSelectionModel *sel_water_model;// модель для выделения строк
     QItemSelectionModel *sel_model;// модель для выделения строк
     Ui::Editor *ui;
     bool water_sign;
     bool location_sign;
     bool factor_sign;
+    bool water_edited;
+    bool location_edited;
+    bool item_edited;
+    bool factor_edited;
+
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
     void setFactor();
-//    void setFactorValues();
+    void closeEvent(QCloseEvent *event);
+    bool maybeSave();
+    void save();
 
 public slots:
     void on_listWidget_editorMenu_clicked();
+    void on_item_changed();
+    void on_location_changed();
+    void on_water_changed();
 signals:
     void exit_action();
 private slots:

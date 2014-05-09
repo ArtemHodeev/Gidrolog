@@ -100,6 +100,7 @@ bool WaterTypeModel::setData(const QModelIndex &index, const QVariant &value, in
         insertRows(rCount,1);
     }
 
+    emit(dataChanged(index, index));
     return true;
 }
 

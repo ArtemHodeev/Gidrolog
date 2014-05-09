@@ -202,7 +202,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
         items_to_save.append(i);
         insertRows(rCount,1);
     }
-
+    emit(dataChanged(index, index));
     return true;
 }
 

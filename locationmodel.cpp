@@ -163,6 +163,8 @@ bool LocationModel::setData(const QModelIndex &index, const QVariant &value, int
         items_to_save.append(loc);
         insertRows(rCount,1);
     }
+
+    emit(dataChanged(index, index));
     return true;
 }
 

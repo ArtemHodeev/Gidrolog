@@ -166,7 +166,7 @@ bool ItemTypeModel::setData(const QModelIndex &index, const QVariant &value, int
 //            break;
 //        }
 //    }
-    emit(dataChanged(index,index));
+//    emit(dataChanged(index,index));
     return true;
 }
 

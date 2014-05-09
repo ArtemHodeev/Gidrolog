@@ -11,6 +11,8 @@
 #include <QVariant>
 #include <comboboxdelegate.h>
 #include <watertypecombobox.h>
+#include <QMessageBox>
+#include <QPushButton>
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -21,13 +23,17 @@ Editor::Editor(QWidget *parent) :
     water_sign = false;
     location_sign = false;
     factor_sign = false;
+    water_edited = false;
+    location_edited = false;
+    item_edited = false;
+    factor_edited = false;
     item_model = new ItemModel();
+    connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
 
     //Первичная установка моделеи данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
     item_model->setItems();
     setUi(0,item_model);
-
 }
 /*
  * F:
@@ -82,6 +88,7 @@ void Editor::on_listWidget_editorMenu_clicked()
             location_model = new LocationModel();
             location_model->setItems();
             location_sign = true;
+            connect(location_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_location_changed()));
         }
         setUi(cur,location_model);
         ui->stackedWidget->setCurrentIndex(0);
@@ -93,6 +100,7 @@ void Editor::on_listWidget_editorMenu_clicked()
             water_model = new WaterTypeModel();
             water_model->setItems();
             water_sign = true;
+            connect(water_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_water_changed()));
         }
 //        current_model = water_model;
         setUi(cur,water_model);
@@ -109,6 +117,7 @@ Editor::~Editor()
     delete ui;
     delete sel_model;
     delete item_model;
+    delete factor_model;
 
     if (location_sign == true)
     {
@@ -161,13 +170,21 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
 }
 void Editor::on_pushButton_exit_pressed()
 {
-    saveModel(item_model);
+    save();
+}
+void Editor::save()
+{
+    if (item_edited == true)
+    {
+        qDebug()<<"work saving";
+        saveModel(item_model);
+    }
 
-    if (location_sign == true)
+    if (location_edited == true)
     {
         saveModel(location_model);
     }
-    if (water_sign == true)
+    if (water_edited == true)
     {
         saveModel(water_model);
     }
@@ -218,5 +235,39 @@ void Editor::setFactor()
     float corell = ui->lineEdit_maxCorrel->text().toFloat();
     QString type_name = ui->comboBox->currentText();
     factor_model->setItems(lost,error,corell,type_name);
-//    unsigned int
+}
+bool Editor::maybeSave()
+{
+    QMessageBox msg;
+    QAbstractButton *cancel = msg.addButton("Отменить",QMessageBox::RejectRole);
+    QAbstractButton *ok = msg.addButton("Cохранить",QMessageBox::AcceptRole);
+
+    msg.setText("Данные были изменены. Сохранить изменения?");
+    msg.setIcon(QMessageBox::Question);
+    msg.exec();
+
+    return (msg.clickedButton() == ok) ? true : false;
+}
+void Editor::closeEvent(QCloseEvent *event)
+{
+    if (item_edited == true || location_edited == true || water_edited == true || factor_sign == true)
+    {
+        if (maybeSave() == true)
+        {
+            save();
+        }
+    }
+}
+
+void Editor::on_item_changed()
+{
+    item_edited = true;
+}
+void Editor::on_water_changed()
+{
+    water_edited = true;
+}
+void Editor::on_location_changed()
+{
+    location_edited = true;
 }
