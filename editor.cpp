@@ -207,6 +207,17 @@ void Editor::saveModel(TableModel *model)
 }
 void Editor::setUi(int index, TableModel *model)
 {
+    current_model = model;
+    ui->tableView_itemInSystem->setModel(model);
+    ui->tableView_itemInSystem->resizeColumnsToContents();
+
+
+
+    sel_model = new QItemSelectionModel(model);
+
+    ui->tableView_itemInSystem->setSelectionModel(sel_model);
+    ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
     switch (index)
     {
     case 0:
@@ -237,16 +248,7 @@ void Editor::setUi(int index, TableModel *model)
         break;
     }
 
-    current_model = model;
-    ui->tableView_itemInSystem->setModel(model);
-    ui->tableView_itemInSystem->resizeColumnsToContents();
 
-
-
-    sel_model = new QItemSelectionModel(model);
-
-    ui->tableView_itemInSystem->setSelectionModel(sel_model);
-    ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 void Editor::setFactor()
 {
