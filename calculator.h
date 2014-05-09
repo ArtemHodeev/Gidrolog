@@ -15,6 +15,7 @@ public:
 //    void setAnaliticId(unsigned int id);
     void getAnaliticItems();
     ItemInfo *checkItem(unsigned int item_id);
+    double getCorrelation(double *mass1, double *mass2, int mass_len);
     QVector<ItemInfo*> getInfo();
 //    QVector<>
 
@@ -24,6 +25,9 @@ private:
     float error_count;
 
     void setItemError();
+    double getAverage(double *mass, int length);
+    double getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length);
+    void checkCorrelation();
     QVector<Sample*> items; // все пробы системы
 //    unsigned int analitic_id;
     QHash<unsigned int, double> *item_error; // хэш содержит пары <id компонента, ошибка измерения>

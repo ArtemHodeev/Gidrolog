@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <databaseaccessor.h>
+#include <math.h>
 
 
 Calculator::Calculator()
@@ -138,12 +139,28 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     // Получение информации о прорусках и ошибочных данных в процентах
     lost = lost / analitic_sample.size() * 100;
     error = error / analitic_sample.size() * 100;
-
+    checkCorrelation();
     info->setErrorCount(error);
     info->setLostCount(lost);
     return info;
 }
+void Calculator::checkCorrelation()
+{
+    int len = 10;
+    double *mass = new double[len];
+    double *mass2 = new double[len];
 
+    for (int i = 0; i < len; i ++)
+    {
+        mass[i] = double(i) / 3 + double(i) * 3;
+        mass2[i] = mass[i] *  mass[i];
+//        qDebug()<<"mass[i]: "<< mass[i];
+//        qDebug()<<"mass2[i]: "<< mass2[i];
+    }
+
+    double res = getCorrelation(mass, mass2, len);
+    qDebug()<<"res: "<< res;
+}
 /*
  * F:
  *   QVector<ItemInfo*> Calculator::getInfo()
@@ -171,4 +188,68 @@ QVector<ItemInfo*> Calculator::getInfo()
     }
     delete info;
     return list_info;
+}
+
+double Calculator::getAverage(double *mass, int length)
+{
+    double sum = 0;
+    for (int i = 0; i < length; i ++)
+    {
+        sum += mass[i];
+    }
+    return sum / length;
+}
+double Calculator::getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length)
+{
+    double sum = 0;
+    double temp = 0;
+    qDebug()<<"====================";
+    for (int i = 0; i < length; i ++)
+    {
+        qDebug()<<"mass_1: "<< mass_1[i];
+        qDebug()<<"mass_2: "<< mass_2[i];
+        temp = (mass_1[i] - average_1) * (mass_2[i] - average_2);
+        sum += temp;
+        qDebug()<<"temp: "<< temp;
+    }
+
+    return sum;
+}
+double Calculator::getCorrelation(double *mass1, double *mass2, int mass_len)
+{
+    double average_mass1 = 0;
+    double average_mass2 = 0;
+    double sum_average_square_mass_1 = 0;
+    double sum_average_square_mass_2 = 0;
+    double sum_average = 0;
+    double correlation = 0;
+    double *average_square_mass_1;
+    double *average_square_mass_2;
+    double *average;
+
+    average_square_mass_1 = new double[mass_len];
+    average_square_mass_2 = new double[mass_len];
+    average = new double[mass_len];
+
+    average_mass1 = getAverage(mass1, mass_len);
+    average_mass2 = getAverage(mass2, mass_len);
+
+
+    sum_average_square_mass_1 = getAverageSquare(mass1, average_mass1, mass1, average_mass1, mass_len);
+    sum_average_square_mass_2 = getAverageSquare(mass2, average_mass2, mass2, average_mass2, mass_len);
+    sum_average = getAverageSquare(mass1,average_mass1, mass2, average_mass2, mass_len);
+
+    correlation = sum_average / (sqrt(sum_average_square_mass_1 * sum_average_square_mass_2));
+
+    qDebug()<<"average_mass1: "<< average_mass1;
+    qDebug()<<"average_mass2: "<< average_mass2;
+
+    qDebug()<<"s1: "<< sum_average_square_mass_1;
+    qDebug()<<"s2: "<< sum_average_square_mass_2;
+    qDebug()<<"s3: "<< sum_average;
+
+    qDebug()<<"corellation: "<< correlation;
+
+
+    return correlation;
 }
