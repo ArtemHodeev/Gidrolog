@@ -219,7 +219,7 @@ bool DBCreator::createTable(QString table_name)
         query_sql += "            ( ";
         query_sql += "            id int NOT NULL AUTO_INCREMENT, ";
         query_sql += "            sample_set_id int NOT NULL, ";
-        query_sql += "           sample_date date NOT NULL, ";
+        query_sql += "           sample_date datetime NOT NULL, ";
         query_sql += "            location_id int NOT NULL, ";
         query_sql += "            comment varchar(1024) DEFAULT '', ";
         query_sql += "            water_type_id int NOT NULL, ";

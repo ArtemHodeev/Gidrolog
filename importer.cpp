@@ -223,7 +223,7 @@ Sample* Importer::getSample(int num)
 
     // Инициализация пробы - объекта Sample
     s->setLocationId(location_id);
-    s->setDate(file->read(num,2).toDate());
+    s->setDate(file->read(num,2).toDateTime());
     s->setWaterId(water_id);
     s->setComment(file->read(num,4).toString());
     s->setPosition(num - 2);

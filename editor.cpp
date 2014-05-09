@@ -77,7 +77,6 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->lineEdit_maxErrorCount->setText(error);
         ui->comboBox->addItems(factor_model->getWaterTypes());
         ui->comboBox->setCurrentText(factor_model->getAnaliticName());
-//        ui->lineEdit_analitic_type->setText(QString(factor_model->getAnaliticId()));
         ui->stackedWidget->setCurrentIndex(1);
         break;
     }
@@ -176,7 +175,6 @@ void Editor::save()
 {
     if (item_edited == true)
     {
-        qDebug()<<"work saving";
         saveModel(item_model);
     }
 

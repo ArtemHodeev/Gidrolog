@@ -35,7 +35,7 @@ unsigned int Sample::getWaterId()
     return water_id;
 }
 
-QDate Sample::getDate()
+QDateTime Sample::getDate()
 {
     return date;
 }
@@ -67,7 +67,7 @@ void Sample::setWaterId(unsigned int water_id)
 {
     this->water_id = water_id;
 }
-void Sample::setDate(QDate date)
+void Sample::setDate( const QDateTime &date)
 {
     this->date = date;
 }

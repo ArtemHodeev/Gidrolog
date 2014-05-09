@@ -14,7 +14,7 @@ public:
     unsigned int getPosition();
     unsigned int getLocationId();
     unsigned int getWaterId();
-    QDate getDate();
+    QDateTime getDate();
     QString getComment();
     QHash<unsigned int, ItemInSample> *getComponents();
 
@@ -23,7 +23,7 @@ public:
     void setPosition(unsigned int position);
     void setLocationId(unsigned int location_id);
     void setWaterId(unsigned int water_id);
-    void setDate(QDate date);
+    void setDate(const QDateTime &date);
     void setComment(QString comment);
     void setComponents(QHash<unsigned int, ItemInSample> *components);
 
@@ -33,7 +33,7 @@ private:
     unsigned int position; // номер строки пробы в системе
     unsigned int location_id;// id места отбора пробы из БД
     unsigned int water_id;
-    QDate date; // дата отбора пробы
+    QDateTime date; // дата отбора пробы
     QString comment; // комментарий к пробе
 
     QHash<unsigned int, ItemInSample> *components; // список параметров пробы

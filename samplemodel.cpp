@@ -171,8 +171,15 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     case 2:
 //        Дата
     {
-        QDate d = QDate::fromString(value.toString(),"yyyy-MM-dd");
-        i->setDate(d);
+        QDateTime d = QDateTime::fromString(value.toString(),"yyyy-MM-dd hh:mm");
+        qDebug()<<"date: "<<d.isNull();
+        qDebug()<< "date:"<<d;
+        d = value.toDateTime();
+        qDebug()<<"new date: "<<d.isNull();
+        qDebug()<< "date:"<<d;
+        qDebug()<<"value:"<<value;
+        qDebug()<<"value to datetime : "<< value.toDateTime();
+        i->setDate(value.toDateTime());
         sign = true;
         break;
     }
@@ -405,7 +412,7 @@ void SampleModel::setItems()
         s->setLocationId(query->value("location_id").toUInt());
         s->setSampleSetId(query->value("sample_set_id").toUInt());
         s->setWaterId(query->value("water_type_id").toUInt());
-        s->setDate(query->value("sample_date").toDate());
+        s->setDate(query->value("sample_date").toDateTime());
         s->setComment(query->value("comment").toString());
         s->setPosition(pos);
 
@@ -479,9 +486,10 @@ void SampleModel::updateItems()
         query->bindValue(":id",items_to_update.first()->getId());
         query->bindValue(":location",items_to_update.first()->getLocationId());
         query->bindValue(":water_id", items_to_update.first()->getWaterId());
-        query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd"));
+        query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd hh:mm"));
         query->bindValue(":comment",items_to_update.first()->getComment());
         query->exec();
+        qDebug()<<"error: "<<query->lastError().text();
 
         QHash<unsigned int, ItemInSample>::iterator i;
         unsigned int s_id = 0;
@@ -540,7 +548,7 @@ void SampleModel::saveItems()
         query->bindValue(":sample_set_id",1);
         query->bindValue(":location_id",items_to_save.first()->getLocationId());
         query->bindValue(":water_id", items_to_save.first()->getWaterId());
-        query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd"));
+        query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd hh:mm"));
         query->bindValue(":comment", items_to_save.first()->getComment());
         query->exec();
 
