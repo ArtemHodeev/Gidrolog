@@ -163,6 +163,20 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
 
         // Удаление строк
         current_model->setItemsToDelete(sel_rows);
+        switch(ui->listWidget_editorMenu->currentIndex().row())
+        {
+        case 0:
+            item_edited = true;
+            break;
+        case 2:
+            location_edited = true;
+            break;
+        case 3:
+            water_edited = true;
+            break;
+        default:
+            break;
+        }
 
         delete sel_rows;
     }
