@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     iteminfo.cpp \
     confirmcalculator.cpp \
     confirmcalculatormodel.cpp \
-    itemtypecombobox.cpp
+    itemtypecombobox.cpp \
+    spinboxdelegate.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -80,7 +81,8 @@ HEADERS  += mainwindow.h \
     iteminfo.h \
     confirmcalculator.h \
     confirmcalculatormodel.h \
-    itemtypecombobox.h
+    itemtypecombobox.h \
+    spinboxdelegate.h
 
 FORMS    += mainwindow.ui \
     editor.ui \

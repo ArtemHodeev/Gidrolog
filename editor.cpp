@@ -12,6 +12,7 @@
 #include <comboboxdelegate.h>
 #include <watertypecombobox.h>
 #include <itemtypecombobox.h>
+#include <spinboxdelegate.h>
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -24,8 +25,6 @@ Editor::Editor(QWidget *parent) :
     factor_sign = false;
     item_type_sign = false;
 
-    //item_model = new ItemModel();
-
     item_type_model = new ItemTypeModel();
 
 
@@ -35,12 +34,6 @@ Editor::Editor(QWidget *parent) :
     item_type_model->setItems();
 //    setUi(0,item_model);
     setUi(0,item_type_model);
-
-
-
-
-
-
 
 }
 /*
@@ -63,11 +56,7 @@ void Editor::on_listWidget_editorMenu_clicked()
     {
     case 0:
     {
-////        Компоненты
-//        setUi(cur,item_model);
-//        ui->stackedWidget->setCurrentIndex(0);
-//        break;
-
+//        Типы компонентов
         setUi(cur, item_type_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
@@ -114,12 +103,11 @@ void Editor::on_listWidget_editorMenu_clicked()
             water_model->setItems();
             water_sign = true;
         }
-//        current_model = water_model;
         setUi(cur,water_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
     case 4:
-//            Типы элементов
+//            Компоненты
         if (item_type_sign == false)
         {
             item_model = new ItemModel();
@@ -223,8 +211,9 @@ void Editor::setUi(int index, TableModel *model)
     {
     case 0:
     {
-//        ui->label_page->setText("Компоненты");
         ui->label_page->setText("Типы компонентов");
+        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
         break;
     }
     case 2:
@@ -241,6 +230,7 @@ void Editor::setUi(int index, TableModel *model)
 
         ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
         ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
+
         break;
     }
     default:
@@ -249,6 +239,10 @@ void Editor::setUi(int index, TableModel *model)
 
     current_model = model;
     ui->tableView_itemInSystem->setModel(model);
+    ui->tableView_itemInSystem->resizeColumnsToContents();
+
+
+
     sel_model = new QItemSelectionModel(model);
 
     ui->tableView_itemInSystem->setSelectionModel(sel_model);
