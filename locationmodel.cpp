@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QSqlDriver>
 #include <QDebug>
 #include <names.h>
 
@@ -30,9 +31,10 @@ void LocationModel::setItems()
     cCount = query->record().count();
     int pos = 0;
 
+
     while (query->next())
     {
-        Location *loc = new Location();
+         Location *loc = new Location();
 
         loc->setId(query->value("id").toUInt());
         loc->setName(query->value("name").toString());
@@ -43,7 +45,8 @@ void LocationModel::setItems()
         items.append(loc);
         pos++;
     }
-    qDebug()<<"Locations size: "<<items.size();
+//    delete loc;
+//    qDebug()<<"Locations size: "<<items.size();
     delete query;
 }
 
@@ -126,7 +129,7 @@ bool LocationModel::setData(const QModelIndex &index, const QVariant &value, int
 
     int row = index.row();
     Location *loc;
-    qDebug()<<"items size: "<< items.size();
+//    qDebug()<<"items size: "<< items.size();
     loc = (row < rCount -1) ? items[index.row()] : new Location();
 
     switch (index.column())
@@ -209,17 +212,16 @@ void LocationModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
     QString sql = "";
-    Location *loc = new Location();
-
+    Location *loc;
     sql = "UPDATE location ";
-    sql += "SET (name = :name, width = :width, length = :length, deep = :deep) ";
-    sql += "WHERE id = :id";
+    sql += "SET name = :name, width = :width, length = :length, deep = :deep ";
+    sql += "WHERE id = :l_id";
     query->prepare(sql);
 
     while (items_to_update.isEmpty() != true)
     {
         loc = items_to_update.first();
-        query->bindValue("id", loc->getId());
+        query->bindValue(":l_id", loc->getId());
         query->bindValue(":name", loc->getName());
         query->bindValue(":width", loc->getWidth());
         query->bindValue(":length", loc->getLength());
