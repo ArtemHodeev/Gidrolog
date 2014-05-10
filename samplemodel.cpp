@@ -11,9 +11,6 @@ SampleModel::SampleModel(QObject *parent) :
     TableModel(parent)
 {
 
-//    params = new QHash<QString, unsigned int>();
-//    water_types = new QHash<QString, unsigned int>();
-//    locations = new QHash<QString, unsigned int>();
     setParams();
     setWaterTypes();
     setLocation();
@@ -601,7 +598,7 @@ void SampleModel::setItemsToDelete(int *mass)
     }
     removeRows(first,count);
 }
-int SampleModel::findItemInPosition(unsigned int pos)
+int SampleModel::findItemInPosition(int pos)
 {
     int i = 0;
     while (i < items.size() && items[i]->getPosition() != pos)

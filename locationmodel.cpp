@@ -232,7 +232,7 @@ void LocationModel::updateItems()
         Names::locations->insert(loc->getName(), loc->getId());
         items_to_update.removeFirst();
     }
-    delete loc;
+//    delete loc;
     delete query;
 }
 
@@ -242,12 +242,12 @@ void LocationModel::removeItems()
     QString sql = "";
     int pos = -1;
 
-    sql = "DELETE FROM location WHERE id = :id";
+    sql = "DELETE FROM location WHERE id = :l_id";
     query->prepare(sql);
 
     while(items_to_delete.isEmpty() != true)
     {
-        query->bindValue(":id", items_to_delete.first()->getId());
+        query->bindValue(":l_id", items_to_delete.first()->getId());
         query->exec();
         Names::locations->remove(items_to_delete.first()->getName());
 
@@ -256,11 +256,16 @@ void LocationModel::removeItems()
     delete query;
 }
 
-int LocationModel::findItemInPosition(unsigned int pos)
+int LocationModel::findItemInPosition(int pos)
 {
     int i = 0;
+    qDebug()<<"pos: "<<pos;
     while (i < items.size() && items[i]->getPosition() != pos)
     {
+        qDebug()<<"i: "<<i;
+        qDebug()<<"items[i]->getPosition(): "<< items[i]->getPosition();
+
+//        qDebug()<<"i: "<<i;
         i ++;
     }
 

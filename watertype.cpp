@@ -4,7 +4,7 @@ WaterType::WaterType()
 {
     id  = 0;
     name = "";
-    position = 0;
+    position = -1;
 }
 WaterType::WaterType(const WaterType &other)
 {
@@ -20,7 +20,7 @@ unsigned int WaterType::getId() const
 {
     return id;
 }
-unsigned int WaterType::getPosition() const
+int WaterType::getPosition() const
 {
     return position;
 }
@@ -32,7 +32,7 @@ void WaterType::setId(unsigned int id)
 {
     this->id = id;
 }
-void WaterType::setPosition(unsigned int position)
+void WaterType::setPosition(int position)
 {
     this->position = position;
 }

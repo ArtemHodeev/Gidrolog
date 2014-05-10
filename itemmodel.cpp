@@ -362,7 +362,7 @@ void ItemModel::setItemsToDelete(int *mass)
     removeRows(first,count);
 }
 
-int ItemModel::findItemInPosition(unsigned int pos)
+int ItemModel::findItemInPosition(int pos)
 {
     int i = 0;
     while (i < items.size() && items[i]->getPosition() != pos)

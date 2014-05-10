@@ -20,7 +20,7 @@ public:
     void updateItems();
     void removeItems();
     void setItemsToDelete(int *mass);
-    int findItemInPosition(unsigned int pos);
+    int findItemInPosition(int pos);
 protected:
     QVector<WaterType*> items;
     QVector<WaterType*> items_to_delete;

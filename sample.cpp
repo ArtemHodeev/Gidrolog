@@ -5,7 +5,7 @@ Sample::Sample()
     id = 0;
     comment = "";
     location_id = 0;
-    position = 0;
+    position = -1;
     water_id = 0;
 
     components = new QHash<unsigned int, ItemInSample>();
@@ -22,7 +22,7 @@ unsigned int Sample::getSampleSetId()
 {
     return sample_set_id;
 }
-unsigned int Sample::getPosition()
+int Sample::getPosition()
 {
     return position;
 }
@@ -55,7 +55,7 @@ void Sample::setSampleSetId(unsigned int id)
 {
     this->sample_set_id = id;
 }
-void Sample::setPosition(unsigned int position)
+void Sample::setPosition(int position)
 {
     this->position = position;
 }

@@ -240,7 +240,7 @@ void WaterTypeModel::setItemsToDelete(int *mass)
     removeRows(first,count);
 }
 
-int WaterTypeModel::findItemInPosition(unsigned int pos)
+int WaterTypeModel::findItemInPosition(int pos)
 {
     int i = 0;
     while (i < items.size() && items[i]->getPosition() != pos)

@@ -74,7 +74,7 @@ bool TableModel::removeColumns(int column, int count, const QModelIndex &parent)
 void TableModel::setItemsToDelete(int *mass)
 {
 }
-int TableModel::findItemInPosition(unsigned int pos)
+int TableModel::findItemInPosition(int pos)
 {
     return -1;
 }

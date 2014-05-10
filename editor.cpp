@@ -61,13 +61,15 @@ void Editor::on_listWidget_editorMenu_clicked()
     case 1:
     {
 //        Критерии
+
         if (factor_sign == false)
         {
             factor_model = new FactorModel();
             factor_model->setItems();
+
             factor_sign = true;
+            ui->comboBox->addItems(factor_model->getWaterTypes());
         }
-        ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
         QString corell = QVariant(factor_model->getCorell()).toString();
         QString lost = QVariant(factor_model->getLostCount()).toString();
         QString error = QVariant(factor_model->getErrorCount()).toString();
@@ -75,8 +77,9 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->lineEdit_maxCorrel->setText(corell);
         ui->lineEdit_countOfLost->setText(lost);
         ui->lineEdit_maxErrorCount->setText(error);
-        ui->comboBox->addItems(factor_model->getWaterTypes());
         ui->comboBox->setCurrentText(factor_model->getAnaliticName());
+       ui->comboBox->setEditable(true);
+
         ui->stackedWidget->setCurrentIndex(1);
         break;
     }
@@ -200,9 +203,8 @@ void Editor::save()
     {
         saveModel(water_model);
     }
-    if (factor_sign == true)
+    if (factor_edited == true)
     {
-        setFactor();
         factor_model->saveItems();
     }
 }
@@ -240,14 +242,7 @@ void Editor::setUi(int index, TableModel *model)
     ui->tableView_itemInSystem->setSelectionModel(sel_model);
     ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
-void Editor::setFactor()
-{
-    float lost = ui->lineEdit_countOfLost->text().toFloat();
-    float error = ui->lineEdit_maxErrorCount->text().toFloat();
-    float corell = ui->lineEdit_maxCorrel->text().toFloat();
-    QString type_name = ui->comboBox->currentText();
-    factor_model->setItems(lost,error,corell,type_name);
-}
+
 bool Editor::maybeSave()
 {
     QMessageBox msg;
@@ -262,7 +257,7 @@ bool Editor::maybeSave()
 }
 void Editor::closeEvent(QCloseEvent *event)
 {
-    if (item_edited == true || location_edited == true || water_edited == true || factor_sign == true)
+    if (item_edited == true || location_edited == true || water_edited == true || factor_edited == true)
     {
         if (maybeSave() == true)
         {
@@ -282,4 +277,28 @@ void Editor::on_water_changed()
 void Editor::on_location_changed()
 {
     location_edited = true;
+}
+
+void Editor::on_comboBox_activated(const QString &arg1)
+{
+    factor_model->setAnaliticId(arg1);
+    factor_edited = true;
+}
+
+void Editor::on_lineEdit_maxCorrel_textEdited(const QString &arg1)
+{
+    factor_model->setCorell(arg1.toFloat());
+    factor_edited = true;
+}
+
+void Editor::on_lineEdit_maxErrorCount_textEdited(const QString &arg1)
+{
+    factor_model->setErrorCount(arg1.toFloat());
+    factor_edited = true;
+}
+
+void Editor::on_lineEdit_countOfLost_textEdited(const QString &arg1)
+{
+    factor_model->setLostCount(arg1.toFloat());
+    factor_edited = true;
 }

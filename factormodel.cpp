@@ -21,28 +21,6 @@ FactorModel::~FactorModel()
 
 /*
  * F:
- *   void FactorModel::setItems(float lost, float error, float cor, QString name)
- * I:
- *   lost - максимально допустимый процент пропусков данных
- *   error - максимально допустимы процент ошибочных данных
- *   cor - максимально допустимая корелляция
- *   name - название анализируемого типа водной массы
- * O:
- *   --
- * D:
- *   Функция устанавливает значения критериев, согласно введенным значениям пользователя.
- *   Для введенного имени анализируемого типа водной массы выбирается его id
- */
-void FactorModel::setItems(float lost, float error, float cor, QString name)
-{
-    lost_count = lost;
-    error_count = error;
-    corell = cor;
-    analitic_id = Names::water_types->find(name).value();
-}
-
-/*
- * F:
  *   void FactorModel::setItems()
  * I:
  *   --
@@ -145,6 +123,7 @@ void FactorModel::saveItems()
         query->bindValue(":type_id", analitic_id);
     }
     query->exec();
+    qDebug()<<"error: "<<query->lastError().text();
     Names::analitic_id = analitic_id;
 }
 
@@ -199,4 +178,20 @@ QStringList FactorModel::getWaterTypes()
 QString FactorModel::getAnaliticName()
 {
     return Names::water_types->key(analitic_id);
+}
+void FactorModel::setCorell(const float &cor)
+{
+    corell = cor;
+}
+void FactorModel::setErrorCount(const float &error)
+{
+    error_count = error;
+}
+void FactorModel::setLostCount(const float &lost)
+{
+    lost_count = lost;
+}
+void FactorModel::setAnaliticId(const QString &name)
+{
+    analitic_id = Names::water_types->value(name);
 }

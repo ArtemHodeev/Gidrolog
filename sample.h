@@ -11,7 +11,7 @@ public:
     ~Sample();
     unsigned int getId();
     unsigned int getSampleSetId();
-    unsigned int getPosition();
+    int getPosition();
     unsigned int getLocationId();
     unsigned int getWaterId();
     QDateTime getDate();
@@ -20,7 +20,7 @@ public:
 
     void setId(unsigned int id);
     void setSampleSetId(unsigned int id);
-    void setPosition(unsigned int position);
+    void setPosition(int position);
     void setLocationId(unsigned int location_id);
     void setWaterId(unsigned int water_id);
     void setDate(const QDateTime &date);
@@ -30,7 +30,7 @@ public:
 private:
     unsigned int id; // id пробы из БД
     unsigned int sample_set_id; // номер набора проби из БД (пока устанавливается вручную)
-    unsigned int position; // номер строки пробы в системе
+    int position; // номер строки пробы в системе
     unsigned int location_id;// id места отбора пробы из БД
     unsigned int water_id;
     QDateTime date; // дата отбора пробы

@@ -40,7 +40,6 @@ private:
 
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
-    void setFactor();
     void closeEvent(QCloseEvent *event);
     bool maybeSave();
     void save();
@@ -54,6 +53,10 @@ signals:
     void exit_action();
 private slots:
     void on_pushButton_exit_pressed();
+    void on_comboBox_activated(const QString &arg1);
+    void on_lineEdit_maxCorrel_textEdited(const QString &arg1);
+    void on_lineEdit_maxErrorCount_textEdited(const QString &arg1);
+    void on_lineEdit_countOfLost_textEdited(const QString &arg1);
 };
 
 #endif // EDITOR_H

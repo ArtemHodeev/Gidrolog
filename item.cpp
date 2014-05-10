@@ -7,6 +7,7 @@ Item::Item()
     type_id = 0;
     min_value = 0;
     error_line = 0;
+    position = -1;
     display = true;
 }
 Item::~Item()

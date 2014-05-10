@@ -9,15 +9,15 @@ public:
     WaterType(const WaterType &other);
     ~WaterType();
     unsigned int getId() const;
-    unsigned int getPosition() const;
+    int getPosition() const;
     QString getName() const;
     void setId(unsigned int id);
-    void setPosition(unsigned int position);
+    void setPosition(int position);
     void setName(QString name);
 private:
     unsigned int id;
     QString name;
-    unsigned int position;
+    int position;
 
 };
 

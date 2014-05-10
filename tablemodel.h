@@ -19,7 +19,7 @@ public:
     virtual void updateItems() = 0;
     virtual void removeItems() = 0;
     virtual void setItemsToDelete(int *mass);
-    virtual int findItemInPosition(unsigned int pos);
+    virtual int findItemInPosition(int pos);
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     bool removeColumns(int column, int count, const QModelIndex &parent);

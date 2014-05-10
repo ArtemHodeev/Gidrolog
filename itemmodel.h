@@ -18,7 +18,7 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
     virtual void saveItems();
-    int findItemInPosition(unsigned int pos);
+    int findItemInPosition(int pos);
     void setItems();
     void setItemsToDelete(int *mass);
     void updateItems();

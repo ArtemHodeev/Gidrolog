@@ -16,9 +16,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
-//    QHash<QString, unsigned int> *getParams();
-//    QHash<QString, unsigned int> *getWaterTypes();
-//    QHash<QString, unsigned int> *getLocations();
+
     void setHeaders();
     void resetModel(QVector<Sample *> sample_mass);
     void resetModel();
@@ -28,7 +26,7 @@ public:
     void setAnaliticId();
     void setSamples(QVector<Sample*> sample_mass);
     QVector<Sample*> getSample();
-    int findItemInPosition(unsigned int pos);
+    int findItemInPosition(int pos);
     void setItems();
     void setItemsToDelete(int *mass);
     void deleteAllSamples();
