@@ -14,6 +14,7 @@ ItemInfo::ItemInfo(const ItemInfo &other)
     lost_count = other.getLostCount();
     error_count = other.getErrorCount();
     position = other.getPosition();
+    correlations = other.getCorrelations();
 }
 
 ItemInfo::~ItemInfo()
@@ -40,6 +41,17 @@ void ItemInfo::setPosition(unsigned int position)
     this->position = position;
 }
 
+void ItemInfo::setCorrelations(QVector<ItemCorellation *> corrls)
+{
+    ItemCorellation *i_c;
+    for (int i = 0; i < corrls.size(); i ++)
+    {
+        i_c = new ItemCorellation();
+        i_c->setItemId(corrls[i]->getItemId());
+        i_c->setCorell(corrls[i]->getCorell());
+        correlations.append(i_c);
+    }
+}
 unsigned int ItemInfo::getItemId() const
 {
     return item_id;
@@ -59,3 +71,9 @@ unsigned int ItemInfo::getPosition() const
 {
     return position;
 }
+
+QVector<ItemCorellation*> ItemInfo::getCorrelations() const
+{
+    return correlations;
+}
+

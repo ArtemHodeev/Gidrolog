@@ -6,7 +6,8 @@ ConfirmCalculator::ConfirmCalculator(QWidget *parent) :
     ui(new Ui::ConfirmCalculator)
 {
     ui->setupUi(this);
-
+    ui->tableView->setWordWrap(true);
+    ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     cancel = false;
     model = new ConfirmCalculatorModel();
 }

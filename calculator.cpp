@@ -5,7 +5,6 @@
 #include <databaseaccessor.h>
 #include <math.h>
 
-
 Calculator::Calculator()
 {
     item_error = new QHash<unsigned int, double>();
@@ -106,6 +105,7 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     ItemInfo *info = new ItemInfo();
     float lost = 0;
     float error = 0;
+    QVector<ItemCorellation*> correlation;
 
     info->setItemId(item_id);
 
@@ -139,27 +139,66 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     // Получение информации о прорусках и ошибочных данных в процентах
     lost = lost / analitic_sample.size() * 100;
     error = error / analitic_sample.size() * 100;
-    checkCorrelation();
+    correlation = checkCorrelation(item_id);
     info->setErrorCount(error);
     info->setLostCount(lost);
+    info->setCorrelations(correlation);
     return info;
 }
-void Calculator::checkCorrelation()
+QVector<ItemCorellation*> Calculator::checkCorrelation(unsigned int item_id)
 {
-    int len = 10;
-    double *mass = new double[len];
-    double *mass2 = new double[len];
+    double *mass = new double[analitic_sample.size()];
+    double *mass_2 = new double[analitic_sample.size()];
+//    QHash<QString,unsigned int>::iterator iterator_1;
+    QHash<QString,unsigned int>::iterator iterator_2;
+    QHash<unsigned int, ItemInSample> *items_in_sample = new QHash<unsigned int, ItemInSample>();
+    ItemInSample item_1;
+    ItemInSample item_2;
+    ItemCorellation *cor;//  = new ItemCorellation();;
+    QString item_name = "";
+    QVector<ItemCorellation*> item_correlation;// = new QMap<unsigned int, double>();
+    item_name = Names::params->key(item_id);
+    double item_cor;
+//    iterator_1 = Names::params->find(item_name);
 
-    for (int i = 0; i < len; i ++)
-    {
-        mass[i] = double(i) / 3 + double(i) * 3;
-        mass2[i] = mass[i] *  mass[i];
-//        qDebug()<<"mass[i]: "<< mass[i];
-//        qDebug()<<"mass2[i]: "<< mass2[i];
-    }
+    int index = 0;
 
-    double res = getCorrelation(mass, mass2, len);
-    qDebug()<<"res: "<< res;
+
+        // Перебор всех оставшихся параметров известных системе на корелляцию с текущим параметром
+        // корреляция X и Y равносильна Y и X, поэтому достаточно всегда проверьо на корреляцию параметры, которые следуют за текущим
+        for (iterator_2 = ++ Names::params->find(item_name); iterator_2 != Names::params->end(); iterator_2 ++)
+        {
+
+            index = 0;
+            mass = new double[analitic_sample.size()];
+            mass_2 = new double[analitic_sample.size()];
+            // Перебор всех проб текущего параметра
+            for (int i = 0; i < analitic_sample.size(); i ++)
+            {
+                items_in_sample = analitic_sample[i]->getComponents();
+                //Если в пробе присутствуют оба параметра то взять их значения
+                if (items_in_sample->contains(item_id)  && items_in_sample->contains(iterator_2.value()))
+                {
+                    item_1 = items_in_sample->value(item_id);
+                    item_2 = items_in_sample->value(iterator_2.value());
+
+                    mass[index] = item_1.getValue();
+                    mass_2[index] = item_2.getValue();
+                    index ++;
+                }
+            }
+
+            item_cor = getCorrelation(mass, mass_2, index);
+            cor = new ItemCorellation();
+            cor->setItemId(iterator_2.value());
+            cor->setCorell(item_cor);
+            item_correlation.append(cor);
+            delete []mass;
+            delete []mass_2;
+
+        }
+
+        return item_correlation;
 }
 /*
  * F:
@@ -202,15 +241,9 @@ double Calculator::getAverage(double *mass, int length)
 double Calculator::getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length)
 {
     double sum = 0;
-    double temp = 0;
-    qDebug()<<"====================";
     for (int i = 0; i < length; i ++)
     {
-        qDebug()<<"mass_1: "<< mass_1[i];
-        qDebug()<<"mass_2: "<< mass_2[i];
-        temp = (mass_1[i] - average_1) * (mass_2[i] - average_2);
-        sum += temp;
-        qDebug()<<"temp: "<< temp;
+        sum += (mass_1[i] - average_1) * (mass_2[i] - average_2);
     }
 
     return sum;
@@ -223,13 +256,6 @@ double Calculator::getCorrelation(double *mass1, double *mass2, int mass_len)
     double sum_average_square_mass_2 = 0;
     double sum_average = 0;
     double correlation = 0;
-    double *average_square_mass_1;
-    double *average_square_mass_2;
-    double *average;
-
-    average_square_mass_1 = new double[mass_len];
-    average_square_mass_2 = new double[mass_len];
-    average = new double[mass_len];
 
     average_mass1 = getAverage(mass1, mass_len);
     average_mass2 = getAverage(mass2, mass_len);
@@ -241,15 +267,5 @@ double Calculator::getCorrelation(double *mass1, double *mass2, int mass_len)
 
     correlation = sum_average / (sqrt(sum_average_square_mass_1 * sum_average_square_mass_2));
 
-    qDebug()<<"average_mass1: "<< average_mass1;
-    qDebug()<<"average_mass2: "<< average_mass2;
-
-    qDebug()<<"s1: "<< sum_average_square_mass_1;
-    qDebug()<<"s2: "<< sum_average_square_mass_2;
-    qDebug()<<"s3: "<< sum_average;
-
-    qDebug()<<"corellation: "<< correlation;
-
-
-    return correlation;
+    return correlation * 100;
 }

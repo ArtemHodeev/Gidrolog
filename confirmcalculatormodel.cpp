@@ -36,17 +36,35 @@ void ConfirmCalculatorModel::setItems(QVector<ItemInfo *> other)
 {
     rCount = 3;
 //    qDebug()<<"=========================";
+    bool need = false;
     unsigned int pos = 0;
 //    qDebug()<<"Other size: "<<other.size();
     for (int i = 0; i < other.size(); i ++)
     {
         if (other[i]->getLostCount() > lost_count || other[i]->getErrorCount() > error_count)
         {
+            need = true;
+        }
+        if (i < other.size() - 1)
+        {
+            for (int j = 0; j < other[i]->getCorrelations().size(); j ++)
+            {
+                qDebug()<<"item corell: "<< other[i]->getCorrelations()[j]->getCorell();
+                qDebug()<<"corell: "<< corell;
+                if (other[i]->getCorrelations()[j]->getCorell() > corell)
+                {
+                    need = true;
+                }
+            }
+        }
+        if (need == true)
+        {
             other[i]->setPosition(pos);
             items.append(other[i]);
-//            items.last()->setPosition(pos);
-//            qDebug()<<"items: "<< Names::params->key(items)
+            //            items.last()->setPosition(pos);
+            //            qDebug()<<"items: "<< Names::params->key(items)
             pos ++;
+            need = false;
         }
     }
     showItems();
@@ -154,11 +172,11 @@ QVariant ConfirmCalculatorModel::headerData(int section, Qt::Orientation orienta
             res = QVariant("Ошибочных данных");
             break;
         case 2:
-            res = QVariant("Корелляция");
+            res = QVariant("Корреляция");
             break;
-        case 3:
-            res = QVariant("Итог");
-            break;
+//        case 3:
+//            res = QVariant("Итог");
+//            break;
         default:
             break;
         }
@@ -180,21 +198,43 @@ int ConfirmCalculatorModel::findItemById(unsigned int &item_id) const
 QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
 {
     QVariant res;
+
     if (index.isValid() != true)
     {
         return res;
     }
-    else if (role == Qt::BackgroundColorRole)
+    unsigned int item_id = items[index.column()]->getItemId();
+
+    int item_index = 0;
+    item_index = findItemById(item_id);
+
+    if (role == Qt::BackgroundColorRole)
     {
         QColor color;
+
         switch(index.row())
         {
         case 0:
-            color = (items[index.column()]->getLostCount() < lost_count) ? QColor(Qt::green) : QColor(Qt::red);
+            color = (items[item_index]->getLostCount() < lost_count) ? QColor(Qt::green) : QColor(Qt::red);
             break;
         case 1:
-            color = (items[index.column()]->getErrorCount() < error_count) ? QColor(Qt::green) : QColor(Qt::red);
+            color = (items[item_index]->getErrorCount() < error_count) ? QColor(Qt::green) : QColor(Qt::red);
             break;
+        case 2:
+        {
+            QVector<ItemCorellation*> item_correl = items[item_index]->getCorrelations();
+//            QString correl_str = "";
+            bool hasFail = false;
+            for (int i = 0; i < item_correl.size(); i ++)
+            {
+                if (item_correl[i]->getCorell() > corell)
+                {
+                    hasFail = true;
+                }
+            }
+            color = (hasFail == false) ? QColor(Qt::green) : QColor(Qt::red);
+            break;
+        }
         default:
             color = Qt::white;
         }
@@ -202,11 +242,6 @@ QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
     }
     else if(role == Qt::DisplayRole)
     {
-        unsigned int item_id = items[index.column()]->getItemId();
-
-        int item_index = 0;
-        item_index = findItemById(item_id);
-
         switch(index.row())
         {
         case 0:
@@ -215,6 +250,21 @@ QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
         case 1:
             res = QVariant(items[item_index]->getErrorCount());
             break;
+        case 2:
+        {
+            QVector<ItemCorellation*> item_correl = items[item_index]->getCorrelations();
+            QString correl_str = "";
+            for (int i = 0; i < item_correl.size(); i ++)
+            {
+                if (item_correl[i]->getCorell() > corell)
+                {
+                correl_str += QString("%1 (%2); ").arg(Names::params->key(item_correl[i]->getItemId()))
+                                                  .arg(item_correl[i]->getCorell());
+                }
+            }
+            res = QVariant(correl_str);
+            break;
+        }
         default:
             break;
         }
@@ -235,8 +285,6 @@ int ConfirmCalculatorModel::findItemInPosition(unsigned int pos)
     int i = 0;
     while(i < items.size() && items[i]->getPosition() != pos)
     {
-        qDebug()<<"pos: "<<pos;
-        qDebug()<<"item.pos: "<< items[i]->getPosition();
         i++;
     }
     return (i < items.size()) ? i : -1;

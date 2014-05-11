@@ -27,7 +27,7 @@ private:
     void setItemError();
     double getAverage(double *mass, int length);
     double getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length);
-    void checkCorrelation();
+    QVector<ItemCorellation *> checkCorrelation(unsigned int item_id);
     QVector<Sample*> items; // все пробы системы
 //    unsigned int analitic_id;
     QHash<unsigned int, double> *item_error; // хэш содержит пары <id компонента, ошибка измерения>
