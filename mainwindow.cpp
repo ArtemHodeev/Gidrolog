@@ -204,4 +204,5 @@ void MainWindow::on_action_3_triggered()
     QDialog *dlg = new ConnectDB();
     dlg->exec();
     delete dlg;
+//    model->resetModel();
 }

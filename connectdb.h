@@ -2,6 +2,7 @@
 #define CONNECTDB_H
 
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui {
 class ConnectDB;
@@ -15,8 +16,13 @@ public:
     explicit ConnectDB(QWidget *parent = 0);
     ~ConnectDB();
 
+private slots:
+    void on_pushButton_pressed();
+
 private:
     Ui::ConnectDB *ui;
+    QSettings *setting;
+
 };
 
 #endif // CONNECTDB_H

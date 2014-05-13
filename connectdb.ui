@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
+    <width>434</width>
     <height>225</height>
    </rect>
   </property>
@@ -52,7 +52,7 @@
    <item row="3" column="1" rowspan="4" colspan="3">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="host_lineEdit">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -70,7 +70,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_2">
+      <widget class="QLineEdit" name="user_lineEdit">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -88,7 +88,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_3">
+      <widget class="QLineEdit" name="pass_lineEdit">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -106,7 +106,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_4">
+      <widget class="QLineEdit" name="port_lineEdit">
        <property name="minimumSize">
         <size>
          <width>80</width>
@@ -221,5 +221,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>pressed()</signal>
+   <receiver>ConnectDB</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>299</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>ConnectDB</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>387</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>201</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

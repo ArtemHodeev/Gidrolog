@@ -1,31 +1,35 @@
 #include "databaseaccessor.h"
 #include <QDebug>
 #include <QSqlQuery>
-#include<QStringList>
+//#include <QSettings>
+#include <QDialog>
+#include <connectdb.h>
+
 DatabaseAccessor::DatabaseAccessor()
 {
+
     if (!db.isOpen())
     {
+        setting = new QSettings();
+
         db = QSqlDatabase::addDatabase("QMYSQL");
-        db.setDatabaseName(dbName);
-        db.setHostName(dbHost);
-        db.setUserName(dbUser);
-        db.setPassword(dbPassword);
-        db.setPort(dbPort);
+        setting->beginGroup("dbSettings");
+        db.setDatabaseName(setting->value("name","").toString());
+        db.setHostName(setting->value("host","localhost").toString());
+        db.setUserName(setting->value("user","user").toString());
+        db.setPassword(setting->value("password","123").toString());
+        db.setPort(setting->value("port",3306).toInt());
+        setting->endGroup();
 
         if (!db.open())
         {
-            qDebug() << "DB was not opened";
+            QDialog *dlg = new ConnectDB();
+            dlg->exec();
+            delete dlg;
         }
     }
 }
 
-// Инициализация параметров по умолчанию
-QString DatabaseAccessor::dbName = "";
-QString DatabaseAccessor::dbHost = "localhost";
-QString DatabaseAccessor::dbUser = "";
-QString DatabaseAccessor::dbPassword = "";
-int DatabaseAccessor::dbPort = 5432;
 QSqlDatabase DatabaseAccessor::db = QSqlDatabase();
 
 /*
@@ -42,4 +46,14 @@ QSqlDatabase DatabaseAccessor::getDb()
 {
     DatabaseAccessor instance;
     return instance.db;
+}
+
+void DatabaseAccessor::reconnect()
+{
+    if (db.isOpen())
+    {
+        db.close();
+    }
+    db = getDb();
+
 }

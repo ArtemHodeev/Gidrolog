@@ -4,25 +4,25 @@
 #include <QDebug>
 #include <databaseaccessor.h>
 #include <dbcreator.h>
+#include <QSettings>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::setOrganizationName("DVO_RAN");
+    QApplication::setApplicationName("Gydro");
+//    QSettings *setting = new QSettings("DVO_RAN","Gydro");
+//    setting->beginGroup("dbSettings");
+//    setting->setValue("port",3306);
+//    setting->endGroup();
+//    DatabaseAccessor::dbHost = "localhost";
+//    DatabaseAccessor::dbUser = "user";
+//    DatabaseAccessor::dbPassword = "123";
+//    DatabaseAccessor::dbPort = 3306;
 
-//    DatabaseAccessor::dbName = "gydro";
-    DatabaseAccessor::dbHost = "localhost";
-    DatabaseAccessor::dbUser = "user";
-    DatabaseAccessor::dbPassword = "123";
-//    DatabaseAccessor::dbPort = 5432;
-    DatabaseAccessor::dbPort = 3306;
-
-//    DatabaseAccessor db;
-//    db.checkSchema();
     DBCreator db(DatabaseAccessor::getDb());
     db.checkSchema();
-//    enum table{item, item_type, water_type,location,sample_set,sample,item_sample,factor};
-//    if (QString("item").compare(table) == 0)
-//    qDebug()<<table(QString("item"));
+
     MainWindow w;
     w.show();
 
