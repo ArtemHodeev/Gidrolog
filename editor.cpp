@@ -11,13 +11,10 @@
 #include <QVariant>
 #include <comboboxdelegate.h>
 #include <watertypecombobox.h>
-<<<<<<< HEAD
 #include <QMessageBox>
 #include <QPushButton>
-=======
 #include <itemtypecombobox.h>
 #include <spinboxdelegate.h>
->>>>>>> origin/nastya_br
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -28,34 +25,29 @@ Editor::Editor(QWidget *parent) :
     water_sign = false;
     location_sign = false;
     factor_sign = false;
-<<<<<<< HEAD
     water_edited = false;
     location_edited = false;
     item_edited = false;
     factor_edited = false;
     item_model = new ItemModel();
     connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
-=======
     item_type_sign = false;
->>>>>>> origin/nastya_br
 
     item_type_model = new ItemTypeModel();
 
 
     //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
-<<<<<<< HEAD
     item_model->setItems();
     setUi(0,item_model);
-=======
  //   item_model->setItems();
-    item_type_model->setItems();
+//    item_type_model->setItems();
 
 
 //    setUi(0,item_model);
-    setUi(0,item_type_model);
+//    item_type_model->setItems();
+//    setUi(0,item_type_model);
 
->>>>>>> origin/nastya_br
 }
 /*
  * F:
@@ -78,6 +70,8 @@ void Editor::on_listWidget_editorMenu_clicked()
     case 0:
     {
 //        Типы компонентов
+        item_type_model->setItems();
+        setUi(0,item_type_model);
         setUi(cur, item_type_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
@@ -148,13 +142,18 @@ Editor::~Editor()
 {
     delete ui;
     delete sel_model;
-<<<<<<< HEAD
     delete item_model;
-    delete factor_model;
-=======
+    if (factor_sign == true)
+    {
+        delete factor_model;
+    }
+
 //    delete item_model;
-    delete item_type_model;
->>>>>>> origin/nastya_br
+    if (item_type_sign == true)
+    {
+        delete item_type_model;
+    }
+
 
     if (location_sign == true)
     {
@@ -225,7 +224,6 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
 }
 void Editor::on_pushButton_exit_pressed()
 {
-<<<<<<< HEAD
     save();
 }
 void Editor::save()
@@ -234,9 +232,7 @@ void Editor::save()
     {
         saveModel(item_model);
     }
-=======
     saveModel(item_type_model);
->>>>>>> origin/nastya_br
 
     if (location_edited == true)
     {
@@ -306,8 +302,6 @@ void Editor::setUi(int index, TableModel *model)
     default:
         break;
     }
-
-
 }
 
 bool Editor::maybeSave()

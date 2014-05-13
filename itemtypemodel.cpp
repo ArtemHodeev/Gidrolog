@@ -141,38 +141,7 @@ bool ItemTypeModel::setData(const QModelIndex &index, const QVariant &value, int
         items_to_save.append(item_type);
         insertRows(rCount,1);
     }
-<<<<<<< HEAD
-//    if (index.row() < rCount - 1)
-//    {
-//        switch(index.column())
-//        {
-//        case 1:
-//            items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
-//            break;
-//        case 2:
-//            items.at(index.row())->setPriority(value != "" ? value.toUInt() : index.data().toUInt());
-//            break;
-//        }
-//        if (!items_to_save.contains(items.at(index.row())))
-//        {
-//            items_to_save.append(items.at(index.row()));
-//        }
-//    }
-//    else
-//    {
-//        switch(index.column())
-//        {
-//        case 1:
-//            items.at(index.row())->setName(value != "" ? value.toString() : index.data().toString());
-//            break;
-//        case 2:
-//            items.at(index.row())->setPriority(value != "" ? value.toUInt() : index.data().toUInt());
-//            break;
-//        }
-//    }
-//    emit(dataChanged(index,index));
-=======
->>>>>>> origin/nastya_br
+
     return true;
 }
 
@@ -193,7 +162,7 @@ void ItemTypeModel::saveItems()
     unsigned int last_id;
     int pos = -1;
 
-    sql = "INSERT INTO item_type (name, priority)";
+    sql = "INSERT INTO item_type (name, priority) ";
     sql += "VALUES (:name, :priority)";
     query->prepare(sql);
 

@@ -35,15 +35,14 @@ private:
     bool water_sign;
     bool location_sign;
     bool factor_sign;
-<<<<<<< HEAD
+
     bool water_edited;
     bool location_edited;
     bool item_edited;
     bool factor_edited;
 
-=======
     bool item_type_sign;
->>>>>>> origin/nastya_br
+
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
     void closeEvent(QCloseEvent *event);
