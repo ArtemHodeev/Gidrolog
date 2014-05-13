@@ -14,7 +14,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     editor.cpp \
     connector.cpp \
     pgconnector.cpp \
@@ -46,13 +46,10 @@ SOURCES += main.cpp\
     iteminfo.cpp \
     confirmcalculator.cpp \
     confirmcalculatormodel.cpp \
-
     itemcorellation.cpp \
-    connectdb.cpp
-
+    connectdb.cpp \
     itemtypecombobox.cpp \
-    spinboxdelegate.cpp
-
+    spinboxdelegate.cpp \
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -86,16 +83,13 @@ HEADERS  += mainwindow.h \
     iteminfo.h \
     confirmcalculator.h \
     confirmcalculatormodel.h \
-
     itemcorellation.h \
-    connectdb.h
-
+    connectdb.h \
     itemtypecombobox.h \
-    spinboxdelegate.h
-
+    spinboxdelegate.h \
 
 FORMS    += mainwindow.ui \
     editor.ui \
     confirmimport.ui \
     confirmcalculator.ui \
-    connectdb.ui
+    connectdb.ui \

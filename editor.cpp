@@ -33,9 +33,6 @@ Editor::Editor(QWidget *parent) :
     connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
     item_type_sign = false;
 
-    item_type_model = new ItemTypeModel();
-
-
     //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
     item_model->setItems();
@@ -69,12 +66,16 @@ void Editor::on_listWidget_editorMenu_clicked()
     {
     case 0:
     {
-//        Типы компонентов
-        item_type_model->setItems();
-        setUi(0,item_type_model);
-        setUi(cur, item_type_model);
-        ui->stackedWidget->setCurrentIndex(0);
-        break;
+        //            Компоненты
+       if (item_type_sign == false)
+       {
+           item_model = new ItemModel();
+           item_model->setItems();
+           item_type_sign = true;
+       }
+       setUi(cur,item_model);
+       ui->stackedWidget->setCurrentIndex(0);
+       break;
     }
     case 1:
     {
@@ -102,6 +103,7 @@ void Editor::on_listWidget_editorMenu_clicked()
         break;
     }
     case 2:
+    {
 //        Объекты (Места взятия)
         if (location_sign == false)
         {
@@ -113,6 +115,7 @@ void Editor::on_listWidget_editorMenu_clicked()
         setUi(cur,location_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
+    }
     case 3:
 //        Типы водных масс
         if (water_sign == false)
@@ -126,14 +129,16 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->stackedWidget->setCurrentIndex(0);
         break;
     case 4:
-//            Компоненты
+        //        Типы компонентов
         if (item_type_sign == false)
         {
-            item_model = new ItemModel();
-            item_model->setItems();
+            item_type_model = new ItemTypeModel();
+            item_type_model->setItems();
             item_type_sign = true;
         }
-        setUi(cur,item_model);
+//        item_type_model->setItems();
+        setUi(cur,item_type_model);
+//        setUi(cur, item_type_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
     };
@@ -143,18 +148,15 @@ Editor::~Editor()
     delete ui;
     delete sel_model;
     delete item_model;
+
     if (factor_sign == true)
     {
         delete factor_model;
     }
-
-//    delete item_model;
     if (item_type_sign == true)
     {
         delete item_type_model;
     }
-
-
     if (location_sign == true)
     {
         delete location_model;
@@ -262,9 +264,7 @@ void Editor::setUi(int index, TableModel *model)
 {
     current_model = model;
     ui->tableView_itemInSystem->setModel(model);
-    ui->tableView_itemInSystem->resizeColumnsToContents();
-
-
+//    ui->tableView_itemInSystem->resizeColumnsToContents();
 
     sel_model = new QItemSelectionModel(model);
 
@@ -275,13 +275,15 @@ void Editor::setUi(int index, TableModel *model)
     {
     case 0:
     {
-        ui->label_page->setText("Типы компонентов");
-        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
+        ui->label_page->setText("Компоненты");
 
-        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
+        ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
 
         break;
+
     }
+
     case 2:
     {
         ui->label_page->setText("Объекты");
@@ -292,10 +294,10 @@ void Editor::setUi(int index, TableModel *model)
         break;
     case 4:
     {
-        ui->label_page->setText("Компоненты");
+        ui->label_page->setText("Типы компонентов");
+        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
 
-        ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
-        ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
 
         break;
     }
@@ -307,8 +309,8 @@ void Editor::setUi(int index, TableModel *model)
 bool Editor::maybeSave()
 {
     QMessageBox msg;
-    QAbstractButton *cancel = msg.addButton("Отменить",QMessageBox::RejectRole);
     QAbstractButton *ok = msg.addButton("Cохранить",QMessageBox::AcceptRole);
+    QAbstractButton *cancel = msg.addButton("Отменить",QMessageBox::RejectRole);
 
     msg.setText("Данные были изменены. Сохранить изменения?");
     msg.setIcon(QMessageBox::Question);
