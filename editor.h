@@ -5,6 +5,7 @@
 #include<tablemodel.h>
 #include <QItemSelectionModel>
 #include <itemmodel.h>
+#include <itemtypemodel.h>
 #include <watertypemodel.h>
 #include <locationmodel.h>
 #include <factormodel.h>
@@ -26,6 +27,7 @@ private:
     TableModel *water_model;
     TableModel *location_model;
     TableModel *current_model;
+    TableModel *item_type_model;
     FactorModel *factor_model;
 
     QItemSelectionModel *sel_model;// модель для выделения строк
@@ -33,11 +35,15 @@ private:
     bool water_sign;
     bool location_sign;
     bool factor_sign;
+<<<<<<< HEAD
     bool water_edited;
     bool location_edited;
     bool item_edited;
     bool factor_edited;
 
+=======
+    bool item_type_sign;
+>>>>>>> origin/nastya_br
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
     void closeEvent(QCloseEvent *event);

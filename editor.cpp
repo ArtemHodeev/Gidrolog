@@ -11,8 +11,13 @@
 #include <QVariant>
 #include <comboboxdelegate.h>
 #include <watertypecombobox.h>
+<<<<<<< HEAD
 #include <QMessageBox>
 #include <QPushButton>
+=======
+#include <itemtypecombobox.h>
+#include <spinboxdelegate.h>
+>>>>>>> origin/nastya_br
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -23,17 +28,34 @@ Editor::Editor(QWidget *parent) :
     water_sign = false;
     location_sign = false;
     factor_sign = false;
+<<<<<<< HEAD
     water_edited = false;
     location_edited = false;
     item_edited = false;
     factor_edited = false;
     item_model = new ItemModel();
     connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
+=======
+    item_type_sign = false;
+>>>>>>> origin/nastya_br
 
-    //Первичная установка моделеи данных раздела компоненты
+    item_type_model = new ItemTypeModel();
+
+
+    //Первичная установка модели данных раздела компоненты
     ui->stackedWidget->setCurrentIndex(0);
+<<<<<<< HEAD
     item_model->setItems();
     setUi(0,item_model);
+=======
+ //   item_model->setItems();
+    item_type_model->setItems();
+
+
+//    setUi(0,item_model);
+    setUi(0,item_type_model);
+
+>>>>>>> origin/nastya_br
 }
 /*
  * F:
@@ -54,10 +76,12 @@ void Editor::on_listWidget_editorMenu_clicked()
     switch(cur)
     {
     case 0:
-//        Компоненты
-        setUi(cur,item_model);
+    {
+//        Типы компонентов
+        setUi(cur, item_type_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
+    }
     case 1:
     {
 //        Критерии
@@ -104,22 +128,33 @@ void Editor::on_listWidget_editorMenu_clicked()
             water_sign = true;
             connect(water_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_water_changed()));
         }
-//        current_model = water_model;
         setUi(cur,water_model);
         ui->stackedWidget->setCurrentIndex(0);
         break;
     case 4:
-//        Типы элементов
-//        model = new ItemTypeModel();
+//            Компоненты
+        if (item_type_sign == false)
+        {
+            item_model = new ItemModel();
+            item_model->setItems();
+            item_type_sign = true;
+        }
+        setUi(cur,item_model);
+        ui->stackedWidget->setCurrentIndex(0);
         break;
-    };// switch(cur)
+    };
 }
 Editor::~Editor()
 {
     delete ui;
     delete sel_model;
+<<<<<<< HEAD
     delete item_model;
     delete factor_model;
+=======
+//    delete item_model;
+    delete item_type_model;
+>>>>>>> origin/nastya_br
 
     if (location_sign == true)
     {
@@ -128,6 +163,10 @@ Editor::~Editor()
     if (water_sign == true)
     {
         delete water_model;
+    }
+    if (item_type_sign == true)
+    {
+        delete item_model;
     }
 }
 
@@ -186,6 +225,7 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
 }
 void Editor::on_pushButton_exit_pressed()
 {
+<<<<<<< HEAD
     save();
 }
 void Editor::save()
@@ -194,6 +234,9 @@ void Editor::save()
     {
         saveModel(item_model);
     }
+=======
+    saveModel(item_type_model);
+>>>>>>> origin/nastya_br
 
     if (location_edited == true)
     {
@@ -207,6 +250,10 @@ void Editor::save()
     {
         factor_model->saveItems();
     }
+    if (item_type_sign == true)
+    {
+        saveModel(item_model);
+    }
 }
 void Editor::saveModel(TableModel *model)
 {
@@ -217,30 +264,50 @@ void Editor::saveModel(TableModel *model)
 }
 void Editor::setUi(int index, TableModel *model)
 {
-    switch (index)
-    {
-    case 0:
-        ui->label_page->setText("Компоненты");
-        break;
-    case 2:
-        ui->label_page->setText("Объекты");
-        break;
-    case 3:
-        ui->label_page->setText("Типы водных масс");
-        break;
-    case 4:
-        ui->label_page->setText("Типы компонентов");
-        break;
-    default:
-        break;
-    }
-
     current_model = model;
     ui->tableView_itemInSystem->setModel(model);
+    ui->tableView_itemInSystem->resizeColumnsToContents();
+
+
+
     sel_model = new QItemSelectionModel(model);
 
     ui->tableView_itemInSystem->setSelectionModel(sel_model);
     ui->tableView_itemInSystem->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    switch (index)
+    {
+    case 0:
+    {
+        ui->label_page->setText("Типы компонентов");
+        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
+
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
+
+        break;
+    }
+    case 2:
+    {
+        ui->label_page->setText("Объекты");
+        break;
+    }
+    case 3:
+        ui->label_page->setText("Типы водных масс");
+        break;
+    case 4:
+    {
+        ui->label_page->setText("Компоненты");
+
+        ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
+
+        break;
+    }
+    default:
+        break;
+    }
+
+
 }
 
 bool Editor::maybeSave()

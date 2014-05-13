@@ -1,3 +1,5 @@
+
+
 #include "locationmodel.h"
 #include <databaseaccessor.h>
 #include <QSqlQuery>
@@ -211,15 +213,33 @@ void LocationModel::saveItems()
 void LocationModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+<<<<<<< HEAD
     QString sql = "";
     Location *loc;
     sql = "UPDATE location ";
     sql += "SET name = :name, width = :width, length = :length, deep = :deep ";
     sql += "WHERE id = :l_id";
+=======
+
+///////////////////////////////////////////////////////////////////////////////
+//  Вот этот код не работает
+//    QString sql = "";
+//    sql = "UPDATE location ";
+//    sql += "SET name = :name, width = :width, length = :length, deep = :deep" ;
+//    sql += "WHERE id = :l_id";
+///////////////////////////////////////////////////////////////////////////////
+//  А этот работает!!!!! Найди 20 отличий)))
+    QString sql = "";
+    sql = "UPDATE location ";
+    sql += "SET name = :name, width = :width, length = :length, deep = :deep ";
+    sql += "WHERE id = :l_id";
+///////////////////////////////////////////////////////////////////////////////
+>>>>>>> origin/nastya_br
     query->prepare(sql);
 
     while (items_to_update.isEmpty() != true)
     {
+<<<<<<< HEAD
         loc = items_to_update.first();
         query->bindValue(":l_id", loc->getId());
         query->bindValue(":name", loc->getName());
@@ -233,6 +253,23 @@ void LocationModel::updateItems()
         items_to_update.removeFirst();
     }
 //    delete loc;
+=======
+        query->bindValue(":l_id", items_to_update.first()->getId());
+        qDebug()<<items_to_update.first()->getId();
+        query->bindValue(":name", items_to_update.first()->getName());
+        qDebug()<<items_to_update.first()->getName();
+        query->bindValue(":width", items_to_update.first()->getWidth());
+        qDebug()<<items_to_update.first()->getWidth();
+        query->bindValue(":length", items_to_update.first()->getLength());
+        qDebug()<<items_to_update.first()->getLength();
+        query->bindValue(":deep", items_to_update.first()->getDeep());
+        qDebug()<<items_to_update.first()->getDeep();
+        query->exec();
+
+
+        items_to_update.removeFirst();
+    }
+>>>>>>> origin/nastya_br
     delete query;
 }
 

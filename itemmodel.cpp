@@ -4,15 +4,19 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QSqlRecord>
+#include <names.h>
+
 
 ItemModel::ItemModel(QObject *parent) :
     TableModel(parent)
 {
-
+     item_types = new QHash<QString, unsigned int>();
+     setItemType();
 }
 
 ItemModel::~ItemModel()
 {
+    delete item_types;
 }
 
 /*
@@ -36,26 +40,42 @@ QVariant ItemModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    QVariant res;
+    QVariant res = QVariant("");
+    unsigned int item_type_id;
+    QString item_type_name = "";
+
     if (index.row() < rCount - 1 )
     {
         switch(index.column())
         {
         case 0:
+        {
             res = QVariant(items.at(index.row())->getId());
             break;
+        }
         case 1:
+        {
             res = QVariant(items.at(index.row())->getName());
             break;
+        }
         case 2:
-            res = QVariant(items.at(index.row())->getTypeId());
+        {
+            item_type_id = items.at(index.row())->getTypeId();
+            item_type_name = item_types->key(item_type_id);
+            res = QVariant(item_type_name);
+            //res = QVariant(items.at(index.row())->getTypeId());
             break;
+        }
         case 3:
+        {
             res = QVariant(items.at(index.row())->getMinValue());
             break;
+        }
         case 4:
+        {
             res = QVariant(items.at(index.row())->getErrorLine());
             break;
+        }
         }
     }
     else
@@ -167,22 +187,35 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
     int row = index.row();
 
     Item *i;
+    bool sign = false;
+
     i = (row < rCount -1) ? items[index.row()] : new Item();
 
     switch(index.column())
     {
     case 1:
+    {
         i->setName(value.toString());
         break;
+    }
     case 2:
-        i->setTypeId(value.toUInt());
+    {
+        unsigned int item_type_id = item_types->value(value.toString());
+        i->setTypeId(item_type_id);
+        sign = true;
+        //i->setTypeId(value.toUInt());
         break;
+    }
     case 3:
+    {
         i->setMinValue(value.toDouble());
         break;
+    }
     case 4:
+    {
         i->setErrorLine(value.toDouble());
         break;
+    }
     };
 
     i->setPosition(row);
@@ -373,3 +406,23 @@ int ItemModel::findItemInPosition(int pos)
     return (i<items.size()) ? i : -1;
 }
 
+void ItemModel::setItemType()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    QString name = "";
+    unsigned int id;
+    sql = "SELECT id, name FROM item_type";
+    query->exec(sql);
+
+    while(query->next())
+    {
+        id = query->value("id").toUInt();
+        name = query->value("name").toString();
+        Names::item_types->insert(name, id);
+        item_types->insert(name, id);
+    }
+
+    delete query;
+
+}

@@ -18,7 +18,11 @@
 #include <calculator.h>
 #include <confirmcalculatormodel.h>
 #include <confirmcalculator.h>
+<<<<<<< HEAD
 #include <connectdb.h>
+=======
+#include <spinboxdelegate.h>
+>>>>>>> origin/nastya_br
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

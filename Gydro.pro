@@ -46,8 +46,13 @@ SOURCES += main.cpp\
     iteminfo.cpp \
     confirmcalculator.cpp \
     confirmcalculatormodel.cpp \
+<<<<<<< HEAD
     itemcorellation.cpp \
     connectdb.cpp
+=======
+    itemtypecombobox.cpp \
+    spinboxdelegate.cpp
+>>>>>>> origin/nastya_br
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -81,8 +86,13 @@ HEADERS  += mainwindow.h \
     iteminfo.h \
     confirmcalculator.h \
     confirmcalculatormodel.h \
+<<<<<<< HEAD
     itemcorellation.h \
     connectdb.h
+=======
+    itemtypecombobox.h \
+    spinboxdelegate.h
+>>>>>>> origin/nastya_br
 
 FORMS    += mainwindow.ui \
     editor.ui \
