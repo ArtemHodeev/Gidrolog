@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<<<<<<< HEAD
-<!-- Written by QtCreator 3.0.1, 2014-05-13T16:30:26. -->
-=======
+
 <!-- Written by QtCreator 3.0.1, 2014-05-13T21:20:45. -->
->>>>>>> origin/nastya_br
+
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
