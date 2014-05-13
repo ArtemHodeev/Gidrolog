@@ -225,9 +225,9 @@ void Editor::setUi(int index, TableModel *model)
     case 0:
     {
         ui->label_page->setText("Типы компонентов");
-//        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
+        SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
 
-//        ui->tableView->setItemDelegateForColumn(4, type_delegate);
+        ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
 
         break;
     }

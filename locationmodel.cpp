@@ -207,14 +207,24 @@ void LocationModel::updateItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    QString sql = QString("UPDATE location ");
-    sql += ("SET name = :name, width = :width, length = :length, deep = :deep") ;
-    sql += ("WHERE id = :id");
+///////////////////////////////////////////////////////////////////////////////
+//  Вот этот код не работает
+//    QString sql = "";
+//    sql = "UPDATE location ";
+//    sql += "SET name = :name, width = :width, length = :length, deep = :deep" ;
+//    sql += "WHERE id = :l_id";
+///////////////////////////////////////////////////////////////////////////////
+//  А этот работает!!!!! Найди 20 отличий)))
+    QString sql = "";
+    sql = "UPDATE location ";
+    sql += "SET name = :name, width = :width, length = :length, deep = :deep ";
+    sql += "WHERE id = :l_id";
+///////////////////////////////////////////////////////////////////////////////
     query->prepare(sql);
 
     while (items_to_update.isEmpty() != true)
     {
-        query->bindValue(":id", items_to_update.first()->getId());
+        query->bindValue(":l_id", items_to_update.first()->getId());
         qDebug()<<items_to_update.first()->getId();
         query->bindValue(":name", items_to_update.first()->getName());
         qDebug()<<items_to_update.first()->getName();
