@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     iteminfo.cpp \
     confirmcalculator.cpp \
     confirmcalculatormodel.cpp \
-    itemcorellation.cpp
+    itemcorellation.cpp \
+    connectdb.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -80,9 +81,11 @@ HEADERS  += mainwindow.h \
     iteminfo.h \
     confirmcalculator.h \
     confirmcalculatormodel.h \
-    itemcorellation.h
+    itemcorellation.h \
+    connectdb.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
     confirmimport.ui \
-    confirmcalculator.ui
+    confirmcalculator.ui \
+    connectdb.ui

@@ -28,6 +28,8 @@ private slots:
 
     void on_action_prepare_triggered();
 
+    void on_action_3_triggered();
+
 private:
     Ui::MainWindow *ui;
     SampleModel *model;// модель для проб

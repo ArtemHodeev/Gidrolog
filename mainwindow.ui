@@ -40,6 +40,8 @@
     <property name="title">
      <string>Файл</string>
     </property>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
     <addaction name="action_4"/>
     <addaction name="action_5"/>
    </widget>
