@@ -186,14 +186,14 @@ void ItemTypeModel::updateItems()
     ItemType *item_type = new ItemType();
 
     sql = "UPDATE item_type ";
-    sql += "SET (name = :name, priority = :priority) ";
-    sql += "WHERE id = :id";
+    sql += "SET name = :name, priority = :priority ";
+    sql += "WHERE id = :it_id";
     query->prepare(sql);
 
     while (items_to_update.isEmpty() != true)
     {
         item_type = items_to_update.first();
-        query->bindValue("id", item_type->getId());
+        query->bindValue(":it_id", item_type->getId());
         query->bindValue(":name", item_type->getName());
         query->bindValue(":priority", item_type->getPriority());
         query->exec();
