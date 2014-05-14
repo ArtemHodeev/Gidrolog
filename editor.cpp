@@ -25,16 +25,23 @@ Editor::Editor(QWidget *parent) :
     water_sign = false;
     location_sign = false;
     factor_sign = false;
+    item_type_sign = false;
+
+    item_edited = false;
     water_edited = false;
     location_edited = false;
     item_edited = false;
+    item_type_edited = false;
     factor_edited = false;
+
     item_model = new ItemModel();
+    item_sign = true;
+    ui->stackedWidget->setCurrentIndex(0);
+
     connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
-    item_type_sign = false;
 
     //Первичная установка модели данных раздела компоненты
-    ui->stackedWidget->setCurrentIndex(0);
+
     item_model->setItems();
     setUi(0,item_model);
  //   item_model->setItems();
@@ -67,11 +74,11 @@ void Editor::on_listWidget_editorMenu_clicked()
     case 0:
     {
         //            Компоненты
-       if (item_type_sign == false)
+       if (item_sign == false)
        {
            item_model = new ItemModel();
            item_model->setItems();
-           item_type_sign = true;
+           item_sign = true;
        }
        setUi(cur,item_model);
        ui->stackedWidget->setCurrentIndex(0);
@@ -153,10 +160,10 @@ Editor::~Editor()
     {
         delete factor_model;
     }
-    if (item_type_sign == true)
-    {
-        delete item_type_model;
-    }
+//    if (item_sign == true)
+//    {
+//        delete item_model;
+//    }
     if (location_sign == true)
     {
         delete location_model;
@@ -167,7 +174,7 @@ Editor::~Editor()
     }
     if (item_type_sign == true)
     {
-        delete item_model;
+        delete item_type_model;
     }
 }
 
@@ -216,6 +223,9 @@ void Editor::keyPressEvent(QKeyEvent *key_event)
             break;
         case 3:
             water_edited = true;
+            break;
+        case 4:
+            item_type_edited = true;
             break;
         default:
             break;

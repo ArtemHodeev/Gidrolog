@@ -40,8 +40,9 @@ private:
     bool location_edited;
     bool item_edited;
     bool factor_edited;
-
+    bool item_sign;
     bool item_type_sign;
+    bool item_type_edited;
 
     void saveModel(TableModel* model);
     void setUi(int index, TableModel *model);
