@@ -9,6 +9,7 @@
 #include <watertypemodel.h>
 #include <locationmodel.h>
 #include <factormodel.h>
+#include <checkboxdelegate.h>
 
 namespace Ui {
 class Editor;
@@ -29,6 +30,7 @@ private:
     TableModel *current_model;
     TableModel *item_type_model;
     FactorModel *factor_model;
+//    CheckBoxDelegate *disp_delegate;
 
     QItemSelectionModel *sel_model;// модель для выделения строк
     Ui::Editor *ui;

@@ -16,7 +16,7 @@ public:
     unsigned int getWaterId();
     QDateTime getDate();
     QString getComment();
-    QHash<unsigned int, ItemInSample> *getComponents();
+    QHash<unsigned int, ItemInSample> *getComponents()/* const*/;
 
     void setId(unsigned int id);
     void setSampleSetId(unsigned int id);

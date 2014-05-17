@@ -35,9 +35,10 @@ Editor::Editor(QWidget *parent) :
     factor_edited = false;
 
     item_model = new ItemModel();
+    CheckBoxDelegate *disp_delegate = new CheckBoxDelegate();
     item_sign = true;
     ui->stackedWidget->setCurrentIndex(0);
-
+    ui->tableView_itemInSystem->setItemDelegateForColumn(5,disp_delegate);
     connect(item_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_item_changed()));
 
     //Первичная установка модели данных раздела компоненты
@@ -79,6 +80,7 @@ void Editor::on_listWidget_editorMenu_clicked()
            item_model = new ItemModel();
            item_model->setItems();
            item_sign = true;
+//           disp
        }
        setUi(cur,item_model);
        ui->stackedWidget->setCurrentIndex(0);
