@@ -50,6 +50,9 @@ SOURCES += main.cpp\
     connectdb.cpp \
     itemtypecombobox.cpp \
     spinboxdelegate.cpp \
+    checkboxdelegate.cpp \
+    solverpca.cpp \
+    confirmsolver.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -87,9 +90,13 @@ HEADERS  += mainwindow.h \
     connectdb.h \
     itemtypecombobox.h \
     spinboxdelegate.h \
+    checkboxdelegate.h \
+    solverpca.h \
+    confirmsolver.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
     confirmimport.ui \
     confirmcalculator.ui \
     connectdb.ui \
+    confirmsolver.ui

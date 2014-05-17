@@ -1,5 +1,6 @@
 #include "confirmimport.h"
 #include "ui_confirmimport.h"
+#include <itemtypecombobox.h>
 
 ConfirmImport::ConfirmImport(QWidget *parent) :
     QDialog(parent),
@@ -34,6 +35,7 @@ void ConfirmImport::setParamModel(ConfirmItemModel *model)
 {
     // Установка модели
     param_model = new ConfirmItemModel();
+    Itemtypecombobox *combobox = new Itemtypecombobox();
     param_model = model;
 
     // Установка "слушателя" на изменение данных поля "Тип компонента"
@@ -43,6 +45,7 @@ void ConfirmImport::setParamModel(ConfirmItemModel *model)
     ui->pushButton_save->setEnabled(false);
     ui->params_widget->setHidden(false);
     ui->params_tableView->setModel(model);
+    ui->params_tableView->setItemDelegateForColumn(2, combobox);
     param_sign = true;
 }
 

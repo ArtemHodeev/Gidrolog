@@ -18,7 +18,8 @@
 #include <calculator.h>
 #include <confirmcalculatormodel.h>
 #include <confirmcalculator.h>
-
+#include <confirmsolver.h>
+#include <solverpca.h>
 #include <connectdb.h>
 
 #include <spinboxdelegate.h>
@@ -161,10 +162,6 @@ void MainWindow::on_action_importExcel_triggered()
     // Подготовка для импорта проб
     Importer doc(url);
 
-//    doc.setParams(model->getParams());
-//    doc.setWaterTypes(model->getWaterTypes());
-//    doc.setLocations(model->getLocations());
-
     // Импорт проб
     QVector<Sample*> sam = doc.import();
 
@@ -180,27 +177,24 @@ void MainWindow::on_action_prepare_triggered()
     Calculator calc;
     ConfirmCalculatorModel *calc_model = new ConfirmCalculatorModel();
     ConfirmCalculator *calc_dlg = new ConfirmCalculator();
-    QDialog *dlg ;//
-
+    QDialog *dlg ;
+    QVector<ItemInfo* >list;// = calc.getInfo();
 
     calc.setItems(model->getSample());
-    //    calc.setAnaliticId();
-    QVector<ItemInfo* >list = calc.getInfo();
+    list = calc.getInfo();
 
-    qDebug()<<"info size: "<<list.size();
     calc_model->setItems(list);
     calc_dlg->setModel(calc_model);
     dlg = calc_dlg;
-    dlg->exec();
+
+    if (dlg->exec() == QDialog::Accepted)
+    {
+        calc.standart();
+        model->resetModel(calc.getItems());
+    }
 
     delete dlg;
     delete calc_model;
-    model->resetModel();
-//delete calc_dlg;
-
-//calc
-
-
 }
 
 void MainWindow::on_action_3_triggered()
@@ -208,5 +202,26 @@ void MainWindow::on_action_3_triggered()
     QDialog *dlg = new ConnectDB();
     dlg->exec();
     delete dlg;
-//    model->resetModel();
+}
+
+void MainWindow::on_action_calcilate_triggered()
+{
+    ConfirmSolver *confirm = new ConfirmSolver();
+    QDialog *dlg = confirm;
+    if (dlg->exec() == QDialog::Accepted)
+    {
+        SolverPCA solver;
+        QHash<QString, unsigned int>::iterator iter;
+        QVector<unsigned int> mass;
+
+        for (iter = Names::params->begin(); iter != Names::params->end(); iter ++)
+        {
+            mass.append(iter.value());
+        }
+
+        qDebug()<<"mass size: "<<mass.size();
+        solver.makePlurals(confirm->getCount(), mass);
+    }
+
+    delete confirm;
 }

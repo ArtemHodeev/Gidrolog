@@ -1,6 +1,6 @@
 #include "confirmcalculator.h"
 #include "ui_confirmcalculator.h"
-
+#include <itemtypecombobox.h>
 ConfirmCalculator::ConfirmCalculator(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConfirmCalculator)
@@ -10,6 +10,7 @@ ConfirmCalculator::ConfirmCalculator(QWidget *parent) :
     ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     cancel = false;
     model = new ConfirmCalculatorModel();
+
 }
 
 ConfirmCalculator::~ConfirmCalculator()
@@ -50,6 +51,8 @@ void ConfirmCalculator::on_pushButton_ok_pressed()
         cols[ind] = -1;
         model->setItemsToDelete(cols);
         delete cols;
+        model->backup();
+        model->removeItems();
     }
-    model->removeItems();
+
 }
