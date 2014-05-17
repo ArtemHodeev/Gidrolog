@@ -76,6 +76,17 @@ QVariant ItemModel::data(const QModelIndex &index, int role) const
             res = QVariant(items.at(index.row())->getErrorLine());
             break;
         }
+        default :
+            break;
+//        case 5:
+//        {
+////            if (role == Qt::CheckStateRole)
+////            {
+////                return Qt::Checked;
+////            }
+//            res = QVariant(items.at(index.row())->getDisplay());
+//            break;
+//        }
         }
     }
     else
@@ -103,6 +114,10 @@ Qt::ItemFlags ItemModel::flags(const QModelIndex &index) const
     if (index.column() == 0)
     {
         return Qt::ItemIsEnabled;
+    }
+    else if(index.column() == 5)
+    {
+        return Qt::ItemIsEditable | Qt::ItemIsUserCheckable | QAbstractTableModel::flags(index);
     }
 
     return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
@@ -216,6 +231,11 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
         i->setErrorLine(value.toDouble());
         break;
     }
+    case 5:
+    {
+        i->setDisplay(value.toBool());
+        break;
+    }
     };
 
     i->setPosition(row);
@@ -254,7 +274,7 @@ bool ItemModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
 void ItemModel::setItems()
 {
-    QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line FROM item ORDER BY id", DatabaseAccessor::getDb());
+    QSqlQuery *query = new QSqlQuery("SELECT id,name, type_id, min_value, error_line, display FROM item ORDER BY id", DatabaseAccessor::getDb());
 
     rCount = query->size() + 1;
     cCount = query->record().count();
@@ -267,6 +287,7 @@ void ItemModel::setItems()
         item->setTypeId(query->value("type_id").toUInt());
         item->setMinValue(query->value("min_value").toDouble());
         item->setErrorLine(query->value("error_line").toDouble());
+        item->setDisplay(query->value("display").toBool());
         item->setPosition(pos);
         pos ++;
         items.append(item);

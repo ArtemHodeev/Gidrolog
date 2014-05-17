@@ -62,8 +62,12 @@ QVariant ConfirmItemModel::data(const QModelIndex &index, int role) const
             res = QVariant(items.at(index.row())->getName());
             break;
         case 2:
-            res = QVariant(items.at(index.row())->getTypeId());
+        {
+            unsigned int type_id = items.at(index.row())->getTypeId();
+
+            res = (type_id != 0) ? QVariant(Names::item_types->key(type_id)) : QVariant("");
             break;
+        }
         case 3:
             res = QVariant(items.at(index.row())->getMinValue());
             break;
@@ -75,11 +79,6 @@ QVariant ConfirmItemModel::data(const QModelIndex &index, int role) const
         }
     }
 
-
-//    else if (role == Qt::CheckStateRole)
-//    {
-//        return (index.column() == 1) ? true : QVariant();
-//    }
     return res;
 }
 
@@ -108,8 +107,11 @@ bool ConfirmItemModel::setData(const QModelIndex &index, const QVariant &value, 
         items[row]->setName(value.toString());
         break;
     case 2:
-        items[row]->setTypeId(value.toUInt());
+    {
+        unsigned int type_id = Names::item_types->value(value.toString());
+        items[row]->setTypeId(type_id);
         break;
+    }
     case 3:
         items[row]->setMinValue(value.toDouble());
         break;

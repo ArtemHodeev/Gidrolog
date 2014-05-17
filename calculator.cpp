@@ -116,7 +116,7 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
         QHash<unsigned int, ItemInSample>::iterator sample_iter = analitic_sample[i]->getComponents()->find(item_id);
 
         //если компонент отсутствует
-        if (sample_iter == analitic_sample[i]->getComponents()->end())
+        if (analitic_sample[i]->getComponents()->contains(item_id) == false)
         {
             lost ++;
         }
@@ -268,4 +268,53 @@ double Calculator::getCorrelation(double *mass1, double *mass2, int mass_len)
     correlation = sum_average / (sqrt(sum_average_square_mass_1 * sum_average_square_mass_2));
 
     return correlation * 100;
+}
+void Calculator::standart()
+{
+    double *mass = new double [items.size()];
+    QHash<QString,unsigned int>::iterator iterator;
+    ItemInSample item_1;
+    double average = 0;
+    double disp = 0;
+    double res = 0;
+    int index = 0;
+    QHash<unsigned int, ItemInSample> *items_in_sample = new QHash<unsigned int, ItemInSample>();
+
+    for (iterator = Names::params->begin(); iterator != Names::params->end(); iterator ++)
+    {
+        index = 0;
+        // Перебор всех проб текущего параметра для определения среднего и дисперсии
+        for (int i = 0; i < items.size(); i ++)
+        {
+            items_in_sample = items[i]->getComponents();
+            //Если в пробе присутствуют параметр то взять его значение
+            if (items_in_sample->contains(iterator.value()))
+            {
+                item_1 = items_in_sample->value(iterator.value());
+                mass[index] = item_1.getValue();
+                index ++;
+            }
+        }
+
+        average = getAverage(mass, index);
+        disp = getAverageSquare(mass, average, mass, average, index) / index;
+
+        // стандартизация значений
+        for (int i = 0; i < items.size(); i ++)
+        {
+            items_in_sample = items[i]->getComponents();
+            if (items_in_sample->contains(iterator.value()))
+            {
+                item_1 = items_in_sample->value(iterator.value());
+                res = (item_1.getValue() - average) / disp;
+                item_1.setValue(res);
+                items[i]->getComponents()->insert(iterator.value(),item_1);
+//                items[i]->getComponents()->value(iterator.value()).setValue(res);
+            }
+        }
+    }
+}
+QVector<Sample*> Calculator::getItems()
+{
+    return items;
 }

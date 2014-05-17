@@ -76,6 +76,7 @@
    <addaction name="actionSave"/>
    <addaction name="action_prepare"/>
    <addaction name="action_calcilate"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">

@@ -49,8 +49,8 @@ void ConfirmCalculatorModel::setItems(QVector<ItemInfo *> other)
         {
             for (int j = 0; j < other[i]->getCorrelations().size(); j ++)
             {
-                qDebug()<<"item corell: "<< other[i]->getCorrelations()[j]->getCorell();
-                qDebug()<<"corell: "<< corell;
+//                qDebug()<<"item corell: "<< other[i]->getCorrelations()[j]->getCorell();
+//                qDebug()<<"corell: "<< corell;
                 if (other[i]->getCorrelations()[j]->getCorell() > corell)
                 {
                     need = true;
@@ -75,8 +75,8 @@ void ConfirmCalculatorModel::showItems()
 {
     for (int i = 0; i < items.size(); i ++)
     {
-        qDebug()<<"item name: "<< Names::params->key(items[i]->getItemId());
-        qDebug()<<"position: "<< items[i]->getPosition();
+//        qDebug()<<"item name: "<< Names::params->key(items[i]->getItemId());
+//        qDebug()<<"position: "<< items[i]->getPosition();
     }
 }
 void ConfirmCalculatorModel::setFactors()
@@ -115,8 +115,8 @@ void ConfirmCalculatorModel::setItemsToDelete(int *mass)
     {
 
         pos = findItemInPosition( mass[count]);
-        qDebug()<<"mass[count]: "<< mass[count];
-        qDebug()<<"pos: "<< pos;
+//        qDebug()<<"mass[count]: "<< mass[count];
+//        qDebug()<<"pos: "<< pos;
         if (pos != -1)
         {
             items_to_delete.append(items[pos]);
@@ -288,4 +288,30 @@ int ConfirmCalculatorModel::findItemInPosition(unsigned int pos)
         i++;
     }
     return (i < items.size()) ? i : -1;
+}
+void ConfirmCalculatorModel::backup()
+{
+    QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QSqlQuery *query_backup = new QSqlQuery(DatabaseAccessor::getDb());
+    QString sql = "";
+    QString sql_backup = "";
+
+    query_backup->exec("DELETE FROM item_sample_backupS WHERE id > 0");
+
+    sql = "SELECT item_id, sample_id, value FROM item_sample";
+    sql_backup = "INSERT INTO item_sample_backup (item_id, sample_id, value) ";
+    sql_backup += "VALUE (:i_id, :s_id, :val)";
+    query_backup->prepare(sql_backup);
+
+    query->exec(sql);
+    while (query->next())
+    {
+        query_backup->bindValue(":i_id", query->value("item_id").toUInt());
+        query_backup->bindValue(":s_id", query->value("sample_id").toUInt());
+        query_backup->bindValue(":val", query->value("value").toDouble());
+        query_backup->exec();
+    }
+
+    delete query;
+    delete query_backup;
 }

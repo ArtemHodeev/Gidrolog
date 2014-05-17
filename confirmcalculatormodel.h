@@ -22,6 +22,7 @@ public:
     void setItemsToDelete(int *mass);
 //    void setParams();
     void setFactors();
+    void backup();
     int findItemById(unsigned int &item_id) const;
     int findItemInPosition(unsigned int pos);
 private:

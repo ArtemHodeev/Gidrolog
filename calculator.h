@@ -17,6 +17,8 @@ public:
     ItemInfo *checkItem(unsigned int item_id);
     double getCorrelation(double *mass1, double *mass2, int mass_len);
     QVector<ItemInfo*> getInfo();
+    void standart();
+    QVector<Sample*> getItems();
 //    QVector<>
 
 private:
@@ -27,6 +29,7 @@ private:
     void setItemError();
     double getAverage(double *mass, int length);
     double getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length);
+
     QVector<ItemCorellation *> checkCorrelation(unsigned int item_id);
     QVector<Sample*> items; // все пробы системы
 //    unsigned int analitic_id;

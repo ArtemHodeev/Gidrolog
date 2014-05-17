@@ -21,6 +21,7 @@ DBCreator::DBCreator(QSqlDatabase db)
     table_names.append("item_sample");
     table_names.append("factor");
     table_names.append("analitic_type");
+    table_names.append("item_sample_backup");
 }
 DBCreator::~DBCreator()
 {}
@@ -270,6 +271,22 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "FOREIGN KEY (type_id) ";
             query_sql += " REFERENCES water_type(id) ";
             query_sql += " ON UPDATE CASCADE ON DELETE CASCADE ";
+            query_sql += ")";
+        break;
+    case 9:
+            query_sql = "CREATE TABLE item_sample_backup ";
+            query_sql += "( ";
+            query_sql += "id int NOT NULL AUTO_INCREMENT, ";
+            query_sql += "sample_id int NOT NULL, ";
+            query_sql += "item_id int NOT NULL, ";
+            query_sql += "value double NOT NULL DEFAULT -1, ";
+            query_sql += "PRIMARY KEY (id) ";
+//            query_sql += "FOREIGN KEY (sample_id) ";
+//            query_sql += "              REFERENCES sample(id) ";
+//            query_sql += "              ON UPDATE CASCADE ON DELETE RESTRICT, ";
+//            query_sql += "FOREIGN KEY (item_id) ";
+//            query_sql += "              REFERENCES item(id) ";
+//            query_sql += "              ON UPDATE CASCADE ON DELETE RESTRICT ";
             query_sql += ")";
         break;
     default:
