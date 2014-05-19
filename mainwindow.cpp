@@ -208,20 +208,32 @@ void MainWindow::on_action_calcilate_triggered()
 {
     ConfirmSolver *confirm = new ConfirmSolver();
     QDialog *dlg = confirm;
+
     if (dlg->exec() == QDialog::Accepted)
     {
         SolverPCA solver;
         QHash<QString, unsigned int>::iterator iter;
         QVector<unsigned int> mass;
+        QVector<Sample*> analitic_samples;
+        QVector<Sample*> samples;
+
+        samples = model->getSample();
+        for (int i = 0; i <samples.size(); i ++)
+        {
+            if (samples[i]->getWaterId() == Names::analitic_id)
+            {
+                analitic_samples.append(samples[i]);
+            }
+        }
 
         for (iter = Names::params->begin(); iter != Names::params->end(); iter ++)
         {
             mass.append(iter.value());
         }
 
-        qDebug()<<"mass size: "<<mass.size();
-        solver.makePlurals(confirm->getCount(), mass);
+        solver.makePlurals(confirm->getCount(),confirm->getSelectedItems(), mass);
+        solver.setAnaliticSamples(analitic_samples);
+        solver.lookForCompletePlurals();
     }
-
-    delete confirm;
+    delete dlg;
 }
