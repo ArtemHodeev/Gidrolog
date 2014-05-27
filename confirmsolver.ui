@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
+    <width>462</width>
     <height>414</height>
    </rect>
   </property>
@@ -111,7 +111,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Указать обязательные компоненты</string>
+      <string>Все наборы с выбранными компонентами</string>
      </property>
     </widget>
    </item>
@@ -163,7 +163,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Расчитать</string>
+      <string>Рассчитать</string>
      </property>
     </widget>
    </item>

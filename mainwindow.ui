@@ -143,7 +143,7 @@
   </action>
   <action name="action_calcilate">
    <property name="text">
-    <string>Расчитать</string>
+    <string>Рассчитать</string>
    </property>
    <property name="toolTip">
     <string>Начать разделени гидрографа речного стока</string>

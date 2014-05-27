@@ -8,7 +8,7 @@ SolverPCA::SolverPCA()
 }
 SolverPCA::~SolverPCA()
 {
-    delete []temp_mass;
+//    delete []temp_mass;
     delete []append_mass;
 }
 

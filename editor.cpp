@@ -246,7 +246,6 @@ void Editor::save()
     {
         saveModel(item_model);
     }
-    saveModel(item_type_model);
 
     if (location_edited == true)
     {
@@ -262,7 +261,7 @@ void Editor::save()
     }
     if (item_type_sign == true)
     {
-        saveModel(item_model);
+        saveModel(item_type_model);
     }
 }
 void Editor::saveModel(TableModel *model)
