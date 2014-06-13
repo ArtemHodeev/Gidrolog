@@ -32,7 +32,6 @@ private:
     float corell;
     float lost_count;
     float error_count;
-     void showItems();
 signals:
 
 public slots:

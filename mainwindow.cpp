@@ -189,7 +189,7 @@ void MainWindow::on_action_prepare_triggered()
 
     if (dlg->exec() == QDialog::Accepted)
     {
-        calc.standart();
+//        calc.standart();
         model->resetModel(calc.getItems());
     }
 
@@ -215,6 +215,7 @@ void MainWindow::on_action_calcilate_triggered()
         QHash<QString, unsigned int>::iterator iter;
         QVector<unsigned int> mass;
         QVector<Sample*> analitic_samples;
+        QVector<Sample*> other_samples;
         QVector<Sample*> samples;
 
         samples = model->getSample();
@@ -224,16 +225,23 @@ void MainWindow::on_action_calcilate_triggered()
             {
                 analitic_samples.append(samples[i]);
             }
+            else
+            {
+                other_samples.append(samples[i]);
+            }
         }
 
         for (iter = Names::params->begin(); iter != Names::params->end(); iter ++)
         {
             mass.append(iter.value());
         }
-
+        solver.setItems(samples);
+        solver.standart();
         solver.makePlurals(confirm->getCount(),confirm->getSelectedItems(), mass);
         solver.setAnaliticSamples(analitic_samples);
+
         solver.lookForCompletePlurals();
+
     }
     delete dlg;
 }

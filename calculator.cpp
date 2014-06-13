@@ -106,7 +106,7 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     float lost = 0;
     float error = 0;
     QVector<ItemCorellation*> correlation;
-
+//    qDebug()<<"analitic id: "<< item_id;
     info->setItemId(item_id);
 
     // Перебор всех проб анализируемого типа
@@ -115,7 +115,10 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
         // Поиск компонента в текущей пробе
         QHash<unsigned int, ItemInSample>::iterator sample_iter = analitic_sample[i]->getComponents()->find(item_id);
 
+//        qDebug()<<"Sample Id: "<< analitic_sample[i]->getId();
+
         //если компонент отсутствует
+
         if (analitic_sample[i]->getComponents()->contains(item_id) == false)
         {
             lost ++;
@@ -123,7 +126,10 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
 
         else
         {
+
             ItemInSample item_in_sample = sample_iter.value();
+
+//            qDebug()<<"value: "<<item_in_sample.getValue();
             // Поиск значения ошибки измерения для компонента
             QHash<unsigned int, double>::iterator item_error_iter = item_error->find(item_id);
 
@@ -140,6 +146,10 @@ ItemInfo* Calculator::checkItem(unsigned int item_id)
     lost = lost / analitic_sample.size() * 100;
     error = error / analitic_sample.size() * 100;
     correlation = checkCorrelation(item_id);
+    qDebug()<<"item name: "<< Names::params->key(item_id);
+    qDebug()<<"lost: "<< lost;
+    qDebug()<<"error: "<< error;
+    qDebug()<<"*********************";
     info->setErrorCount(error);
     info->setLostCount(lost);
     info->setCorrelations(correlation);
@@ -229,25 +239,6 @@ QVector<ItemInfo*> Calculator::getInfo()
     return list_info;
 }
 
-double Calculator::getAverage(double *mass, int length)
-{
-    double sum = 0;
-    for (int i = 0; i < length; i ++)
-    {
-        sum += mass[i];
-    }
-    return sum / length;
-}
-double Calculator::getAverageSquare(double *mass_1, double average_1, double *mass_2, double average_2, int length)
-{
-    double sum = 0;
-    for (int i = 0; i < length; i ++)
-    {
-        sum += (mass_1[i] - average_1) * (mass_2[i] - average_2);
-    }
-
-    return sum;
-}
 double Calculator::getCorrelation(double *mass1, double *mass2, int mass_len)
 {
     double average_mass1 = 0;
@@ -277,7 +268,7 @@ void Calculator::standart()
     double average = 0;
     double disp = 0;
     double res = 0;
-    int index = 0;
+    int index = 0; // длина массива для нахождения среднего и диспесрисии
     QHash<unsigned int, ItemInSample> *items_in_sample = new QHash<unsigned int, ItemInSample>();
 
     for (iterator = Names::params->begin(); iterator != Names::params->end(); iterator ++)

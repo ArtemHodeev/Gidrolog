@@ -41,44 +41,41 @@ void ConfirmCalculatorModel::setItems(QVector<ItemInfo *> other)
 //    qDebug()<<"Other size: "<<other.size();
     for (int i = 0; i < other.size(); i ++)
     {
+        // проверка процентов пропусков и ошибочных данных компонента на
+        // приборную ошибку и количество пропусков
         if (other[i]->getLostCount() > lost_count || other[i]->getErrorCount() > error_count)
         {
             need = true;
         }
+        // проверка на корреляцию. Для последнего нет смысла проверять,
+        // сним уже все предыдущие проверили свою корреляцию
         if (i < other.size() - 1)
         {
             for (int j = 0; j < other[i]->getCorrelations().size(); j ++)
             {
-//                qDebug()<<"item corell: "<< other[i]->getCorrelations()[j]->getCorell();
-//                qDebug()<<"corell: "<< corell;
+                // корреляция компонентов превышает допустимую
                 if (other[i]->getCorrelations()[j]->getCorell() > corell)
                 {
                     need = true;
                 }
             }
         }
+
+        // если компонент не прошел какую-нибудь проверку,
+        // то его нужно добавить в список компонентов, которые будут отображаться на экране
         if (need == true)
         {
             other[i]->setPosition(pos);
             items.append(other[i]);
-            //            items.last()->setPosition(pos);
-            //            qDebug()<<"items: "<< Names::params->key(items)
+
             pos ++;
             need = false;
         }
     }
-    showItems();
-//    qDebug()<<"items size: "<<items.size();
+
     cCount = items.size();
 }
-void ConfirmCalculatorModel::showItems()
-{
-    for (int i = 0; i < items.size(); i ++)
-    {
-//        qDebug()<<"item name: "<< Names::params->key(items[i]->getItemId());
-//        qDebug()<<"position: "<< items[i]->getPosition();
-    }
-}
+
 void ConfirmCalculatorModel::setFactors()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());

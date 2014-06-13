@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     alglib/optimization.cpp \
     alglib/solvers.cpp \
     alglib/specialfunctions.cpp \
-    alglib/statistics.cpp
+    alglib/statistics.cpp \
+    standartization.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -118,7 +119,8 @@ HEADERS  += mainwindow.h \
     alglib/optimization.h \
     alglib/solvers.h \
     alglib/specialfunctions.h \
-    alglib/statistics.h
+    alglib/statistics.h \
+    standartization.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
