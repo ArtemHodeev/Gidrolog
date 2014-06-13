@@ -35,66 +35,71 @@ ItemModel::~ItemModel()
  */
 QVariant ItemModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || role != Qt::DisplayRole)
+    if (!index.isValid() )
     {
         return QVariant();
     }
-
-    QVariant res = QVariant("");
-    unsigned int item_type_id;
-    QString item_type_name = "";
-
-    if (index.row() < rCount - 1 )
+    if (role == Qt::EditRole)
     {
-        switch(index.column())
+        return index.data();
+    }
+    else if(role == Qt::DisplayRole)
+    {
+        QVariant res = QVariant("");
+        unsigned int item_type_id;
+        QString item_type_name = "";
+
+        if (index.row() < rCount - 1 )
         {
-        case 0:
-        {
-            res = QVariant(items.at(index.row())->getId());
-            break;
+            switch(index.column())
+            {
+            case 0:
+            {
+                res = QVariant(items.at(index.row())->getId());
+                break;
+            }
+            case 1:
+            {
+                res = QVariant(items.at(index.row())->getName());
+                break;
+            }
+            case 2:
+            {
+                item_type_id = items.at(index.row())->getTypeId();
+                item_type_name = item_types->key(item_type_id);
+                res = QVariant(item_type_name);
+                //res = QVariant(items.at(index.row())->getTypeId());
+                break;
+            }
+            case 3:
+            {
+                res = QVariant(items.at(index.row())->getMinValue());
+                break;
+            }
+            case 4:
+            {
+                res = QVariant(items.at(index.row())->getErrorLine());
+                break;
+            }
+            default :
+                break;
+    //        case 5:
+    //        {
+    ////            if (role == Qt::CheckStateRole)
+    ////            {
+    ////                return Qt::Checked;
+    ////            }
+    //            res = QVariant(items.at(index.row())->getDisplay());
+    //            break;
+    //        }
+            }
         }
-        case 1:
-        {
-            res = QVariant(items.at(index.row())->getName());
-            break;
-        }
-        case 2:
-        {
-            item_type_id = items.at(index.row())->getTypeId();
-            item_type_name = item_types->key(item_type_id);
-            res = QVariant(item_type_name);
-            //res = QVariant(items.at(index.row())->getTypeId());
-            break;
-        }
-        case 3:
-        {
-            res = QVariant(items.at(index.row())->getMinValue());
-            break;
-        }
-        case 4:
-        {
-            res = QVariant(items.at(index.row())->getErrorLine());
-            break;
-        }
-        default :
-            break;
-//        case 5:
-//        {
-////            if (role == Qt::CheckStateRole)
-////            {
-////                return Qt::Checked;
-////            }
-//            res = QVariant(items.at(index.row())->getDisplay());
-//            break;
-//        }
-        }
+        return res;
     }
     else
     {
-        res = QVariant("");
+         return QVariant();
     }
-
-    return res;
 }
 
 /*
