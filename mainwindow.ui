@@ -73,10 +73,14 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action_editorTool"/>
+   <addaction name="separator"/>
    <addaction name="actionSave"/>
+   <addaction name="separator"/>
    <addaction name="action_prepare"/>
+   <addaction name="separator"/>
    <addaction name="action_calcilate"/>
    <addaction name="separator"/>
+   <addaction name="action_plot"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">
@@ -147,6 +151,17 @@
    </property>
    <property name="toolTip">
     <string>Начать разделени гидрографа речного стока</string>
+   </property>
+  </action>
+  <action name="action_plot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Диаграммы</string>
+   </property>
+   <property name="toolTip">
+    <string>Диаграммы смешения</string>
    </property>
   </action>
  </widget>

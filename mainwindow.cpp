@@ -21,7 +21,7 @@
 #include <confirmsolver.h>
 #include <solverpca.h>
 #include <connectdb.h>
-
+#include "dialogtriangle.h"
 #include <spinboxdelegate.h>
 
 
@@ -243,5 +243,12 @@ void MainWindow::on_action_calcilate_triggered()
         solver.lookForCompletePlurals();
 
     }
+    delete dlg;
+}
+
+void MainWindow::on_action_plot_triggered()
+{
+    DialogTriangle *dlg = new DialogTriangle();
+    dlg->exec();
     delete dlg;
 }

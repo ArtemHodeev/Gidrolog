@@ -66,7 +66,10 @@ SOURCES += main.cpp\
     alglib/solvers.cpp \
     alglib/specialfunctions.cpp \
     alglib/statistics.cpp \
-    standartization.cpp
+    standartization.cpp \
+    alltriangles.cpp \
+    dialogtriangle.cpp \
+    gentriangles.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -120,11 +123,17 @@ HEADERS  += mainwindow.h \
     alglib/solvers.h \
     alglib/specialfunctions.h \
     alglib/statistics.h \
-    standartization.h
+    standartization.h \
+    alltriangles.h \
+    dialogtriangle.h \
+    gentriangles.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
     confirmimport.ui \
     confirmcalculator.ui \
     connectdb.ui \
-    confirmsolver.ui
+    confirmsolver.ui \
+    dialogtriangle.ui
+
+CONFIG += qwt
