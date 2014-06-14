@@ -15,6 +15,8 @@
 #include <QPushButton>
 #include <itemtypecombobox.h>
 #include <spinboxdelegate.h>
+#include <doubleboxdelegate.h>
+
 
 Editor::Editor(QWidget *parent) :
     QDialog(parent),
@@ -106,7 +108,7 @@ void Editor::on_listWidget_editorMenu_clicked()
         ui->lineEdit_countOfLost->setText(lost);
         ui->lineEdit_maxErrorCount->setText(error);
         ui->comboBox->setCurrentText(factor_model->getAnaliticName());
-       ui->comboBox->setEditable(true);
+        ui->comboBox->setEditable(true);
 
         ui->stackedWidget->setCurrentIndex(1);
         break;
@@ -287,17 +289,16 @@ void Editor::setUi(int index, TableModel *model)
     case 0:
     {
         ui->label_page->setText("Компоненты");
-
         ComboboxDelegate *item_type_delegate = new Itemtypecombobox();
         ui->tableView_itemInSystem->setItemDelegateForColumn(2, item_type_delegate);
-
         break;
-
     }
 
     case 2:
     {
         ui->label_page->setText("Объекты");
+        DoubleBoxDelegate *type_loc_delegate = new DoubleBoxDelegate();
+        ui->tableView_locationInSystem->setItemDelegateForColumn(2, type_loc_delegate);
         break;
     }
     case 3:
@@ -307,9 +308,7 @@ void Editor::setUi(int index, TableModel *model)
     {
         ui->label_page->setText("Типы компонентов");
         SpinBoxDelegate *type_delegate = new SpinBoxDelegate();
-
         ui->tableView_itemInSystem->setItemDelegateForColumn(2, type_delegate);
-
         break;
     }
     default:

@@ -10,22 +10,22 @@ public:
     ~Location();
     unsigned int getId() const;
     QString getName() const;
-    float getWidth() const;
-    float getLength() const;
-    float getDeep() const;
+    double getWidth() const;
+    double getLength() const;
+    double getDeep() const;
     int getPosition() const;
     void setId(unsigned int id);
     void setName(QString name);
-    void setWidth(float width);
-    void setLength(float length);
-    void setDeep(float deep);
+    void setWidth(double width);
+    void setLength(double length);
+    void setDeep(double deep);
     void setPosition(int position);
 private:
     unsigned int id;
     QString name;
-    float width;
-    float length;
-    float deep;
+    double width;
+    double length;
+    double deep;
     int position;
 };
 

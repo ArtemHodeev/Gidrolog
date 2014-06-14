@@ -1,5 +1,3 @@
-
-
 #include "locationmodel.h"
 #include <databaseaccessor.h>
 #include <QSqlQuery>
@@ -40,9 +38,9 @@ void LocationModel::setItems()
 
         loc->setId(query->value("id").toUInt());
         loc->setName(query->value("name").toString());
-        loc->setWidth(query->value("width").toFloat());
-        loc->setLength(query->value("length").toFloat());
-        loc->setDeep(query->value("deep").toFloat());
+        loc->setWidth(query->value("width").toDouble());
+        loc->setLength(query->value("length").toDouble());
+        loc->setDeep(query->value("deep").toDouble());
         loc->setPosition(pos);
         items.append(loc);
         pos++;
@@ -91,35 +89,44 @@ QVariant LocationModel::headerData(int section, Qt::Orientation orientation, int
 }
 QVariant LocationModel::data(const QModelIndex &index, int role) const
 {
-    QVariant res;
-    if (index.isValid() != true || role != Qt::DisplayRole || index.row() >= rCount - 1)
+    if (!index.isValid() )
     {
+        return QVariant();
+    }
+    if (role == Qt::EditRole)
+    {
+        return index.data();
+    }
+    else if(role == Qt::DisplayRole)
+    {
+        QVariant res;
+        if (index.row() < rCount - 1 )
+        {
+            switch(index.column())
+            {
+            case 0:
+                res = items[index.row()]->getId();
+                break;
+            case 1:
+                res = items[index.row()]->getName();
+                break;
+            case 2:
+                res = items[index.row()]->getWidth();
+                break;
+            case 3:
+                res = items[index.row()]->getLength();
+                break;
+            case 4:
+                res = items[index.row()]->getDeep();
+                break;
+            }
+        }
         return res;
     }
-
-    switch(index.column())
+    else
     {
-    case 0:
-        res = items[index.row()]->getId();
-        break;
-    case 1:
-        res = items[index.row()]->getName();
-        break;
-    case 2:
-        res = items[index.row()]->getWidth();
-        break;
-    case 3:
-        res = items[index.row()]->getLength();
-        break;
-    case 4:
-        res = items[index.row()]->getDeep();
-        break;
+         return QVariant();
     }
-
-
-//    items[index.row()]->setPosition(index.row());
-    return res;
-
 }
 
 bool LocationModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -140,13 +147,13 @@ bool LocationModel::setData(const QModelIndex &index, const QVariant &value, int
         loc->setName(value.toString());
         break;
     case 2:
-        loc->setWidth(value.toFloat());
+        loc->setWidth(value.toDouble());
         break;
     case 3:
-        loc->setLength(value.toFloat());
+        loc->setLength(value.toDouble());
         break;
     case 4:
-        loc->setDeep(value.toFloat());
+        loc->setDeep(value.toDouble());
         break;
     default:
         break;
@@ -218,12 +225,9 @@ void LocationModel::updateItems()
     sql = "UPDATE location ";
     sql += "SET name = :name, width = :width, length = :length, deep = :deep ";
     sql += "WHERE id = :l_id";
-
     query->prepare(sql);
-
     while (items_to_update.isEmpty() != true)
     {
-
         loc = items_to_update.first();
         query->bindValue(":l_id", loc->getId());
         query->bindValue(":name", loc->getName());

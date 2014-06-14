@@ -1,7 +1,5 @@
-#ifndef DIALOGTRIANGLE_H
-#define DIALOGTRIANGLE_H
-
-#include <QDialog>
+#ifndef BASEFLOW_H
+#define BASEFLOW_H
 #include <qwt_plot.h>
 #include <qwt_plot_grid.h>
 #include <qwt_legend.h>
@@ -18,23 +16,20 @@
 #include <QLabel>
 
 
-namespace Ui {
-class DialogTriangle;
-}
-
-class DialogTriangle : public QDialog
+class Baseflow: public QwtPlot
 {
     Q_OBJECT
 public:
-    explicit DialogTriangle(QWidget *parent = 0);
-    ~DialogTriangle();
+    Baseflow(QWidget * = NULL );
+    ~Baseflow();
 private Q_SLOTS:
     void click_on_canvas( const QPoint &pos );      //Считывание координат при клике мыши
+public Q_SLOTS:
+    void makeAnaliz();                              //Решение уравнения смешения (не реализовано)
+    void exportPlot();                              //Экспорт графика в .jpg
     void showItem( const QVariant &, bool on );     //Скрыть/показать точки/кривые на графике
     void plotDefault();                             //Отобразить исходные треугольники (до перемещения их пользователем)
-    void makeAnaliz();                              //Решение уравнения смешения (не реализовано)
 private:
-    Ui::DialogTriangle *ui;
     double x, y;                    //Координаты
     bool is_mooved;                 //Флаг, показывающий, была ли выделена мышью точка источников питания
     int old_xy_position;            //Старая позиция точки источника питания
@@ -42,7 +37,6 @@ private:
     void addAll(QVector <bool> legenditems);    //Добавляем легенду на график, отображаем выделенные элементы легенды
     void addPlot();
     void addPoints();               //Добавляем пробы анализируемого типа на график
-    void exportPlot();              //Экспорт графика в .jpg
     void addPlotGrid();             //Добавляем сетку
     QwtLegend *legend;              //Легенда
     QwtPlotCurve *curve1;           //Треугольник
@@ -63,4 +57,4 @@ protected:
   void mouseReleaseEvent(QMouseEvent *event);
 };
 
-#endif // DIALOGTRIANGLE_H
+#endif // BASEFLOW_H

@@ -21,7 +21,7 @@
 #include <confirmsolver.h>
 #include <solverpca.h>
 #include <connectdb.h>
-#include "dialogtriangle.h"
+#include "dialogtriangles.h"
 #include <spinboxdelegate.h>
 
 
@@ -248,7 +248,7 @@ void MainWindow::on_action_calcilate_triggered()
 
 void MainWindow::on_action_plot_triggered()
 {
-    DialogTriangle *dlg = new DialogTriangle();
-    dlg->exec();
-    delete dlg;
+    DialogTriangles *dlg = new DialogTriangles();
+    dlg->setFixedSize(800, 559);
+    dlg->show();
 }

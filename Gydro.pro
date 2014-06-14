@@ -68,8 +68,10 @@ SOURCES += main.cpp\
     alglib/statistics.cpp \
     standartization.cpp \
     alltriangles.cpp \
-    dialogtriangle.cpp \
-    gentriangles.cpp
+    gentriangles.cpp \
+    doubleboxdelegate.cpp \
+    dialogtriangles.cpp \
+    baseflow.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -125,8 +127,10 @@ HEADERS  += mainwindow.h \
     alglib/statistics.h \
     standartization.h \
     alltriangles.h \
-    dialogtriangle.h \
-    gentriangles.h
+    gentriangles.h \
+    doubleboxdelegate.h \
+    dialogtriangles.h \
+    baseflow.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
@@ -134,6 +138,6 @@ FORMS    += mainwindow.ui \
     confirmcalculator.ui \
     connectdb.ui \
     confirmsolver.ui \
-    dialogtriangle.ui
+    dialogtriangles.ui
 
 CONFIG += qwt

@@ -1,5 +1,4 @@
-#include "dialogtriangle.h"
-#include "ui_dialogtriangle.h"
+#include "baseflow.h"
 #include "alltriangles.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -16,57 +15,24 @@
 #include <QLabel>
 #include <qwt_plot_marker.h>
 #include <QMessageBox>
+#include "dialogtriangles.h"
 
-DialogTriangle::DialogTriangle(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DialogTriangle)
+Baseflow::Baseflow(QWidget *parent ):
+    QwtPlot( parent )
 {
-    ui->setupUi(this);
-
-    ui->Qwt_Widget->setMouseTracking(true);         //True, чтобы считывать показания указателя мыши без события нажатия, а просто по перемещению
-    this->setMouseTracking(true);
-
-    //Добавление тулбара и четырех кнопок
-    QToolBar *toolBar = new QToolBar( this );
-
-    QToolButton *btnExport = new QToolButton( toolBar );
-    btnExport->setText( "Экспорт графика" );
-    btnExport->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-    connect( btnExport, SIGNAL( clicked() ), SLOT( exportPlot() ) );
-
-    QToolButton *btnShowAllItems = new QToolButton( toolBar );
-    btnShowAllItems->setText( "Показать источники" );
-    btnShowAllItems->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-
-    QToolButton *btnDefault = new QToolButton( toolBar );
-    btnDefault->setText( "Сбросить к исходному" );
-    btnDefault->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-    connect( btnDefault, SIGNAL( clicked() ), SLOT( plotDefault() ) );
-
-    QToolButton *btnMakeAnaliz = new QToolButton( toolBar );
-    btnMakeAnaliz->setText( "Рассчитать" );
-    btnMakeAnaliz->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
-    connect( btnMakeAnaliz, SIGNAL( clicked() ), SLOT( makeAnaliz() ) );
-
-    toolBar->addWidget( btnExport );
-    toolBar->addWidget( btnShowAllItems );
-    toolBar->addWidget( btnDefault );
-    toolBar->addWidget( btnMakeAnaliz );
-    //addToolBar( toolBar );
-
     //Добавление канвы
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setPalette( Qt::gray );
     canvas->setBorderRadius( 10 );
-    ui->Qwt_Widget->setCanvas( canvas );
-    ui->Qwt_Widget->plotLayout()->setAlignCanvasToScales( true );
+    setCanvas( canvas );
+    plotLayout()->setAlignCanvasToScales( true );
 
-   // ui->Qwt_Widget->setTitle( "Диаграммы смешения" );
-    ui->Qwt_Widget->setCanvasBackground( Qt::white );
+   // setTitle( "Диаграммы смешения" );
+    setCanvasBackground( Qt::white );
 
     // Параметры осей координат
-    ui->Qwt_Widget->setAxisTitle(QwtPlot::yLeft, "U1");
-    ui->Qwt_Widget->setAxisTitle(QwtPlot::xBottom, "U2");
+    setAxisTitle(QwtPlot::yLeft, "U1");
+    setAxisTitle(QwtPlot::xBottom, "U2");
 
     one = new AllTriangles();
     two = new AllTriangles();
@@ -81,25 +47,25 @@ DialogTriangle::DialogTriangle(QWidget *parent) :
 
     addAll(legenditems);
 }
-void DialogTriangle::addAll(QVector<bool> legenditems)
+void Baseflow::addAll(QVector<bool> legenditems)
 {
     QwtLegend *legend = new QwtLegend;
     legend->setDefaultItemMode( QwtLegendData::Checkable ); //Элементы легенды выделяются по клику мыши
-    ui->Qwt_Widget->insertLegend( legend, QwtPlot::RightLegend );   //Отображаем легенду справа от графика
+    insertLegend( legend, QwtPlot::RightLegend );   //Отображаем легенду справа от графика
 
     connect( legend, SIGNAL( checked( const QVariant &, bool, int ) ),
         SLOT( showItem( const QVariant &, bool ) ) );
 
     addPlot();
-    ui->Qwt_Widget->replot();
+    replot();
 
-    QwtPlotItemList items = ui->Qwt_Widget->itemList( QwtPlotItem::Rtti_PlotCurve); // все элементы, которые есть на графике (треугольники + 2 набора точек)
+    QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve); // все элементы, которые есть на графике (треугольники + 2 набора точек)
 
     for ( int i = 0; i < items.size(); i++ )
     {
         if (legenditems.at(i))  //Те элементы, которые в legenditems - true, те отображаются на графике, остальные - нет.
         {
-            const QVariant itemInfo = ui->Qwt_Widget->itemToInfo( items[i] );
+            const QVariant itemInfo = itemToInfo( items[i] );
 
             QwtLegendLabel *legendLabel =
                 qobject_cast<QwtLegendLabel *>( legend->legendWidget( itemInfo ) );
@@ -113,13 +79,13 @@ void DialogTriangle::addAll(QVector<bool> legenditems)
             items[i]->setVisible( false );
         }
     }
-    ui->Qwt_Widget->setAutoReplot( true );
+    setAutoReplot( true );
 }
-DialogTriangle::~DialogTriangle()
+Baseflow::~Baseflow()
 {
-    delete ui;
+
 }
-void DialogTriangle::addPlot()
+void Baseflow::addPlot()
 {
     is_mooved = false;
     addCurve();
@@ -129,15 +95,15 @@ void DialogTriangle::addPlot()
     enableMagnifier();
     enableMovingOnPlot();
     enablePicker();
-    ui->Qwt_Widget->replot();
+    replot();
 }
-void DialogTriangle::addPlotGrid()
+void Baseflow::addPlotGrid()
 {
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setMajorPen(QPen( Qt::gray, 2 ));                                         // цвет линий и толщина
-    grid->attach( ui->Qwt_Widget );
+    grid->attach( this );
 }
-void DialogTriangle::addCurve()
+void Baseflow::addCurve()
 {
     for (int i = 0; i<one->getSizeTriangles(); i++)
     {
@@ -159,10 +125,10 @@ void DialogTriangle::addCurve()
         Y.append(one->getTriangles().at(i).A.y);
 
         curve1->setSamples(X, Y);                                                   // ассоциировать набор точек с кривой
-        curve1->attach( ui->Qwt_Widget );                                           // отобразить кривую на графике
+        curve1->attach( this );                                           // отобразить кривую на графике
     }
 }
-void DialogTriangle::addBaseflow()
+void Baseflow::addBaseflow()
 {
     curve2 = new QwtPlotCurve();
     curve2->setTitle( "Источники питания" );                                        //Имя элемента легенды
@@ -172,9 +138,9 @@ void DialogTriangle::addBaseflow()
     curve2->setSymbol( symbol1 );                                                   //Привязать символы к кривой
     curve2->setSamples(two->getBaseflowX(), two->getBaseflowY());                   // ассоциировать набор точек с кривой
     curve2->setStyle(QwtPlotCurve::Dots);                                           //просто выводит точки
-    curve2->attach( ui->Qwt_Widget );                                               // отобразить кривую на графике
+    curve2->attach( this );                                               // отобразить кривую на графике
 }
-void DialogTriangle::addPoints()
+void Baseflow::addPoints()
 {
     water_points = new QwtPlotCurve;
     water_points->setPen( Qt::red, 6 );                                             // цвет и толщина кривой
@@ -185,22 +151,22 @@ void DialogTriangle::addPoints()
     water_points->setSymbol( symbols );
     water_points->setSamples(one->getSamplesX(), one->getSamplesY());
     water_points->setStyle(QwtPlotCurve::Dots);                                     //просто выводит точки
-    water_points->attach( ui->Qwt_Widget );                                         // отобразить кривую на графике
+    water_points->attach( this );                                         // отобразить кривую на графике
 }
-void DialogTriangle::enableMagnifier()
+void Baseflow::enableMagnifier()
 {
     QwtPlotMagnifier *magnifier =
-            new QwtPlotMagnifier(ui->Qwt_Widget->canvas());
+            new QwtPlotMagnifier(canvas());
     // клавиша, активирующая приближение/удаление
     magnifier->setMouseButton(Qt::MidButton);
 }
-void DialogTriangle::enableMovingOnPlot()
+void Baseflow::enableMovingOnPlot()
 {
-    QwtPlotPanner *d_panner = new QwtPlotPanner( ui->Qwt_Widget->canvas() );
+    QwtPlotPanner *d_panner = new QwtPlotPanner( canvas() );
     // клавиша, активирующая перемещение
     d_panner->setMouseButton( Qt::RightButton );
 }
-void DialogTriangle::enablePicker()
+void Baseflow::enablePicker()
 {
     // настройка функций
     QwtPlotPicker *d_picker =
@@ -208,7 +174,7 @@ void DialogTriangle::enablePicker()
                 QwtPlot::xBottom, QwtPlot::yLeft,                                       // ассоциация с осями
     QwtPlotPicker::CrossRubberBand,                                                     // стиль перпендикулярных линий
     QwtPicker::AlwaysOn,                                                                // всегда включен
-    ui->Qwt_Widget->canvas() );                                                         // ассоциация с полем
+    canvas() );                                                         // ассоциация с полем
     d_picker->setRubberBandPen( QColor( Qt::red ) );                                    // Цвет перпендикулярных линий
     d_picker->setTrackerPen( QColor( Qt::black ) );                                     // цвет координат положения указателя
     d_picker->setStateMachine( new QwtPickerDragPointMachine() );                       // непосредственное включение вышеописанных функций
@@ -217,36 +183,36 @@ void DialogTriangle::enablePicker()
             SLOT( click_on_canvas( const QPoint & ) ) );
 
 }
-void DialogTriangle::click_on_canvas( const QPoint &pos )
+void Baseflow::click_on_canvas( const QPoint &pos )
 {
     // считываем значения координат клика
-    x = ui->Qwt_Widget->invTransform(QwtPlot::xBottom, pos.x());
-    y = ui->Qwt_Widget->invTransform(QwtPlot::yLeft, pos.y());
+    x = invTransform(QwtPlot::xBottom, pos.x());
+    y = invTransform(QwtPlot::yLeft, pos.y());
 }
-void DialogTriangle::showItem( const QVariant &itemInfo, bool on )
+void Baseflow::showItem( const QVariant &itemInfo, bool on )
 {
-    QwtPlotItem *plotItem = ui->Qwt_Widget->infoToItem( itemInfo );
+    QwtPlotItem *plotItem = infoToItem( itemInfo );
     if ( plotItem )
     {
         plotItem->setVisible( on );
     }
 }
-void DialogTriangle::plotDefault()
+void Baseflow::plotDefault()
 {
     one = new AllTriangles();
     two = new AllTriangles();
-    ui->Qwt_Widget->detachItems(QwtPlotItem::Rtti_PlotItem, true);
+    detachItems(QwtPlotItem::Rtti_PlotItem, true);
     addAll(legenditems);
 }
-void DialogTriangle::exportPlot()
+void Baseflow::exportPlot()
 {
     QwtPlotRenderer renderer;
-    renderer.exportTo( ui->Qwt_Widget, "tvplot.pdf" );
+    renderer.exportTo( this, "Диаграмма смешения.jpg" );
 }
-void DialogTriangle::mousePressEvent(QMouseEvent *event)
+void Baseflow::mousePressEvent(QMouseEvent *event)
 {
-    x = ui->Qwt_Widget->invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702; //Без этих страшных циферок неправильно считывается позиция клика
-    y = ui->Qwt_Widget->invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
+    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702; //Без этих страшных циферок неправильно считывается позиция клика
+    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
 //    qDebug() << "x " << x << "; y " << y;
     if (!is_mooved)
     {
@@ -261,10 +227,10 @@ void DialogTriangle::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void DialogTriangle::mouseReleaseEvent(QMouseEvent *event)
+void Baseflow::mouseReleaseEvent(QMouseEvent *event)
 {
-    x = ui->Qwt_Widget->invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
-    y = ui->Qwt_Widget->invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
+    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
+    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
 
 //    qDebug() << "x " << x << "; y " << y;
     if (is_mooved)  //Если по точке источника питания кликнули
@@ -299,7 +265,7 @@ void DialogTriangle::mouseReleaseEvent(QMouseEvent *event)
         one->setBaseflowY(temp_mass_y);
 
         //Перед перерисовкой запомним, какие элементы легенды были нажаты
-        QwtPlotItemList items = ui->Qwt_Widget->itemList( QwtPlotItem::Rtti_PlotCurve);
+        QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve);
         for (int i=0; i<items.size(); i++)
         {
             if (items[i]->isVisible())
@@ -307,25 +273,24 @@ void DialogTriangle::mouseReleaseEvent(QMouseEvent *event)
             else
                 legenditems[i] = false;
         }
-        ui->Qwt_Widget->detachItems(QwtPlotItem::Rtti_PlotItem, true);  // Очистка рабочей области
+        detachItems(QwtPlotItem::Rtti_PlotItem, true);  // Очистка рабочей области
         addAll(legenditems);                                            //Перерисовка графика
         is_mooved = false;
     }
 }
-void DialogTriangle::mouseMoveEvent(QMouseEvent *event)
+void Baseflow::mouseMoveEvent(QMouseEvent *event)
 {
-    x = ui->Qwt_Widget->invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
-    y = ui->Qwt_Widget->invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
+    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
+    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
 
     //Показываем координаты перемещения мышки по графику
-    ui->label->setText("x= " + QString::number(x) + "; y = " + QString::number(y));
+    //ui->label->setText("x= " + QString::number(x) + "; y = " + QString::number(y));
     qDebug() << "x " << x << "; y " << y;
-
 }
-void DialogTriangle::makeAnaliz()
+void Baseflow::makeAnaliz()
 {
     QMessageBox::about(
-              ui->Qwt_Widget, tr("Ох, нет!"),
+              this, tr("Ох, нет!"),
               tr("<h2>Просим прощения,</h2>"
                  "<p>но этот метод еще не реализован."));
 }

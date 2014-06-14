@@ -193,9 +193,9 @@ bool DBCreator::createTable(QString table_name)
             query_sql +="( ";
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
             query_sql += "name varchar(128) DEFAULT '', ";
-            query_sql += "width real DEFAULT 0, ";
-            query_sql += "length real DEFAULT 0, ";
-            query_sql += "deep real DEFAULT 0, ";
+            query_sql += "width double DEFAULT 0, ";
+            query_sql += "length double DEFAULT 0, ";
+            query_sql += "deep double DEFAULT 0, ";
             query_sql += "PRIMARY KEY (id) ";
             query_sql += ")";
         break;

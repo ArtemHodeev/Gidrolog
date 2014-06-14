@@ -13,8 +13,8 @@ QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     QSpinBox *editor = new QSpinBox(parent);
     editor->setFrame(false);
     editor->setMinimum(0);
-    editor->setMaximum(100);
-
+    editor->setMaximum(5);
+    editor->setButtonSymbols(QSpinBox::PlusMinus);
     return editor;
 }
 

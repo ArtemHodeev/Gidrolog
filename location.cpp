@@ -5,9 +5,9 @@ Location::Location()
 {
     id = 0;
     name = "";
-    width = 0;
-    length = 0;
-    deep = 0;
+    width = 0.0;
+    length = 0.0;
+    deep = 0.0;
     position = -1;
 }
 Location::Location(const Location &other)
@@ -32,15 +32,15 @@ QString Location::getName() const
 {
     return name;
 }
-float Location::getWidth() const
+double Location::getWidth() const
 {
     return width;
 }
-float Location::getLength() const
+double Location::getLength() const
 {
     return length;
 }
-float Location::getDeep() const
+double Location::getDeep() const
 {
     return deep;
 }
@@ -56,15 +56,15 @@ void Location::setName(QString name)
 {
     this->name = name;
 }
-void Location::setWidth(float width)
+void Location::setWidth(double width)
 {
     this->width = width;
 }
-void Location::setLength(float length)
+void Location::setLength(double length)
 {
     this->length = length;
 }
-void Location::setDeep(float deep)
+void Location::setDeep(double deep)
 {
     this->deep = deep;
 }

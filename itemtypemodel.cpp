@@ -79,26 +79,38 @@ QVariant ItemTypeModel::headerData(int section, Qt::Orientation orientation, int
 }
 QVariant ItemTypeModel::data(const QModelIndex &index, int role) const
 {
-    QVariant res;
-    if (index.isValid() != true || role != Qt::DisplayRole || index.row() >= rCount - 1)
+    if (!index.isValid() )
     {
+        return QVariant();
+    }
+    if (role == Qt::EditRole)
+    {
+        return index.data();
+    }
+    else if(role == Qt::DisplayRole)
+    {
+        QVariant res;
+        if (index.row() < rCount - 1 )
+        {
+            switch(index.column())
+            {
+            case 0:
+                res = items[index.row()]->getId();
+                break;
+            case 1:
+                res = items[index.row()]->getName();
+                break;
+            case 2:
+                res = items[index.row()]->getPriority();
+                break;
+            }
+        }
         return res;
     }
-
-    switch(index.column())
+    else
     {
-    case 0:
-        res = items[index.row()]->getId();
-        break;
-    case 1:
-        res = items[index.row()]->getName();
-        break;
-    case 2:
-        res = items[index.row()]->getPriority();
-        break;
+         return QVariant();
     }
-    return res;
-
 }
 
 bool ItemTypeModel::setData(const QModelIndex &index, const QVariant &value, int role)
