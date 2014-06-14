@@ -278,15 +278,6 @@ void Baseflow::mouseReleaseEvent(QMouseEvent *event)
         is_mooved = false;
     }
 }
-void Baseflow::mouseMoveEvent(QMouseEvent *event)
-{
-    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
-    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
-
-    //Показываем координаты перемещения мышки по графику
-    //ui->label->setText("x= " + QString::number(x) + "; y = " + QString::number(y));
-    qDebug() << "x " << x << "; y " << y;
-}
 void Baseflow::makeAnaliz()
 {
     QMessageBox::about(

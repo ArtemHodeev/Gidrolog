@@ -53,7 +53,6 @@ private:
     void enablePicker();            //Отображение координаты
 protected:
   void mousePressEvent(QMouseEvent *event);     //Перемещение угла треугольника
-  void mouseMoveEvent(QMouseEvent *event);      //Отображение координаты точки при перемещении мыши по графику
   void mouseReleaseEvent(QMouseEvent *event);
 };
 

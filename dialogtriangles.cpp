@@ -13,7 +13,8 @@ DialogTriangles::DialogTriangles(QWidget *parent) :
     ui->setupUi(this);
     plot = new Baseflow( this );
     plot->setTitle("Диаграммы смешения");
-
+    plot->setMouseTracking(true);
+    this->setMouseTracking(true);
     setCentralWidget( plot );
 
     QToolBar *toolBar = new QToolBar( this );
@@ -47,4 +48,10 @@ DialogTriangles::DialogTriangles(QWidget *parent) :
 DialogTriangles::~DialogTriangles()
 {
     delete ui;
+}
+void DialogTriangles::mouseMoveEvent(QMouseEvent *event)
+{
+    double x = plot->invTransform(QwtPlot::xBottom, event->pos().x()) - 1.44676;
+    double y = plot->invTransform(QwtPlot::yLeft, event->pos().y()) + 1.9954;
+    statusBar()->showMessage("x= " + QString::number(x) + "; y = " + QString::number(y));
 }
