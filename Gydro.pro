@@ -71,7 +71,11 @@ SOURCES += main.cpp\
     gentriangles.cpp \
     doubleboxdelegate.cpp \
     dialogtriangles.cpp \
-    baseflow.cpp
+    baseflow.cpp \
+    sampleinfo.cpp \
+    analiticpoints.cpp \
+    springpoints.cpp \
+    testsolve.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -130,7 +134,11 @@ HEADERS  += mainwindow.h \
     gentriangles.h \
     doubleboxdelegate.h \
     dialogtriangles.h \
-    baseflow.h
+    baseflow.h \
+    sampleinfo.h \
+    analiticpoints.h \
+    springpoints.h \
+    testsolve.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
@@ -138,6 +146,8 @@ FORMS    += mainwindow.ui \
     confirmcalculator.ui \
     connectdb.ui \
     confirmsolver.ui \
-    dialogtriangles.ui
-
+    dialogtriangles.ui \
+    testsolve.ui
 CONFIG += qwt
+
+

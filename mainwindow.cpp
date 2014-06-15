@@ -22,6 +22,7 @@
 #include <solverpca.h>
 #include <connectdb.h>
 #include "dialogtriangles.h"
+#include <testsolve.h>
 #include <spinboxdelegate.h>
 
 
@@ -178,7 +179,7 @@ void MainWindow::on_action_prepare_triggered()
     ConfirmCalculatorModel *calc_model = new ConfirmCalculatorModel();
     ConfirmCalculator *calc_dlg = new ConfirmCalculator();
     QDialog *dlg ;
-    QVector<ItemInfo* >list;// = calc.getInfo();
+    QVector<ItemInfo* >list;
 
     calc.setItems(model->getSample());
     list = calc.getInfo();
@@ -189,7 +190,6 @@ void MainWindow::on_action_prepare_triggered()
 
     if (dlg->exec() == QDialog::Accepted)
     {
-//        calc.standart();
         model->resetModel(calc.getItems());
     }
 
@@ -211,36 +211,27 @@ void MainWindow::on_action_calcilate_triggered()
 
     if (dlg->exec() == QDialog::Accepted)
     {
-        SolverPCA solver;
+//        SolverPCA solver;
         QHash<QString, unsigned int>::iterator iter;
         QVector<unsigned int> mass;
-        QVector<Sample*> analitic_samples;
-        QVector<Sample*> other_samples;
         QVector<Sample*> samples;
 
         samples = model->getSample();
-        for (int i = 0; i <samples.size(); i ++)
-        {
-            if (samples[i]->getWaterId() == Names::analitic_id)
-            {
-                analitic_samples.append(samples[i]);
-            }
-            else
-            {
-                other_samples.append(samples[i]);
-            }
-        }
 
         for (iter = Names::params->begin(); iter != Names::params->end(); iter ++)
         {
             mass.append(iter.value());
         }
-        solver.setItems(samples);
-        solver.standart();
-        solver.makePlurals(confirm->getCount(),confirm->getSelectedItems(), mass);
-        solver.setAnaliticSamples(analitic_samples);
 
-        solver.lookForCompletePlurals();
+        TestSolve *solve = new TestSolve();
+        solve->setSamples(samples);
+        solve->setParam(confirm->getCount(),confirm->getSelectedItems());
+        solve->setPlurList();
+        solve->exec();
+//        solver.setItems(samples);
+//        solver.standart();
+//        solver.makePlurals(confirm->getCount(),confirm->getSelectedItems(), mass);
+//        solver.setAnaliticSamples(analitic_samples);
 
     }
     delete dlg;
