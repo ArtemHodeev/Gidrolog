@@ -19,7 +19,12 @@ public:
 private:
     Ui::DialogTriangles *ui;
     Baseflow *plot;
-    void mouseMoveEvent(QMouseEvent *event);      //Отображение координаты точки при перемещении мыши по графику
+    bool askOnClose();
+
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);      //Отображение координаты точки при перемещении мыши по графику
+    virtual void closeEvent(QCloseEvent *event);         //Реакция на нажатие кнопки "Закрыть"
+
 };
 
 #endif // DIALOGTRIANGLES_H

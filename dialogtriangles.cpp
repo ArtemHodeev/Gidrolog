@@ -55,3 +55,25 @@ void DialogTriangles::mouseMoveEvent(QMouseEvent *event)
     double y = plot->invTransform(QwtPlot::yLeft, event->pos().y()) + 1.9954;
     statusBar()->showMessage("x= " + QString::number(x) + "; y = " + QString::number(y));
 }
+void DialogTriangles::closeEvent(QCloseEvent *event)
+{
+    if (askOnClose())
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+bool DialogTriangles::askOnClose()
+{
+    QMessageBox msg;
+    QPushButton  *yes = msg.addButton("Выйти",QMessageBox::AcceptRole);
+    QPushButton  *no = msg.addButton("Отменить",QMessageBox::RejectRole);
+    msg.setDefaultButton(yes);
+    msg.setWindowTitle("Подтвердите выход");
+    msg.setText("Вы действительно хотите покинуть окно построения диаграмм смешения?");
+    msg.setIcon(QMessageBox::Question);
+    return (msg.exec() == QMessageBox::AcceptRole) ? true : false;
+}
