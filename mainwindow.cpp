@@ -24,6 +24,7 @@
 #include "dialogtriangles.h"
 #include <testsolve.h>
 #include <spinboxdelegate.h>
+#include <QCloseEvent>
 
 
 MainWindow::MainWindow(QWidget *parent) :
