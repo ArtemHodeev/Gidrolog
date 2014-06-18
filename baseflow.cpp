@@ -16,6 +16,7 @@
 #include <qwt_plot_marker.h>
 #include <QMessageBox>
 #include "dialogtriangles.h"
+#include "names.h"
 
 Baseflow::Baseflow(QWidget *parent ):
     QwtPlot( parent )
@@ -37,15 +38,11 @@ Baseflow::Baseflow(QWidget *parent ):
     one = new AllTriangles();
     two = new AllTriangles();
 
-    int legenditems_size = one->getSizeTriangles() + 2; //число элементов легенды
-    //говорим, какие из элементов будут отображаться, а какие нет
-    legenditems.resize(legenditems_size);
-    legenditems.fill(false);
-    legenditems[0] = true;
-    legenditems[legenditems_size-1] = true;
-    legenditems[legenditems_size-2] = true;
-
-    addAll(legenditems);
+    is_mooved = false;
+    addPlotGrid();
+    enableMagnifier();
+    enableMovingOnPlot();
+    enablePicker();
 }
 void Baseflow::addAll(QVector<bool> legenditems)
 {
@@ -88,7 +85,10 @@ Baseflow::~Baseflow()
 void Baseflow::addPlot()
 {
     is_mooved = false;
-    addCurve();
+    if (one->getBaseflowSize() >= 3)
+    {
+        addCurve();
+    }
     addBaseflow();
     addPoints();
     addPlotGrid();
@@ -109,20 +109,20 @@ void Baseflow::addCurve()
     {
         curve1 = new QwtPlotCurve();
         curve1->setTitle( "Дождь, Дождь2, Подземные" );                             //Имя элемента легенды
-        curve1->setPen( Qt::blue, 6 );                                              // цвет и толщина кривой
+        curve1->setPen( Qt::blue, 2 );                                              // цвет и толщина кривой
         QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse,
-            QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 11, 11 ) );            //Форма, цвет и размер точки на кривой
+            QBrush( Qt::yellow ), QPen( Qt::red, 1 ), QSize( 3, 3 ) );            //Форма, цвет и размер точки на кривой
         curve1->setSymbol( symbol );                                                //Привязать символы к кривой
 
         QVector<double> X, Y;
-        X.append(one->getTriangles().at(i).A.x);
-        X.append(one->getTriangles().at(i).B.x);
-        X.append(one->getTriangles().at(i).C.x);
-        X.append(one->getTriangles().at(i).A.x);
-        Y.append(one->getTriangles().at(i).A.y);
-        Y.append(one->getTriangles().at(i).B.y);
-        Y.append(one->getTriangles().at(i).C.y);
-        Y.append(one->getTriangles().at(i).A.y);
+        X.append(one->getTriangles().at(i).A.getU1());
+        X.append(one->getTriangles().at(i).B.getU1());
+        X.append(one->getTriangles().at(i).C.getU1());
+        X.append(one->getTriangles().at(i).A.getU1());
+        Y.append(one->getTriangles().at(i).A.getU2());
+        Y.append(one->getTriangles().at(i).B.getU2());
+        Y.append(one->getTriangles().at(i).C.getU2());
+        Y.append(one->getTriangles().at(i).A.getU2());
 
         curve1->setSamples(X, Y);                                                   // ассоциировать набор точек с кривой
         curve1->attach( this );                                           // отобразить кривую на графике
@@ -132,9 +132,9 @@ void Baseflow::addBaseflow()
 {
     curve2 = new QwtPlotCurve();
     curve2->setTitle( "Источники питания" );                                        //Имя элемента легенды
-    curve2->setPen( Qt::blue, 6 );                                                  // цвет и толщина кривой
+    curve2->setPen( Qt::blue, 2 );                                                  // цвет и толщина кривой
     QwtSymbol *symbol1 = new QwtSymbol( QwtSymbol::Ellipse,
-        QBrush( Qt::blue ), QPen( Qt::darkBlue, 2 ), QSize( 13, 13 ) );             //Форма, цвет и размер точки на кривой
+        QBrush( Qt::blue ), QPen( Qt::blue, 2 ), QSize( 3, 3 ) );             //Форма, цвет и размер точки на кривой
     curve2->setSymbol( symbol1 );                                                   //Привязать символы к кривой
     curve2->setSamples(two->getBaseflowX(), two->getBaseflowY());                   // ассоциировать набор точек с кривой
     curve2->setStyle(QwtPlotCurve::Dots);                                           //просто выводит точки
@@ -143,11 +143,12 @@ void Baseflow::addBaseflow()
 void Baseflow::addPoints()
 {
     water_points = new QwtPlotCurve;
-    water_points->setPen( Qt::red, 6 );                                             // цвет и толщина кривой
-    water_points->setTitle( "Речные воды" );
+    water_points->setPen( Qt::red, 2 );                                             // цвет и толщина кривой
+    QString str = Names::water_types->key(Names::analitic_id);
+    water_points->setTitle( str );
 
     QwtSymbol *symbols = new QwtSymbol( QwtSymbol::Ellipse,
-        QBrush( Qt::red ), QPen( Qt::black, 2 ), QSize( 6, 6 ) );
+        QBrush( Qt::red ), QPen( Qt::red, 2 ), QSize( 3, 3 ) );
     water_points->setSymbol( symbols );
     water_points->setSamples(one->getSamplesX(), one->getSamplesY());
     water_points->setStyle(QwtPlotCurve::Dots);                                     //просто выводит точки
@@ -211,21 +212,25 @@ void Baseflow::exportPlot()
 }
 void Baseflow::mousePressEvent(QMouseEvent *event)
 {
-    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702; //Без этих страшных циферок неправильно считывается позиция клика
-    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
-//    qDebug() << "x " << x << "; y " << y;
-    if (!is_mooved)
+    if (one->getBaseflowSize() >=3 )
     {
-        for (int i=0; i < one->getBaseflowX().size(); i++)
+        x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702; //Без этих страшных циферок неправильно считывается позиция клика
+        y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
+    //    qDebug() << "x " << x << "; y " << y;
+        if (!is_mooved)
         {
-            if (((double) abs(one->getBaseflowX().at(i) - x) < 0.0150) && ((double) abs(one->getBaseflowY().at(i) - y) < 0.0150))
+            for (int i=0; i < one->getBaseflowSize(); i++)
             {
-                old_xy_position = i;        //Запоминаем старую координату точки
-                is_mooved = true;           //Кликнули по точке источника питания
+                if (((double) abs(one->getBaseflowX().at(i) - x) < 0.0150) && ((double) abs(one->getBaseflowY().at(i) - y) < 0.0150))
+                {
+                    old_xy_position = i;        //Запоминаем старую координату точки
+                    is_mooved = true;           //Кликнули по точке источника питания
+                }
             }
         }
     }
 }
+
 
 void Baseflow::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -235,31 +240,31 @@ void Baseflow::mouseReleaseEvent(QMouseEvent *event)
 //    qDebug() << "x " << x << "; y " << y;
     if (is_mooved)  //Если по точке источника питания кликнули
     {
-        QVector<double> temp_mass_x, temp_mass_y;
+        QVector<SampleInfo> temp_mass_x, temp_mass_y;
 
-        temp_mass_x = one->getBaseflowX();
-        temp_mass_y = one->getBaseflowY();
+        temp_mass_x = one->getInfoBaseflowX();
+        temp_mass_y = one->getInfoBaseflowY();
 
         //Меняем координаты угла треугольника, по которому кликнули
         QVector<triagnle_struct> size_tri = one->getTriangles();
         for (int i = 0; i<size_tri.size(); i++)
         {
-            if (((double) abs(one->getTriangles().at(i).A.x - temp_mass_x[old_xy_position]) < 0.0150) && ((double) abs(one->getTriangles().at(i).A.y - temp_mass_y[old_xy_position]) < 0.0150))
+            if (((double) abs(one->getTriangles().at(i).A.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).A.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
             {
-                size_tri[i].A.x = x; size_tri[i].A.y = y;
+                size_tri[i].A.setU1(x); size_tri[i].A.setU2(y);
             }
-            if (((double) abs(one->getTriangles().at(i).B.x - temp_mass_x[old_xy_position]) < 0.0150) && ((double) abs(one->getTriangles().at(i).B.y - temp_mass_y[old_xy_position]) < 0.0150))
+            if (((double) abs(one->getTriangles().at(i).B.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).B.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
             {
-                size_tri[i].B.x = x; size_tri[i].B.y = y;
+                size_tri[i].B.setU1(x); size_tri[i].B.setU2(y);
             }
-            if (((double) abs(one->getTriangles().at(i).C.x - temp_mass_x[old_xy_position]) < 0.0150) && ((double) abs(one->getTriangles().at(i).C.y - temp_mass_y[old_xy_position]) < 0.0150))
+            if (((double) abs(one->getTriangles().at(i).C.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).C.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
             {
-                size_tri[i].C.x = x; size_tri[i].C.y = y;
+               size_tri[i].C.setU1(x); size_tri[i].C.setU2(y);
             }
         }
         one->setTriangles(size_tri);
-        temp_mass_x[old_xy_position] = x;
-        temp_mass_y[old_xy_position] = y;
+        temp_mass_x[old_xy_position].setU1(x);
+        temp_mass_y[old_xy_position].setU2(y);
 
         one->setBaseflowX(temp_mass_x);
         one->setBaseflowY(temp_mass_y);
@@ -284,4 +289,22 @@ void Baseflow::makeAnaliz()
               this, tr("Ох, нет!"),
               tr("<h2>Просим прощения,</h2>"
                  "<p>но этот метод еще не реализован."));
+}
+void Baseflow::setData(AllTriangles data)
+{
+    one->setBaseflowX(data.getInfoBaseflowX());
+    one->setBaseflowY(data.getInfoBaseflowX());
+    one->setSamplesX(data.getInfoSamplesX());
+    one->setSamplesY(data.getInfoSamplesY());
+    two = one;
+
+    int legenditems_size = one->getSizeTriangles() + 2; //число элементов легенды
+    //говорим, какие из элементов будут отображаться, а какие нет
+    legenditems.resize(legenditems_size);
+    legenditems.fill(false);
+    legenditems[0] = true;
+    legenditems[legenditems_size-1] = true;
+    legenditems[legenditems_size-2] = true;
+
+    addAll(legenditems);
 }

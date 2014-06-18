@@ -22,6 +22,10 @@ class Baseflow: public QwtPlot
 public:
     Baseflow(QWidget * = NULL );
     ~Baseflow();
+    void setData(AllTriangles data);
+    void addPoints();               //Добавляем пробы анализируемого типа на график
+    void addBaseflow();             //Добавить точки - источники питания
+    void addCurve();                //Добавить треугольник
 private Q_SLOTS:
     void click_on_canvas( const QPoint &pos );      //Считывание координат при клике мыши
 public Q_SLOTS:
@@ -36,7 +40,7 @@ private:
     QVector <bool> legenditems;     //Вектор, в котором хранится инф-я, какой элемент легенды выделен
     void addAll(QVector <bool> legenditems);    //Добавляем легенду на график, отображаем выделенные элементы легенды
     void addPlot();
-    void addPoints();               //Добавляем пробы анализируемого типа на график
+
     void addPlotGrid();             //Добавляем сетку
     QwtLegend *legend;              //Легенда
     QwtPlotCurve *curve1;           //Треугольник
@@ -46,8 +50,6 @@ private:
     QPolygonF points2;              // Точки, которые накладываются на кривые curve1, curve2 и water_points.
     QPolygonF points3;              //
     AllTriangles *one, *two;        //Классы, хранящие координаты треугольников
-    void addCurve();                //Добавить треугольник
-    void addBaseflow();             //Добавить точки - источники питания
     void enableMagnifier();         //Масштабирование графика
     void enableMovingOnPlot();
     void enablePicker();            //Отображение координаты

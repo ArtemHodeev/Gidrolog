@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogTriangles</class>
- <widget class="QMainWindow" name="DialogTriangles">
+ <class>EditorNew</class>
+ <widget class="QMainWindow" name="EditorNew">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
-    <height>559</height>
+    <width>800</width>
+    <height>536</height>
    </rect>
   </property>
-  <property name="mouseTracking">
-   <bool>true</bool>
-  </property>
   <property name="windowTitle">
-   <string>Построение диаграмм смешения</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
@@ -22,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>680</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>

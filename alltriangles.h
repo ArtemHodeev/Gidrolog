@@ -1,16 +1,17 @@
 #ifndef ALLTRIANGLES_H
 #define ALLTRIANGLES_H
 #include <QVector>
+#include <sampleinfo.h>
 
 
-struct pair {   //координаты точки
-    double x;
-    double y;
-};
+//struct pair {   //координаты точки
+//    double x;
+//    double y;
+//};
 struct triagnle_struct { //треугольник с координатами + число точек внутри треугольника
-    pair A;
-    pair B;
-    pair C;
+    SampleInfo A;
+    SampleInfo B;
+    SampleInfo C;
     int count_of_points;
  };
 
@@ -19,28 +20,34 @@ class AllTriangles
 public:
     AllTriangles();
     //~AllTriangles();
-    QVector <double> getBaseflowX() const;
-    void setBaseflowX(const QVector<double> &baseflowX);
+    QVector<double> getBaseflowX() const;
+    void setBaseflowX(const QVector<SampleInfo> &baseflowX);
     QVector <double> getBaseflowY() const;
-    void setBaseflowY(const QVector<double> &baseflowY);
+    void setBaseflowY(const QVector<SampleInfo> &baseflowY);
     QVector <double> getSamplesX() const;
-    void setSamplesX(const QVector<double> &samplesX);
+    void setSamplesX(const QVector<SampleInfo> &samplesX);
     QVector <double> getSamplesY() const;
-    void setSamplesY(const QVector<double> &samplesY);
+    void setSamplesY(const QVector<SampleInfo> &samplesY);
     QVector <triagnle_struct> getTriangles();
+    QVector <SampleInfo> getInfoSamplesX() const;
+    QVector <SampleInfo> getInfoSamplesY() const;
+    QVector <SampleInfo> getInfoBaseflowX() const;
+    QVector <SampleInfo> getInfoBaseflowY() const;
     void setTriangles(const QVector<triagnle_struct> &triangles);
-    QVector <pair> getMass();
-    void generateSets(QVector<double> baseflowX, QVector<double> baseflowY);//генерируется вектор mass
+    QVector <SampleInfo> getMass();
+    void generateSets(QVector<SampleInfo> baseflowX, QVector<SampleInfo> baseflowY);//генерируется вектор mass
     int getSizeTriangles();
+    int getBaseflowSize() const;
+    int getSamplesSize() const;
 
 private:
-    QVector <double> baseflowX; //координаты источников по Х
-    QVector <double> baseflowY; //координаты источников по Y
-    QVector <double> samplesX;  //координаты анализируемого типа по Х
-    QVector <double> samplesY;  //координаты анализируемого типа по Y
+    QVector <SampleInfo> baseflowX; //координаты источников по Х
+    QVector <SampleInfo> baseflowY; //координаты источников по Y
+    QVector <SampleInfo> samplesX;  //координаты анализируемого типа по Х
+    QVector <SampleInfo> samplesY;  //координаты анализируемого типа по Y
     QVector <triagnle_struct> triangles; //все сгенерированные треугольники
-    QVector <pair> mass; // вектор пар координат источников
-    pair pair_of_points;
+    QVector <SampleInfo> mass; // вектор пар координат источников
+    SampleInfo pair_of_points;
 //    triagnle_struct struct_of_triagnles;
 
  };

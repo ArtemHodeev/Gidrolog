@@ -75,7 +75,9 @@ SOURCES += main.cpp\
     sampleinfo.cpp \
     analiticpoints.cpp \
     springpoints.cpp \
-    testsolve.cpp
+    testsolve.cpp \
+    editornew.cpp \
+    sampleinfoparser.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -138,7 +140,9 @@ HEADERS  += mainwindow.h \
     sampleinfo.h \
     analiticpoints.h \
     springpoints.h \
-    testsolve.h
+    testsolve.h \
+    editornew.h \
+    sampleinfoparser.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
@@ -147,7 +151,8 @@ FORMS    += mainwindow.ui \
     connectdb.ui \
     confirmsolver.ui \
     dialogtriangles.ui \
-    testsolve.ui
+    testsolve.ui \
+    editornew.ui
 CONFIG += qwt
 
 
