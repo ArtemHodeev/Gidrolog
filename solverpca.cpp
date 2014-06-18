@@ -4,6 +4,8 @@
 
 #include <analiticpoints.h>
 #include <springpoints.h>
+#include <omp.h>
+#include <time.h>
 
 SolverPCA::SolverPCA()
 {
@@ -115,65 +117,59 @@ void SolverPCA::genPlural(int count, int pos)
 
 void SolverPCA::lookForCompletePlurals()
 {
-//    unsigned int *temp;
-    alglib::real_2d_array dataset; // матрица данных для проведения pca
-    alglib::real_2d_array res_dataset; // матрица нагрузок
-    alglib::real_1d_array variars; // массив весов компонентов
-    alglib::ae_int_t rows; // число строк в матрице данных
-    alglib::ae_int_t cols; // число столбцов в матрице данных
-    alglib::ae_int_t info;
-    QVector<Sample*> analitic_samples;
-    int analitic_count = 0;
-    double *container;
-//    QHash<unsigned int, QVector<double> >::iterator item_value_iterator;
-    double first_component = 0; // нагрузка на первую компоненту
-    double second_component = 0; // нагрузка на вторую компоненту
-    double sum_w = 0; // сумма весов компонентов
-    int plur_count = 0;
-    QVector<double> vec_item_value;
-//    QHash<unsigned int, QVector<double> > item_values;
-
-//    item_values = pickValues()
-
-    analitic_samples = samples_by_type.value(Names::analitic_id);
-    analitic_count = analitic_samples.size();
-    container = new double[size * analitic_count + size];
-    rows = analitic_count;
-    cols = size;
-    info = 0;
-//    int score = 0;
-//    int complete_count=0;
 
 
-    // Собрать значеняи компонента в пробах в хэш, для того что бы каждый раз не собирать
-//    QHash<QString, unsigned int>::iterator iter;
-//    for (iter = Names::params->begin(); iter != Names::params->end(); iter ++)
-//    {
-//        pickItemValues(iter.value());
-//    }
-    double **matrix ;
-    matrix = new double*[analitic_count];
-    qDebug()<<"plurals count: "<<plurals.size();
+
+//    qDebug()<<"plurals count: "<<plurals.size();
     // цикл по всем сгенерированным множествам
+    clock_t start;
+    clock_t end;
+    start = clock();
+//    int plur_count = 0;
+    long int all = 0;
+    omp_set_num_threads(6);
+#pragma omp parallel
+    {
+#pragma omp for
     for (int plural_ind = 0; plural_ind < plurals.size(); plural_ind ++)
     {
+//        qDebug()<<"thread id: "<< omp_get_thread_num();
+        alglib::real_2d_array dataset; // матрица данных для проведения pca
+        alglib::real_2d_array res_dataset; // матрица нагрузок
+        alglib::real_1d_array variars; // массив весов компонентов
+        alglib::ae_int_t rows; // число строк в матрице данных
+        alglib::ae_int_t cols; // число столбцов в матрице данных
+        alglib::ae_int_t info;
+        QVector<Sample*> analitic_samples;
+        int analitic_count = 0;
+
+        double *container;
+        double first_component = 0; // нагрузка на первую компоненту
+        double second_component = 0; // нагрузка на вторую компоненту
+        double sum_w = 0; // сумма весов компонентов
+
+        double **loading_matrix; // матрица нагрузок для подходящего набора
+        QVector<double> vec_item_value;
+
+
+        analitic_samples = samples_by_type.value(Names::analitic_id);
+        analitic_count = analitic_samples.size();
+        /*container = new double[size * analitic_count];*/// + size];
+        rows = analitic_count;
+        cols = size;
+        info = 0;
+
+        container = new double[size * analitic_count + size];
         //цикл по все пробам для сбора значений концентрации компонента
         for (int row_ind = 0; row_ind < analitic_count; row_ind ++)
         {
-            matrix[row_ind] = new double[size];
             // создать массив данных для проведения метода PCA
             // Container заполняется согласно тому как будет разбираться в real_2d_array.setcontainer()
             // цикл по количеству компонентов в наборе (особенность создания контейнера)
             for (int col_ind = 0; col_ind < size; col_ind ++)
             {
                 vec_item_value = pickValues(plurals[plural_ind][col_ind], Names::analitic_id);
-
-//                if (row_ind >= vec_item_value.size())
-//                qDebug()<<"name: "<<Names::params->key(plurals[plural_ind][col_ind]) << " value: " << vec_item_value[row_ind];
-
-//                score ++;
                 container[row_ind * size + col_ind] = vec_item_value[row_ind];
-//                matrix[row_ind][col_ind] = vec_item_value[row_ind];
 //                item_value_iterator = item_values.find(plurals[plural_ind][col_ind]);
 //                container[row_ind * size + col_ind] = item_value_iterator.value()[row_ind];
             }
@@ -182,112 +178,59 @@ void SolverPCA::lookForCompletePlurals()
         QString str = "";
        // подготовка массива данных
        dataset.setcontent(rows, cols, container);
-       qDebug()<<"dataset";
-       for (int i = 0; i < rows; i ++)
-                       {
-                           str = "";
-                           for (int j = 0; j < cols; j ++)
-                           {
-                               str += QString("%1 ").arg(dataset[i][j]);
-                           }
-                           qDebug()<<str;
-                       }
+//       delete container;
 
             //метод PCA
             alglib::pcabuildbasis(dataset, rows, cols, info, variars, res_dataset);
-
-//            for
-
+#pragma omp atomic
+            all ++;
             sum_w = 0;
             first_component = 0;
             second_component = 0;
-//            qDebug()<<"**********************";
             for (int i = 0; i < variars.length(); i ++)
             {
                 sum_w += variars(i);
             }
             first_component = variars(0) / sum_w;
             second_component = variars(1) / sum_w;
-//            qDebug()<<"info: "<<info;
-//            qDebug()<<"var 0: "<<(double) variars(0);
-//            qDebug()<<"var 1: "<<(double) variars(2);
-//            qDebug() <<"sum: "<< QVariant(sum_w).toString();
-//            qDebug()<<"first: "<<first_component;
-//            qDebug()<<"second: "<<second_component;
-//            qDebug()<<"power: "<<first_component + second_component;
 
-//            for (int i = 0; i < variars.length(); i ++)
-//            {
-//                sum_w += variars(i);
-
-//                str += QString("%1 ").arg(variars(i) / sum_w);
-//            }
-//            qDebug()<<str;
-            str = "";
-//            qDebug()<<"======================";
+            qDebug()<<"checked: "<<all;
             if ((first_component + second_component) > 0.9)
             {
-                double **loading_matrix;
-//                qDebug()<<"==================================";
-//                qDebug()<<"rows: "<< rows;
-//                qDebug()<<"cols: "<< cols;
-//                for (int i = 0; i < rows; i ++)
-//                {
-//                    str = "";
-//                    for (int j = 0; j < cols; j ++)
-//                    {
-//                        str += QString("%1 ").arg(container[i * size + j]);
-//                    }
-//                    qDebug()<<str;
-//                }
+
+//               plur_count ++;
+//               qDebug()<<"complete count: "<< plur_count;
+
                 // преобрахование матрицы нагрузок из типа alglib::real_2d_array в double**
                 loading_matrix = new double*[res_dataset.rows()];
-                qDebug()<<"variars";
                 for (int i = 0; i < variars.length(); i ++)
                            {
                                sum_w += variars(i);
-
-                               str += QString("%1 ").arg(variars(i));
                            }
-                           qDebug()<<str;
-                 qDebug()<<"load: "<<first_component + second_component;
-                qDebug()<<"//////////////////////////////////////////";
+
                 for (int i = 0; i < res_dataset.rows(); i ++)
                 {
-                    str = "";
                     loading_matrix[i] = new double[res_dataset.cols()];
                     for (int j = 0; j < res_dataset.cols(); j ++)
                     {
-                        str += QString("%1 ").arg(res_dataset[i][j]);
                         loading_matrix[i][j] = res_dataset[i][j];
                     }
-                    qDebug()<<str;
                 }
-                qDebug()<<"//////////////////////////////////////////";
-//                plur_count ++;
+#pragma omp critical
+                {
                 complete_plurals.insert(plurals[plural_ind],loading_matrix);
-//                qDebug()<<"addr: "<<plurals[plural_ind];
-//                complete_plurals.append(plurals[plural_ind]);
-//                for (int i = 0; i < res_dataset.rows(); i ++)
-//                {
-
-//                    for (int j = 0; j < res_dataset.cols(); j ++)
-//                    {
-//                        str += QString("%1 ").arg(res_dataset(i,j));
-//                    }
-//                    qDebug()<<str;
-//                    str = "";
-//                }
-                qDebug()<<"plurals addr: "<< plurals[plural_ind];
+                }
 //                getScores(plurals[plural_ind]);
-            }
-
-//            qDebug()<<"**********************";
+            }// if ((first_component + second_component) > 0.9)
+delete container;
+    }// for (int plural_ind = 0; plural_ind < plurals.size(); plural_ind ++)
     }
+    end = clock() - start;
+    qDebug()<< "executing time: "<<(end / CLOCKS_PER_SEC);
     qDebug()<<"complete count: "<<complete_plurals.size();
 
 
-    delete []container;
+
 
 }
 void SolverPCA::standart()
@@ -310,11 +253,11 @@ void SolverPCA::standart()
     for (water_id = Names::water_types->begin(); water_id != Names::water_types->end(); water_id ++)
     {
         water_samples = samples_by_type.value(water_id.value());
-        qDebug()<<"water_name: "<<water_id.key();
+//        qDebug()<<"water_name: "<<water_id.key();
 //        qDebug()<<"size: "<< water_samples.size();
         for (iterator = Names::params->begin(); iterator != Names::params->end(); iterator ++)
         {
-            qDebug()<<"name: "<< iterator.key();
+//            qDebug()<<"name: "<< iterator.key();
             average = analitic_average->value(iterator.value());
             vec_values = pickValues(iterator.value(),water_id.value());
             length = vec_values.size();
@@ -339,7 +282,7 @@ void SolverPCA::standart()
                     // после чего запись обратно в пробу
                     item_1 = items_in_sample->value(iterator.value());
                     res = (item_1.getValue() - average) / sqrt(norm);//
-                    qDebug()<<"res: "<<res;
+//                    qDebug()<<"res: "<<res;
                     item_1.setValue(res);
                     water_samples[i]->getComponents()->insert(iterator.value(),item_1);
                 }
@@ -428,9 +371,10 @@ QVector<double> SolverPCA::pickValues(unsigned int item_id, unsigned int water_i
     water_samples = samples_by_type.value(water_id);
 
     //собрать все концентрации компонента item_id в пробах нужного типа
+
     for (int i = 0; i < water_samples.size(); i ++)
     {
-        if (water_samples[i]->getComponents()->contains(item_id))
+        if (water_samples[i]->getComponents()->contains(item_id) == true)
         {
             iterator = water_samples[i]->getComponents()->find(item_id);
             values.append(iterator.value().getValue());
@@ -544,8 +488,8 @@ QVector<SampleInfo> SolverPCA::getSamplesInfo(unsigned int *items_set, unsigned 
              points[i].setU1(scores_matrix[i][0]);
              points[i].setU2(scores_matrix[i][1]);
          }
-         qDebug()<<"------------------------------------------";
-         qDebug()<<"loads";
+//         qDebug()<<"------------------------------------------";
+//         qDebug()<<"loads";
 //                  for (int i = 0; i < samples.size(); i ++)
 //                  {
 //                      str = "";
@@ -555,16 +499,16 @@ QVector<SampleInfo> SolverPCA::getSamplesInfo(unsigned int *items_set, unsigned 
 //                      }
 //                      qDebug()<<str;
 //                  }
-         qDebug()<<"Scores";
-         for (int i = 0; i < samples.size(); i ++)
-         {
-             str = "";
-//             for (int j = 0; j < size; j ++)
-//             {
-                 str = QString("%1 %2").arg(scores_matrix[i][0]).arg(scores_matrix[i][1]);
-//             }
-             qDebug()<<str;
-         }
+//         qDebug()<<"Scores";
+//         for (int i = 0; i < samples.size(); i ++)
+//         {
+//             str = "";
+////             for (int j = 0; j < size; j ++)
+////             {
+//                 str = QString("%1 %2").arg(scores_matrix[i][0]).arg(scores_matrix[i][1]);
+////             }
+//             qDebug()<<str;
+//         }
          return points;
 
 //        for (int)

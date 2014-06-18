@@ -150,4 +150,5 @@ FORMS    += mainwindow.ui \
     testsolve.ui
 CONFIG += qwt
 
-
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
