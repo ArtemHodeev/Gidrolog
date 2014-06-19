@@ -36,22 +36,22 @@ bool ConfirmCalculator::isCanceled()
 
 void ConfirmCalculator::on_pushButton_ok_pressed()
 {
-    QModelIndexList sel_columns = sel_model->selectedColumns(0);
+    QModelIndexList sel_columns = sel_model->selectedRows(0);
 
     if (sel_columns.isEmpty() != true)
     {
-        int *cols = new int[sel_columns.size() + 1];
+        int *rows = new int[sel_columns.size() + 1];
         int ind  = 0;
         QModelIndexList::iterator i;
         for (i = sel_columns.begin(); i != sel_columns.end(); i ++)
         {
-            cols[ind] = i->column();
+            rows[ind] = i->column();
             ind ++;
         }
-        cols[ind] = -1;
-        model->setItemsToDelete(cols);
-        delete cols;
-        model->backup();
+        rows[ind] = -1;
+        model->setItemsToDelete(rows);
+        delete rows;
+//        model->backup();
         model->removeItems();
     }
 

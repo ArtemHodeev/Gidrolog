@@ -6,22 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
-    <height>254</height>
+    <width>345</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="3">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Следующие компоненты не удовлетворяют критериям отбора</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="1" column="0" colspan="3">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Выделите компоненты, которые следует исключить из дальнейшей обработки</string>

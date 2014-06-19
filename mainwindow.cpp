@@ -25,6 +25,7 @@
 #include <testsolve.h>
 #include <spinboxdelegate.h>
 #include <QCloseEvent>
+#include <time.h>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -98,9 +99,18 @@ void MainWindow::on_action_editorTool_triggered()
  */
 void MainWindow::on_actionSave_triggered()
 {
+    clock_t start;
+    clock_t end;
+    start = clock();
     model->saveItems();
+    end = clock() - start;
+    qDebug()<< "saving: "<<end / CLOCKS_PER_SEC;
     model->updateItems();
+    end = clock() - end;
+    qDebug()<< "updating: "<<end / CLOCKS_PER_SEC;
     model->removeItems();
+    end = clock() - end;
+    qDebug()<< "deleting: "<<end / CLOCKS_PER_SEC;
 }
 
 /*

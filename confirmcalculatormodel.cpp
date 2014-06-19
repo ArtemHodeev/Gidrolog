@@ -34,7 +34,7 @@ void ConfirmCalculatorModel::setItems()
 }
 void ConfirmCalculatorModel::setItems(QVector<ItemInfo *> other)
 {
-    rCount = 3;
+
 //    qDebug()<<"=========================";
     bool need = false;
     unsigned int pos = 0;
@@ -72,8 +72,8 @@ void ConfirmCalculatorModel::setItems(QVector<ItemInfo *> other)
             need = false;
         }
     }
-
-    cCount = items.size();
+    rCount = items.size();
+    cCount = 3;
 }
 
 void ConfirmCalculatorModel::setFactors()
@@ -153,12 +153,12 @@ void ConfirmCalculatorModel::removeItems()
 QVariant ConfirmCalculatorModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     QVariant res;
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    if(orientation == Qt::Vertical && role == Qt::DisplayRole)
     {
         unsigned int item_id = items[section]->getItemId();
         res = QVariant(Names::params->key(item_id));
     }
-    else if(orientation == Qt::Vertical && role == Qt::DisplayRole)
+    else if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
     {
         switch(section)
         {
@@ -200,7 +200,7 @@ QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
     {
         return res;
     }
-    unsigned int item_id = items[index.column()]->getItemId();
+    unsigned int item_id = items[index.row()]->getItemId();
 
     int item_index = 0;
     item_index = findItemById(item_id);
@@ -209,7 +209,7 @@ QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
     {
         QColor color;
 
-        switch(index.row())
+        switch(index.column())
         {
         case 0:
             color = (items[item_index]->getLostCount() < lost_count) ? QColor(Qt::green) : QColor(Qt::red);
@@ -239,7 +239,7 @@ QVariant ConfirmCalculatorModel::data(const QModelIndex &index, int role) const
     }
     else if(role == Qt::DisplayRole)
     {
-        switch(index.row())
+        switch(index.column())
         {
         case 0:
             res = QVariant(items[item_index]->getLostCount());
