@@ -457,7 +457,7 @@ QVector<SampleInfo> SolverPCA::getSamplesInfo(unsigned int *items_set, unsigned 
             // цикл по количеству компонентов в наборе (особенность создания контейнера)
             for (int col_ind = 0; col_ind < size; col_ind ++)
             {
-                vec_item_value = pickValues(items_set[col_ind], Names::analitic_id);
+                vec_item_value = pickValues(items_set[col_ind], water_id);
 
                 matrix[row_ind][col_ind] = vec_item_value[row_ind];
             }
