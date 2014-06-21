@@ -28,7 +28,7 @@ private:
     int count;
     Ui::TestSolve *ui;
     SolverPCA solve;
-    QVector<unsigned int*> plurals;
+    QVector<unsigned int*> plurals; //адреса удачных множеств
 };
 
 #endif // TESTSOLVE_H

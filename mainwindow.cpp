@@ -26,7 +26,9 @@
 #include <spinboxdelegate.h>
 #include <QCloseEvent>
 #include <time.h>
-
+#include <QMainWindow>
+#include <QTabWidget>
+#include "editornew.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -81,10 +83,14 @@ MainWindow::~MainWindow()
  */
 void MainWindow::on_action_editorTool_triggered()
 {
-    Editor *dlg = new Editor();
-    dlg->exec();
-    delete dlg;
-    model->resetModel();
+//    Editor *dlg = new Editor();
+//    dlg->exec();
+//    delete dlg;
+//    model->resetModel();
+     EditorNew *window = new EditorNew();
+     window->setWindowTitle(QString::fromUtf8("Редактор знаний"));
+     window->resize(680, 559);
+     window->show();
 }
 
 /*
@@ -233,12 +239,19 @@ void MainWindow::on_action_calcilate_triggered()
         {
             mass.append(iter.value());
         }
+        DialogTriangles *dlg = new DialogTriangles();
+        dlg->setFixedSize(1350, 700);
+        dlg->setSamples(samples);
+        dlg->setParam(confirm->getCount(),confirm->getSelectedItems());
+        dlg->setPlurList();
+        dlg->show();
 
-        TestSolve *solve = new TestSolve();
-        solve->setSamples(samples);
-        solve->setParam(confirm->getCount(),confirm->getSelectedItems());
-        solve->setPlurList();
-        solve->exec();
+//        TestSolve *solve = new TestSolve();
+//        solve->setSamples(samples);
+//        solve->setParam(confirm->getCount(),confirm->getSelectedItems());
+//        solve->setPlurList();
+//        solve->exec();
+
 //        solver.setItems(samples);
 //        solver.standart();
 //        solver.makePlurals(confirm->getCount(),confirm->getSelectedItems(), mass);
@@ -251,6 +264,6 @@ void MainWindow::on_action_calcilate_triggered()
 void MainWindow::on_action_plot_triggered()
 {
     DialogTriangles *dlg = new DialogTriangles();
-    dlg->setFixedSize(800, 559);
+    dlg->setFixedSize(1350, 700);
     dlg->show();
 }

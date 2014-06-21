@@ -105,7 +105,7 @@ void FactorModel::saveItems()
 
     unsigned int id = 0;
 
-    // если анализируемы тип водной массы сменился
+    // если анализируемый тип водной массы сменился
     if (query->size() != 0)
     {
         query->first();

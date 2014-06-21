@@ -9,7 +9,7 @@ bool prefLessThan(const triagnle_struct &p1, const triagnle_struct &p2)
     return p1.count_of_points > p2.count_of_points;
 }
 
-GenTriangles::GenTriangles(QVector <pair> &massive_pair, QVector <double> &sX, QVector <double> &sY)
+GenTriangles::GenTriangles(QVector <SampleInfo> &massive_pair, QVector <SampleInfo> &sX, QVector <SampleInfo> &sY)
 {
     mass =  massive_pair;
     samplesX = sX;
@@ -20,7 +20,7 @@ GenTriangles::~GenTriangles()
 }
 void GenTriangles::GenerationTreangles(int count)
 {
-    temp_triangle = new pair[count];
+    temp_triangle = new SampleInfo[count];
 //    mass = item_list;
     num = count;
     genPlural(count, 0);
@@ -35,8 +35,8 @@ void GenTriangles::print(int k)
     QString str = "plural: ";
     for (int i = 0; i < k;  i++)
     {
-        str += QString("%1 | ").arg(temp_triangle[i].x);
-        str += QString("%1 | ").arg(temp_triangle[i].y);
+        str += QString("%1 | ").arg(temp_triangle[i].getU1());
+        str += QString("%1 | ").arg(temp_triangle[i].getU2());
     }
     qDebug()<<str;
 }
@@ -46,12 +46,21 @@ void GenTriangles::genPlural(int count, int pos)
     {
         print(num);
         triagnle_struct struct_of_triagnles;
-        struct_of_triagnles.A.x = temp_triangle[0].x;
-        struct_of_triagnles.A.y = temp_triangle[0].y;
-        struct_of_triagnles.B.x = temp_triangle[1].x;
-        struct_of_triagnles.B.y = temp_triangle[1].y;
-        struct_of_triagnles.C.x = temp_triangle[2].x;
-        struct_of_triagnles.C.y = temp_triangle[2].y;
+        struct_of_triagnles.A.setU1(temp_triangle[0].getU1());
+        struct_of_triagnles.A.setU2(temp_triangle[0].getU2());
+        struct_of_triagnles.A.setWaterId(temp_triangle[0].getWaterId());
+        struct_of_triagnles.A.setLocationId(temp_triangle[0].getLocationId());
+        struct_of_triagnles.A.setDate(temp_triangle[0].getDate());
+        struct_of_triagnles.B.setU1(temp_triangle[1].getU1());
+        struct_of_triagnles.B.setU2(temp_triangle[1].getU2());
+        struct_of_triagnles.B.setWaterId(temp_triangle[1].getWaterId());
+        struct_of_triagnles.B.setLocationId(temp_triangle[1].getLocationId());
+        struct_of_triagnles.B.setDate(temp_triangle[1].getDate());
+        struct_of_triagnles.C.setU1(temp_triangle[2].getU1());
+        struct_of_triagnles.C.setU2(temp_triangle[2].getU2());
+        struct_of_triagnles.C.setWaterId(temp_triangle[2].getWaterId());
+        struct_of_triagnles.C.setLocationId(temp_triangle[2].getLocationId());
+        struct_of_triagnles.C.setDate(temp_triangle[2].getDate());
         struct_of_triagnles.count_of_points = 0;
 
         triangles.append(struct_of_triagnles);
@@ -60,14 +69,17 @@ void GenTriangles::genPlural(int count, int pos)
     {
         for (int i = pos; i < mass.size() - count + 1; i ++)
         {
-            temp_triangle[num - count].x = mass.at(i).x;
-            temp_triangle[num - count].y = mass.at(i).y;
+            temp_triangle[num - count].setU1(mass.at(i).getU1());
+            temp_triangle[num - count].setU2(mass.at(i).getU2());
+            temp_triangle[num - count].setDate(mass.at(i).getDate());
+            temp_triangle[num - count].setLocationId(mass.at(i).getLocationId());
+            temp_triangle[num - count].setWaterId(mass.at(i).getWaterId());
 
             genPlural(count - 1, i + 1);
         }
     }
 }
-void GenTriangles::GetCountOfPoints(QVector<triagnle_struct> &triangles, QVector<double> X, QVector<double> Y)
+void GenTriangles::GetCountOfPoints(QVector<triagnle_struct> &triangles, QVector<SampleInfo> X, QVector<SampleInfo> Y)
 {
     //unsigned int count = 0;
     bool flag = false;
@@ -75,14 +87,15 @@ void GenTriangles::GetCountOfPoints(QVector<triagnle_struct> &triangles, QVector
     {
         for (int j = 0; j < X.size(); j++)
         {
-            flag = isPointInTriangle(triangles.at(i), X.at(j), Y.at(j));
+            flag = isPointInTriangle(triangles.at(i), X.at(j).getU1(), Y.at(j).getU2());
             if (flag == true)
             {
                 triangles[i].count_of_points++;
+                qDebug() << "точка (" << X.at(j).getU1() << "; " << Y.at(j).getU2() << ")  в треугольнике  " << triangles.at(i).A.getU1() << triangles.at(i).A.getU2() << triangles.at(i).B.getU1() << triangles.at(i).B.getU2() << triangles.at(i).C.getU1() << triangles.at(i).C.getU2();
             }
         }
     qDebug()<<"triangles size: "<<triangles.at(i).count_of_points;
-    qDebug()<<"tri: "<<triangles.at(i).A.x << triangles.at(i).A.y << triangles.at(i).B.x << triangles.at(i).B.y << triangles.at(i).C.x << triangles.at(i).C.y;
+    qDebug()<<"tri: "<<triangles.at(i).A.getU1() << triangles.at(i).A.getU2() << triangles.at(i).B.getU1() << triangles.at(i).B.getU2() << triangles.at(i).C.getU1() << triangles.at(i).C.getU2();
     }
     TreanglesSort(triangles);
 }
@@ -101,13 +114,13 @@ bool GenTriangles::isPointInTriangle(triagnle_struct abc, double Px, double Py)
 
     m = 0;
     l = 0;
-    Bx = abc.B.x - abc.A.x;
-    By = abc.B.y - abc.A.y;
-    Cx = abc.C.x - abc.A.x;
-    Cy = abc.C.y - abc.A.y;
+    Bx = abc.B.getU1() - abc.A.getU1();
+    By = abc.B.getU2() - abc.A.getU2();
+    Cx = abc.C.getU1() - abc.A.getU1();
+    Cy = abc.C.getU2() - abc.A.getU2();
 
-    newPx = Px  - abc.A.x;
-    newPy = Py  - abc.A.y;
+    newPx = Px  - abc.A.getU1();
+    newPy = Py  - abc.A.getU2();
   //
 
     m = ((newPx*By - Bx*newPy) / (Cx*By - Bx*Cy)) ;
@@ -120,6 +133,7 @@ bool GenTriangles::isPointInTriangle(triagnle_struct abc, double Px, double Py)
             return true;
         }
     }
+    return false;
 }
 QVector <triagnle_struct> GenTriangles::getResult()
 {

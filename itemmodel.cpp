@@ -81,6 +81,11 @@ QVariant ItemModel::data(const QModelIndex &index, int role) const
                 res = QVariant(items.at(index.row())->getErrorLine());
                 break;
             }
+            case 5:
+            {
+                res = QVariant(items.at(index.row())->getDisplay());
+                break;
+            }
             default :
                 break;
     //        case 5:
@@ -158,11 +163,13 @@ QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int rol
             res = QVariant("Тип");
             break;
         case 3:
-            res = QVariant("Минимальное занчение");
+            res = QVariant("Минимальное значение");
             break;
         case 4:
             res = QVariant("Ошибка измерения");
             break;
+        case 5:
+            res = QVariant("Отображать компоненты");
         }
     }
     else if (role == Qt::DisplayRole && orientation == Qt::Vertical)
@@ -314,8 +321,8 @@ void ItemModel::saveItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
-    QString sql = QString("INSERT INTO item (name, type_id, min_value, error_line)");
-    sql += ("VALUES(:name,:type_id,:min_value,:error_line)");
+    QString sql = QString("INSERT INTO item (name, type_id, min_value, error_line, display)");
+    sql += ("VALUES(:name,:type_id,:min_value,:error_line, :display)");
     query->prepare(sql);
 
     while(!items_to_save.isEmpty())
@@ -324,6 +331,7 @@ void ItemModel::saveItems()
         query->bindValue(":type_id", items_to_save.first()->getTypeId());
         query->bindValue(":min_value", items_to_save.first()->getMinValue());
         query->bindValue(":error_line",items_to_save.first()->getErrorLine());
+        query->bindValue(":display", items_to_save.first()->getDisplay());
         query->exec();
         qDebug()<<"Error on save item: "<< query->lastError().text();
 
@@ -336,7 +344,7 @@ void ItemModel::updateItems()
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
 
     QString sql = QString("UPDATE item ");
-    sql += ("SET name = :name, type_id = :type_id, min_value = :min_value, error_line = :error_line ");
+    sql += ("SET name = :name, type_id = :type_id, min_value = :min_value, error_line = :error_line, display = :display ");
     sql += ("WHERE id = :id");
     query->prepare(sql);
     unsigned int i_id = 0;
@@ -364,6 +372,7 @@ void ItemModel::updateItems()
         query->bindValue(":type_id", items_to_update.first()->getTypeId());
         query->bindValue(":min_value", items_to_update.first()->getMinValue());
         query->bindValue(":error_line",items_to_update.first()->getErrorLine());
+        query->bindValue(":display", items_to_update.first()->getDisplay());
         query->exec();
 
         items_to_update.removeFirst();
@@ -450,5 +459,4 @@ void ItemModel::setItemType()
     }
 
     delete query;
-
 }
