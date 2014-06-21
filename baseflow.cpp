@@ -120,9 +120,9 @@ void Baseflow::addCurve()
                     Names::water_types->key(one->getTriangles().at(i).C.getWaterId()));
 
         curve1->setTitle( str );                                                    //Имя элемента легенды
-        curve1->setPen( Qt::blue, 2 );                                              // цвет и толщина кривой
+        curve1->setPen( Qt::darkCyan, 2 );                                              // цвет и толщина кривой
         QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse,
-            QBrush( Qt::green ), QPen( Qt::green, 1 ), QSize( 3, 3 ) );            //Форма, цвет и размер точки на кривой
+            QBrush( Qt::darkCyan ), QPen( Qt::darkCyan, 1 ), QSize( 3, 3 ) );            //Форма, цвет и размер точки на кривой
         curve1->setSymbol( symbol );                                                //Привязать символы к кривой
 
         QVector<double> X, Y;
@@ -225,6 +225,12 @@ void Baseflow::showItem( const QVariant &itemInfo, bool on, int index )
 }
 void Baseflow::plotDefault()
 {
+    one->setBaseflowX(two->getInfoBaseflowX());
+    one->setBaseflowY(two->getInfoBaseflowX());
+    one->setSamplesX(two->getInfoSamplesX());
+    one->setSamplesY(two->getInfoSamplesY());
+    one->setTriangles(two->getTriangles());
+
     //one->generateSets(one->getBaseflowX(), one->getBaseflowY());
     detachItems(QwtPlotItem::Rtti_PlotItem, true);
     addAll(legenditems);
@@ -315,7 +321,12 @@ void Baseflow::setData(AllTriangles data)
     one->setSamplesX(data.getInfoSamplesX());
     one->setSamplesY(data.getInfoSamplesY());
     one->setTriangles(data.getTriangles());
-    two = one;
+
+    two->setBaseflowX(data.getInfoBaseflowX());
+    two->setBaseflowY(data.getInfoBaseflowX());
+    two->setSamplesX(data.getInfoSamplesX());
+    two->setSamplesY(data.getInfoSamplesY());
+    two->setTriangles(data.getTriangles());
 
     int legenditems_size = one->getSizeTriangles() + 3; //число элементов легенды
     //говорим, какие из элементов будут отображаться, а какие нет
