@@ -48,10 +48,19 @@ void GenTriangles::genPlural(int count, int pos)
         triagnle_struct struct_of_triagnles;
         struct_of_triagnles.A.setU1(temp_triangle[0].getU1());
         struct_of_triagnles.A.setU2(temp_triangle[0].getU2());
+        struct_of_triagnles.A.setWaterId(temp_triangle[0].getWaterId());
+        struct_of_triagnles.A.setLocationId(temp_triangle[0].getLocationId());
+        struct_of_triagnles.A.setDate(temp_triangle[0].getDate());
         struct_of_triagnles.B.setU1(temp_triangle[1].getU1());
         struct_of_triagnles.B.setU2(temp_triangle[1].getU2());
+        struct_of_triagnles.B.setWaterId(temp_triangle[1].getWaterId());
+        struct_of_triagnles.B.setLocationId(temp_triangle[1].getLocationId());
+        struct_of_triagnles.B.setDate(temp_triangle[1].getDate());
         struct_of_triagnles.C.setU1(temp_triangle[2].getU1());
         struct_of_triagnles.C.setU2(temp_triangle[2].getU2());
+        struct_of_triagnles.C.setWaterId(temp_triangle[2].getWaterId());
+        struct_of_triagnles.C.setLocationId(temp_triangle[2].getLocationId());
+        struct_of_triagnles.C.setDate(temp_triangle[2].getDate());
         struct_of_triagnles.count_of_points = 0;
 
         triangles.append(struct_of_triagnles);
@@ -62,6 +71,9 @@ void GenTriangles::genPlural(int count, int pos)
         {
             temp_triangle[num - count].setU1(mass.at(i).getU1());
             temp_triangle[num - count].setU2(mass.at(i).getU2());
+            temp_triangle[num - count].setDate(mass.at(i).getDate());
+            temp_triangle[num - count].setLocationId(mass.at(i).getLocationId());
+            temp_triangle[num - count].setWaterId(mass.at(i).getWaterId());
 
             genPlural(count - 1, i + 1);
         }

@@ -77,7 +77,8 @@ SOURCES += main.cpp\
     springpoints.cpp \
     testsolve.cpp \
     editornew.cpp \
-    sampleinfoparser.cpp
+    sampleinfoparser.cpp \
+    mypicker.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -142,7 +143,8 @@ HEADERS  += mainwindow.h \
     springpoints.h \
     testsolve.h \
     editornew.h \
-    sampleinfoparser.h
+    sampleinfoparser.h \
+    mypicker.h
 
 FORMS    += mainwindow.ui \
     editor.ui \

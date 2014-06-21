@@ -17,6 +17,8 @@
 #include <QMessageBox>
 #include "dialogtriangles.h"
 #include "names.h"
+#include "mypicker.h"
+#include <cmath>
 
 Baseflow::Baseflow(QWidget *parent ):
     QwtPlot( parent )
@@ -51,12 +53,12 @@ void Baseflow::addAll(QVector<bool> legenditems)
     insertLegend( legend, QwtPlot::RightLegend );   //Отображаем легенду справа от графика
 
     connect( legend, SIGNAL( checked( const QVariant &, bool, int ) ),
-        SLOT( showItem( const QVariant &, bool ) ) );
+        SLOT( showItem( const QVariant &, bool, int ) ) );
 
     addPlot();
     replot();
 
-    QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve); // все элементы, которые есть на графике (треугольники + 2 набора точек)
+    QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve); // все элементы, которые есть на графике (треугольники + 3 набора точек)
 
     for ( int i = 0; i < items.size(); i++ )
     {
@@ -85,12 +87,13 @@ Baseflow::~Baseflow()
 void Baseflow::addPlot()
 {
     is_mooved = false;
-    if (one->getBaseflowSize() >= 3)
+    showAllBaseflow();
+    addBaseflow();
+    addPoints();
+    if (one->getSizeTriangles() > 0)
     {
         addCurve();
     }
-    addBaseflow();
-    addPoints();
     addPlotGrid();
     enableMagnifier();
     enableMovingOnPlot();
@@ -107,11 +110,19 @@ void Baseflow::addCurve()
 {
     for (int i = 0; i<one->getSizeTriangles(); i++)
     {
+        QString str = "";
         curve1 = new QwtPlotCurve();
-        curve1->setTitle( "Дождь, Дождь2, Подземные" );                             //Имя элемента легенды
+        str += QString( "( %1 - %2 %3 %4 )")
+                 .arg(one->getTriangles().at(i).count_of_points)
+                 .arg(
+                    Names::water_types->key(one->getTriangles().at(i).A.getWaterId()),
+                    Names::water_types->key(one->getTriangles().at(i).B.getWaterId()),
+                    Names::water_types->key(one->getTriangles().at(i).C.getWaterId()));
+
+        curve1->setTitle( str );                                                    //Имя элемента легенды
         curve1->setPen( Qt::blue, 2 );                                              // цвет и толщина кривой
         QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse,
-            QBrush( Qt::yellow ), QPen( Qt::red, 1 ), QSize( 3, 3 ) );            //Форма, цвет и размер точки на кривой
+            QBrush( Qt::green ), QPen( Qt::green, 1 ), QSize( 3, 3 ) );            //Форма, цвет и размер точки на кривой
         curve1->setSymbol( symbol );                                                //Привязать символы к кривой
 
         QVector<double> X, Y;
@@ -169,18 +180,31 @@ void Baseflow::enableMovingOnPlot()
 }
 void Baseflow::enablePicker()
 {
-    // настройка функций
-    QwtPlotPicker *d_picker =
-            new QwtPlotPicker(
+
+    MyPicker *d_picker = new MyPicker(
                 QwtPlot::xBottom, QwtPlot::yLeft,                                       // ассоциация с осями
-    QwtPlotPicker::CrossRubberBand,                                                     // стиль перпендикулярных линий
-    QwtPicker::AlwaysOn,                                                                // всегда включен
-    canvas() );                                                         // ассоциация с полем
+                QwtPlotPicker::CrossRubberBand,                                                     // стиль перпендикулярных линий
+                QwtPicker::AlwaysOn,                                                                // всегда включен
+                canvas());
+    d_picker->setData(one);
     d_picker->setRubberBandPen( QColor( Qt::red ) );                                    // Цвет перпендикулярных линий
     d_picker->setTrackerPen( QColor( Qt::black ) );                                     // цвет координат положения указателя
     d_picker->setStateMachine( new QwtPickerDragPointMachine() );                       // непосредственное включение вышеописанных функций
 
+    // настройка функций
+//    QwtPlotPicker *d_picker =
+//            new QwtPlotPicker(
+//                QwtPlot::xBottom, QwtPlot::yLeft,                                       // ассоциация с осями
+//    QwtPlotPicker::CrossRubberBand,                                                     // стиль перпендикулярных линий
+//    QwtPicker::AlwaysOn,                                                                // всегда включен
+//    canvas() );                                                         // ассоциация с полем
+//    d_picker->setRubberBandPen( QColor( Qt::red ) );                                    // Цвет перпендикулярных линий
+//    d_picker->setTrackerPen( QColor( Qt::black ) );                                     // цвет координат положения указателя
+//    d_picker->setStateMachine( new QwtPickerDragPointMachine() );                       // непосредственное включение вышеописанных функций
+
     connect( d_picker, SIGNAL( appended( const QPoint & ) ),
+            SLOT( click_on_canvas( const QPoint & ) ) );
+    connect( d_picker, SIGNAL(moved(const QPoint & ) ),
             SLOT( click_on_canvas( const QPoint & ) ) );
 
 }
@@ -189,19 +213,19 @@ void Baseflow::click_on_canvas( const QPoint &pos )
     // считываем значения координат клика
     x = invTransform(QwtPlot::xBottom, pos.x());
     y = invTransform(QwtPlot::yLeft, pos.y());
-}
-void Baseflow::showItem( const QVariant &itemInfo, bool on )
+ }
+void Baseflow::showItem( const QVariant &itemInfo, bool on, int index )
 {
     QwtPlotItem *plotItem = infoToItem( itemInfo );
     if ( plotItem )
     {
         plotItem->setVisible( on );
     }
+    updateLegend();
 }
 void Baseflow::plotDefault()
 {
-    one = new AllTriangles();
-    two = new AllTriangles();
+    //one->generateSets(one->getBaseflowX(), one->getBaseflowY());
     detachItems(QwtPlotItem::Rtti_PlotItem, true);
     addAll(legenditems);
 }
@@ -211,17 +235,20 @@ void Baseflow::exportPlot()
     renderer.exportTo( this, "Диаграмма смешения.jpg" );
 }
 void Baseflow::mousePressEvent(QMouseEvent *event)
-{
-    if (one->getBaseflowSize() >=3 )
+{   
+    if (one->getBaseflowSize() >=3  && event->button() == Qt::LeftButton)
     {
-        x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702; //Без этих страшных циферок неправильно считывается позиция клика
-        y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
-    //    qDebug() << "x " << x << "; y " << y;
+//        x = invTransform(QwtPlot::xBottom, event->pos().x());
+//        y = invTransform(QwtPlot::yLeft, event->pos().y());
+        //qDebug() << "x " << x << "; y " << y;
         if (!is_mooved)
         {
             for (int i=0; i < one->getBaseflowSize(); i++)
             {
-                if (((double) abs(one->getBaseflowX().at(i) - x) < 0.0150) && ((double) abs(one->getBaseflowY().at(i) - y) < 0.0150))
+                if (
+                        (std::abs(one->getBaseflowX().at(i) - x) < 0.03) &&
+                        (std::abs(one->getBaseflowY().at(i) - y) < 0.03)
+                    )
                 {
                     old_xy_position = i;        //Запоминаем старую координату точки
                     is_mooved = true;           //Кликнули по точке источника питания
@@ -230,12 +257,10 @@ void Baseflow::mousePressEvent(QMouseEvent *event)
         }
     }
 }
-
-
 void Baseflow::mouseReleaseEvent(QMouseEvent *event)
 {
-    x = invTransform(QwtPlot::xBottom, event->pos().x()) - 1.58702;
-    y = invTransform(QwtPlot::yLeft, event->pos().y()) + 0.9534;
+//    x = invTransform(QwtPlot::xBottom, event->pos().x());
+//    y = invTransform(QwtPlot::yLeft, event->pos().y());
 
 //    qDebug() << "x " << x << "; y " << y;
     if (is_mooved)  //Если по точке источника питания кликнули
@@ -249,15 +274,15 @@ void Baseflow::mouseReleaseEvent(QMouseEvent *event)
         QVector<triagnle_struct> size_tri = one->getTriangles();
         for (int i = 0; i<size_tri.size(); i++)
         {
-            if (((double) abs(one->getTriangles().at(i).A.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).A.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
+            if ((std::abs(one->getTriangles().at(i).A.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.03) && (std::abs(one->getTriangles().at(i).A.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.03))
             {
                 size_tri[i].A.setU1(x); size_tri[i].A.setU2(y);
             }
-            if (((double) abs(one->getTriangles().at(i).B.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).B.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
+            if ((std::abs(one->getTriangles().at(i).B.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.03) && (std::abs(one->getTriangles().at(i).B.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.03))
             {
                 size_tri[i].B.setU1(x); size_tri[i].B.setU2(y);
             }
-            if (((double) abs(one->getTriangles().at(i).C.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.0150) && ((double) abs(one->getTriangles().at(i).C.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.0150))
+            if ((std::abs(one->getTriangles().at(i).C.getU1() - temp_mass_x[old_xy_position].getU1()) < 0.03) && (std::abs(one->getTriangles().at(i).C.getU2() - temp_mass_y[old_xy_position].getU2()) < 0.03))
             {
                size_tri[i].C.setU1(x); size_tri[i].C.setU2(y);
             }
@@ -269,17 +294,10 @@ void Baseflow::mouseReleaseEvent(QMouseEvent *event)
         one->setBaseflowX(temp_mass_x);
         one->setBaseflowY(temp_mass_y);
 
-        //Перед перерисовкой запомним, какие элементы легенды были нажаты
-        QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve);
-        for (int i=0; i<items.size(); i++)
-        {
-            if (items[i]->isVisible())
-                legenditems[i] = true;
-            else
-                legenditems[i] = false;
-        }
-        detachItems(QwtPlotItem::Rtti_PlotItem, true);  // Очистка рабочей области
-        addAll(legenditems);                                            //Перерисовка графика
+//        //Перед перерисовкой запомним, какие элементы легенды были нажаты
+        updateLegend();
+        detachItems(QwtPlotItem::Rtti_PlotItem, true);  //Очистка рабочей области
+        addAll(legenditems);                            //Перерисовка графика
         is_mooved = false;
     }
 }
@@ -296,15 +314,50 @@ void Baseflow::setData(AllTriangles data)
     one->setBaseflowY(data.getInfoBaseflowX());
     one->setSamplesX(data.getInfoSamplesX());
     one->setSamplesY(data.getInfoSamplesY());
+    one->setTriangles(data.getTriangles());
     two = one;
 
-    int legenditems_size = one->getSizeTriangles() + 2; //число элементов легенды
+    int legenditems_size = one->getSizeTriangles() + 3; //число элементов легенды
     //говорим, какие из элементов будут отображаться, а какие нет
     legenditems.resize(legenditems_size);
     legenditems.fill(false);
-    legenditems[0] = true;
-    legenditems[legenditems_size-1] = true;
-    legenditems[legenditems_size-2] = true;
-
+    legenditems[0] = false;
+    legenditems[1] = true;
+    legenditems[2] = true;
+    legenditems[3] = true;
     addAll(legenditems);
+}
+void Baseflow::showAllBaseflow()
+{
+    baseflows = new QwtPlotCurve;
+    baseflows->setPen( Qt::black, 2 );                                             // цвет и толщина кривой
+    baseflows->setTitle("Все источники питания");
+
+    QwtSymbol *symbols = new QwtSymbol( QwtSymbol::Ellipse,
+        QBrush( Qt::black ), QPen( Qt::black, 1 ), QSize( 1, 1 ) );
+    baseflows->setSymbol( symbols );
+    QVector <double> X, Y;
+    for (int i=0; i<allBaseflow.size(); i++)
+    {
+        X.append(allBaseflow.at(i).getU1());
+        Y.append(allBaseflow.at(i).getU2());
+    }
+    baseflows->setSamples(X, Y);
+    baseflows->setStyle(QwtPlotCurve::Dots);                                     //просто выводит точки
+    baseflows->attach( this );
+}
+void Baseflow::addAllBaseflow(QVector <SampleInfo> allBaseflow)
+{
+    this->allBaseflow = allBaseflow;
+}
+void Baseflow::updateLegend()
+{
+    QwtPlotItemList items = itemList( QwtPlotItem::Rtti_PlotCurve);
+    for (int i=0; i<items.size(); i++)
+    {
+        if (items[i]->isVisible())
+            legenditems[i] = true;
+        else
+            legenditems[i] = false;
+    }
 }

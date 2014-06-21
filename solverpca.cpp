@@ -490,6 +490,7 @@ QVector<SampleInfo> SolverPCA::getSamplesInfo(unsigned int *items_set, unsigned 
 //    for (wt_iter = samples_by_type.begin(); wt_iter != samples_by_type.end(); wt_iter ++)
 //    {
         samples = wt_iter.value();
+        qDebug()<<"Samples.size(): "<<samples.size();
 
         // сбор информации о пробах
         for (int i = 0; i < samples.size(); i ++)
@@ -513,7 +514,7 @@ QVector<SampleInfo> SolverPCA::getSamplesInfo(unsigned int *items_set, unsigned 
             // цикл по количеству компонентов в наборе (особенность создания контейнера)
             for (int col_ind = 0; col_ind < size; col_ind ++)
             {
-                vec_item_value = pickValues(items_set[col_ind], Names::analitic_id);
+                vec_item_value = pickValues(items_set[col_ind], water_id);
 
                 matrix[row_ind][col_ind] = vec_item_value[row_ind];
             }

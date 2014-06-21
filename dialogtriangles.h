@@ -35,7 +35,7 @@ private:
 private slots:
     void on_listWidget_clicked(const QModelIndex &index);
 protected:
-    virtual void mouseMoveEvent(QMouseEvent *event);      //Отображение координаты точки при перемещении мыши по графику
+//    virtual void mouseMoveEvent(QMouseEvent *event);      //Отображение координаты точки при перемещении мыши по графику
     virtual void closeEvent(QCloseEvent *event);         //Реакция на нажатие кнопки "Закрыть"
 
 };

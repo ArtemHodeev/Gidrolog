@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <math.h>
 #include "gentriangles.h"
+#include "names.h"
+#include <cmath>
 
 
 AllTriangles::AllTriangles()
@@ -203,4 +205,48 @@ QVector <SampleInfo> AllTriangles::getInfoBaseflowX() const
 QVector <SampleInfo> AllTriangles::getInfoBaseflowY() const
 {
     return baseflowY;
+}
+QString AllTriangles::is_baseflow_point(double x , double y) const
+{
+QString str = "";
+    for (int i=0; i<getBaseflowSize(); i++)
+    {
+        if (
+                (std::abs(getInfoBaseflowX().at(i).getU1() - x) < 0.03)
+             && (std::abs(getInfoBaseflowY().at(i).getU2() - y) < 0.03)
+           )
+        {
+            str += QString("(%1; %2)\n Источник: %3")
+                    .arg(getInfoBaseflowX().at(i).getU1())
+                    .arg(getInfoBaseflowY().at(i).getU2())
+                    .arg(Names::water_types->key(getInfoBaseflowX().at(i).getWaterId()));
+            return str;
+        }
+    }
+    return "";
+}
+QString AllTriangles::is_analytic_point(double x, double y) const
+{
+    QString str = "";
+        for (int i=0; i<getSamplesSize(); i++)
+        {
+            if (
+                    (std::abs(getInfoSamplesX().at(i).getU1() - x) <  0.03)
+                 && (std::abs(getInfoSamplesY().at(i).getU2() - y) <  0.03)
+                )
+            {
+//                qDebug() << "getInfoSamplesX().at(i).getU1() - x" << abs(getInfoSamplesX().at(i).getU1() - x);
+//                qDebug() << "getInfoSamplesY().at(i).getU2() - y" << abs(getInfoSamplesY().at(i).getU2() - y);
+
+                str += QString(" (%1; %2)\n Дата: %3\n Место: %4\n Источник: %5")
+                        .arg(getInfoSamplesX().at(i).getU1())
+                        .arg(getInfoSamplesY().at(i).getU2())
+                        .arg(
+                            getInfoSamplesX().at(i).getDate().toString(),
+                            Names::locations->key(this->getInfoSamplesX().at(i).getLocationId()),
+                            Names::water_types->key(this->getInfoSamplesX().at(i).getWaterId()));
+                return QString(str);
+            }
+        }
+        return QString("");
 }

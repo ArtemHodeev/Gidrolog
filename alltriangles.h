@@ -39,6 +39,9 @@ public:
     int getSizeTriangles();
     int getBaseflowSize() const;
     int getSamplesSize() const;
+    QString is_analytic_point(double x, double y ) const;
+    QString is_baseflow_point(double x , double y) const;
+
 
 private:
     QVector <SampleInfo> baseflowX; //координаты источников по Х
