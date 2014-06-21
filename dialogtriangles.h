@@ -22,6 +22,7 @@ public:
     void setSamples(QVector<Sample*> s);
     void setParam(int count, QVector<unsigned int> cust_items);
     void setPlurList();
+    int list_size;
 private:
     Ui::DialogTriangles *ui;
     Baseflow *plot;

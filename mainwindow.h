@@ -32,8 +32,6 @@ private slots:
 
     void on_action_calcilate_triggered();
 
-    void on_action_plot_triggered();
-
 private:
     Ui::MainWindow *ui;
     SampleModel *model;// модель для проб

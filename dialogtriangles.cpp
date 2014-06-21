@@ -124,6 +124,8 @@ void DialogTriangles::setPlurList()
 
     }
     itemslist->addItems(list);
+    list_size = list.size();
+
 }
 void DialogTriangles::on_listWidget_clicked(const QModelIndex &index)
 {

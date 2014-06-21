@@ -29,6 +29,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include "editornew.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -244,7 +245,13 @@ void MainWindow::on_action_calcilate_triggered()
         dlg->setSamples(samples);
         dlg->setParam(confirm->getCount(),confirm->getSelectedItems());
         dlg->setPlurList();
-        dlg->show();
+        if (dlg->list_size)
+            dlg->show();
+        else
+            QMessageBox::about(
+                      this, tr("Отсутствуют варианты"),
+                      tr("<h2>Для данного числа компонентов</h2>"
+                         "<p>не найдено ни одного набора, соответствующего условиям."));
 
 //        TestSolve *solve = new TestSolve();
 //        solve->setSamples(samples);
@@ -259,11 +266,4 @@ void MainWindow::on_action_calcilate_triggered()
 
     }
     delete dlg;
-}
-
-void MainWindow::on_action_plot_triggered()
-{
-    DialogTriangles *dlg = new DialogTriangles();
-    dlg->setFixedSize(1350, 700);
-    dlg->show();
 }
