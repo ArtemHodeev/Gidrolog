@@ -280,12 +280,10 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
             items_to_save.append(i);
             insertRows(rCount,1);
         }
-<<<<<<< HEAD
-//    }
-=======
 
-    }
->>>>>>> test_br_49
+
+//    }
+
 
     return true;
 }
