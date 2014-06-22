@@ -273,6 +273,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
             items_to_save.append(i);
             insertRows(rCount,1);
         }
+
     }
 
     return true;
@@ -357,7 +358,9 @@ void SampleModel::deleteAllSamples()
 }
 void SampleModel::setSamples(QVector<Sample *> sample_mass)
 {
-    deleteAllSamples();
+//    deleteAllSamples();
+    items.clear();
+    rCount = 0;
     for (int i = 0; i < sample_mass.size(); i ++)
     {
         items.append(sample_mass[i]);

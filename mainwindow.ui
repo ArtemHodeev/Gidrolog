@@ -159,7 +159,7 @@
            <enum>QListView::IconMode</enum>
           </property>
           <property name="wordWrap">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -184,8 +184,7 @@
     </property>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
-    <addaction name="action_4"/>
-    <addaction name="action_5"/>
+    <addaction name="action_closeSet"/>
    </widget>
    <widget class="QMenu" name="menu_service">
     <property name="title">
@@ -222,7 +221,6 @@
    <addaction name="separator"/>
    <addaction name="action_calcilate"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="action_editorTool">
    <property name="text">
     <string>Редактор</string>
@@ -246,9 +244,12 @@
     <string>Настройки подключения к БД</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="action_closeSet">
    <property name="text">
-    <string>Открыть набор</string>
+    <string>Закрыть набор</string>
+   </property>
+   <property name="toolTip">
+    <string>Закрыть набор</string>
    </property>
   </action>
   <action name="action_5">
@@ -299,6 +300,11 @@
    </property>
    <property name="toolTip">
     <string>Диаграммы смешения</string>
+   </property>
+  </action>
+  <action name="action_deleteSet">
+   <property name="text">
+    <string>Удалить</string>
    </property>
   </action>
  </widget>

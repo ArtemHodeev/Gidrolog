@@ -38,13 +38,21 @@ private slots:
     void on_all_sets_itemClicked(QListWidgetItem *item);
 
     void on_create_set_itemChanged(QListWidgetItem *item);
+    void on_action_closeSet_triggered();
 
+    void on_all_sets_customContextMenuRequested(const QPoint &pos);
+
+public slots:
+    void setDataSaved();
 private:
     Ui::MainWindow *ui;
     SampleModel *model;// модель для проб
     QItemSelectionModel *sel_model; // модель для выделения (выделение строк)
     QMap<QString, unsigned int> *map;
+    bool data_saved;
     bool del;
+    void closeEvent(QCloseEvent *event);
+
 };
 
 #endif // MAINWINDOW_H
