@@ -373,7 +373,8 @@ void SampleModel::setItems()
     QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
     int pos = 0;
 
-    query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM sample");
+    query->prepare("SELECT id, sample_set_id, location_id, water_type_id, sample_date, comment FROM sample WHERE sample_set_id = :sample_set");
+    query->bindValue(":sample_set", Names::sample_set_id);
     query->exec();
 
     rCount = query->size() + 1;
@@ -391,7 +392,8 @@ void SampleModel::setItems()
         s->setComment(query->value("comment").toString());
         s->setPosition(pos);
 
-        q->prepare("SELECT item_id, value FROM item_sample WHERE sample_id = :s_id");
+        q->prepare("SELECT item_id, value FROM item_sample WHERE sample_set_id = :set_id AND sample_id = :s_id");
+        q->bindValue(":sample_set", Names::sample_set_id);
         q->bindValue(":s_id",query->value("id"));
         q->exec();
 
@@ -457,7 +459,8 @@ void SampleModel::updateItems()
 
     while (!items_to_update.empty())
     {
-        query->prepare("UPDATE sample SET location_id = :location, water_type_id = :water_id, sample_date = :date, comment = :comment WHERE id = :id");
+        query->prepare("UPDATE sample SET location_id = :location, water_type_id = :water_id, sample_date = :date, comment = :comment WHERE sample_set_id = :set_id AND id = :id ");
+        query->bindValue(":set_id",Names::sample_set_id);
         query->bindValue(":id",items_to_update.first()->getId());
         query->bindValue(":location",items_to_update.first()->getLocationId());
         query->bindValue(":water_id", items_to_update.first()->getWaterId());
@@ -477,13 +480,13 @@ void SampleModel::updateItems()
             case 0:
                continue;
             case 1:
-               sql = "INSERT INTO item_sample (sample_id, item_id, value) VALUES (:s_id, :i_id, :value)";
+               sql = "INSERT INTO item_sample (sample_set_id, sample_id, item_id, value) VALUES (:set_id,:s_id, :i_id, :value)";
                break;
             case 2:
-               sql = "UPDATE item_sample SET (value = :value) WHERE sample_id = :s_id AND item_id = :i_id";
+               sql = "UPDATE item_sample SET value = :value WHERE sample_set_id = :set_id AND sample_id = :s_id AND item_id = :i_id";
                break;
             case 3:
-               sql = "DELETE FROM item_sample WHERE sample_id = :s_id AND item_id = :i_id";
+               sql = "DELETE FROM item_sample WHERE sample_set_id = :set_id AND sample_id = :s_id AND item_id = :i_id";
                break;
             default:
                break;
@@ -492,6 +495,7 @@ void SampleModel::updateItems()
             i->setChanged(0);
 
             query->prepare(sql);
+            query->bindValue(":set_id", Names::sample_set_id);
             query->bindValue(":s_id", s_id);
             query->bindValue(":i_id",i.key());
             query->bindValue(":value",i.value().getValue());
@@ -519,7 +523,7 @@ void SampleModel::saveItems()
 
     while (!items_to_save.empty())
     {
-        query->bindValue(":sample_set_id",1);
+        query->bindValue(":sample_set_id",Names::sample_set_id);
         query->bindValue(":location_id",items_to_save.first()->getLocationId());
         query->bindValue(":water_id", items_to_save.first()->getWaterId());
         query->bindValue(":date", items_to_save.first()->getDate().toString("yyyy-MM-dd hh:mm"));
@@ -530,6 +534,7 @@ void SampleModel::saveItems()
         items[pos]->setId(query->lastInsertId().toUInt());
         items_to_save.removeFirst();
     }
+    delete query;
 }
 void SampleModel::removeItems()
 {
@@ -543,23 +548,34 @@ void SampleModel::removeItems()
         QHash<unsigned int, ItemInSample>::iterator i;
 
         s_id = s->getId();
-
-        sql = "DELETE FROM item_sample WHERE sample_id = :s_id AND item_id = :i_id";
+        sql = "DELETE FROM item_sample WHERE sample_set_id = :set_id AND sample_id = :s_id";
+//        sql = "DELETE FROM item_sample WHERE sample_set_id = :set_id AND sample_id = :s_id AND item_id = :i_id";
         query->prepare(sql);
 
-        //удаление всех параметров пробы
-        for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
-        {
-            query->bindValue(":s_id", s_id);
-            query->bindValue(":i_id", i.key());
-            query->exec();
-        }
+//        //удаление всех параметров пробы
+//        for (i = s->getComponents()->begin(); i != s->getComponents()->end(); i ++)
+//        {
+        qDebug()<<"s_id: "<< s_id;
+        qDebug()<<"set_id: "<<Names::sample_set_id;
+        QString str = QString("DELETE FROM item_sample WHERE sample_set_id = %1 AND sample_id = %2").arg(Names::sample_set_id).arg(s_id);
+        qDebug() << "query1: "<< str;
 
+            query->bindValue(":set_id", Names::sample_set_id);
+            query->bindValue(":s_id", s_id);
+//            query->bindValue(":i_id", i.key());
+            query->exec();
+//        }
+qDebug()<<"error on item_sample deleting: "<< query->lastError().text();
         // удаление пробы
-        sql = "DELETE FROM sample WHERE id = :s_id";
+        sql = "DELETE FROM sample WHERE sample_set_id = :set_id AND id = :s_id";
+        str = QString("DELETE FROM sample WHERE sample_set_id = %1 AND id = %2").arg(Names::sample_set_id).arg(s_id);
+                qDebug() << "query2: "<< str;
         query->prepare(sql);
         query->bindValue(":s_id", s_id);
+        query->bindValue(":set_id", Names::sample_set_id);
+
         query->exec();
+        qDebug()<<"error on sample deleting: "<< query->lastError().text();
 
         items_to_delete.removeFirst();
     }

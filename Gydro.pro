@@ -75,7 +75,8 @@ SOURCES += main.cpp\
     sampleinfo.cpp \
     analiticpoints.cpp \
     springpoints.cpp \
-    testsolve.cpp
+    testsolve.cpp \
+    starter.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -138,7 +139,8 @@ HEADERS  += mainwindow.h \
     sampleinfo.h \
     analiticpoints.h \
     springpoints.h \
-    testsolve.h
+    testsolve.h \
+    starter.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
@@ -152,3 +154,6 @@ CONFIG += qwt
 
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
+
+RESOURCES += \
+    resources.qrc

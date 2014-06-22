@@ -26,6 +26,7 @@
 #include <spinboxdelegate.h>
 #include <QCloseEvent>
 #include <time.h>
+#include <starter.h>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -33,40 +34,52 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+//     QListWidgetItem *create_item = new QListWidgetItem()
+    QListWidgetItem *create_item = new QListWidgetItem("<Введите название>");//,ui->create_set);
+    QListWidgetItem *available_item = 0;
+//    QListWidgetItem *create_item
+//    QListWidget *lwg = new QListWidget();
+//    lwg->setIconSize(QSize(48,48));
+//    create_item->setText("<Введите название>");
 
-    //создание модели
-    model = new SampleModel();
 
-    // Создание обработчика действий по нажатию на кнопку "Сохранить"
-    QObject::connect(model,SIGNAL(actionSave()), this,SLOT(on_actionSave_triggered()));
 
-    // наполнение модели данными
-    model->setItems();
-    model->setHeaders();
-//    model->setWaterTypes();
-//    model->setLocation();
-//    model->setParams();
-    //отображение модели
-    ui->tableView->setModel(model);
+    create_item->setIcon(QPixmap(":/resources/new.png"));
+    create_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+                                Qt::ItemIsEditable);
+//    lwg->insertItem(0,lwg);
+    ui->create_set->addItem(create_item);
 
-    //Создание делегатов combobox для ввода типов водных масс и мест взятия
-    ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
-    ComboboxDelegate *location_delegate = new LocationCombobox();
+    ui->stackedWidget->setCurrentIndex(1);
+    QMap<QString, unsigned int> *local_map;
+    map = new QMap<QString, unsigned int>();
+    QMap<QString, unsigned int>::iterator iter;
+    Starter sample_sets;
+    local_map = sample_sets.getSampleSets();
 
-    ui->tableView->setItemDelegateForColumn(1,location_delegate);
-    ui->tableView->setItemDelegateForColumn(3,water_delegeate);
+    for (iter = local_map->begin(); iter != local_map->end(); iter ++)
+    {
+        map->insert(iter.key(),iter.value());
+        available_item =  new QListWidgetItem(iter.key(),ui->all_sets);
+        available_item->setIcon(QPixmap(":/resources/available.png"));
 
-    //Установление модели для выделения элементов
-    sel_model = new QItemSelectionModel(model);
-    ui->tableView->setSelectionModel(sel_model);
-    ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+//        ui->all_sets->addItem(iter.key());
+    }
+
+    del = false;
+////    for ()
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete sel_model;
-    delete model;
-    delete ui;
+    if(del == true)
+    {
+        delete sel_model;
+        delete model;
+        delete ui;
+    }
+
 }
 
 /*
@@ -84,7 +97,12 @@ void MainWindow::on_action_editorTool_triggered()
     Editor *dlg = new Editor();
     dlg->exec();
     delete dlg;
-    model->resetModel();
+    // если модель уже имеется(т.е. не на главной странице), то reset
+    if (ui->stackedWidget->currentIndex() == 0)
+    {
+        model->resetModel();
+    }
+
 }
 
 /*
@@ -253,4 +271,47 @@ void MainWindow::on_action_plot_triggered()
     DialogTriangles *dlg = new DialogTriangles();
     dlg->setFixedSize(800, 559);
     dlg->show();
+}
+
+
+
+void MainWindow::on_all_sets_itemClicked(QListWidgetItem *item)
+{
+    del = true;
+    ui->stackedWidget->setCurrentIndex(0);
+    Names::sample_set_id = map->value(item->data(Qt::DisplayRole).toString());
+
+    //создание модели
+    model = new SampleModel();
+
+    // Создание обработчика действий по нажатию на кнопку "Сохранить"
+    QObject::connect(model,SIGNAL(actionSave()), this,SLOT(on_actionSave_triggered()));
+
+    // наполнение модели данными
+    model->setItems();
+    model->setHeaders();
+
+    //отображение модели
+    ui->tableView->setModel(model);
+
+    //Создание делегатов combobox для ввода типов водных масс и мест взятия
+    ComboboxDelegate *water_delegeate = new WaterTypeCombobox();
+    ComboboxDelegate *location_delegate = new LocationCombobox();
+
+    ui->tableView->setItemDelegateForColumn(1,location_delegate);
+    ui->tableView->setItemDelegateForColumn(3,water_delegeate);
+
+    //Установление модели для выделения элементов
+    sel_model = new QItemSelectionModel(model);
+    ui->tableView->setSelectionModel(sel_model);
+    ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+}
+
+
+void MainWindow::on_create_set_itemChanged(QListWidgetItem *item)
+{
+    Starter starter;
+    unsigned int set_id = starter.saveSampleSet(item->data(Qt::DisplayRole).toString());
+    Names::sample_set_id = set_id;
+    on_all_sets_itemClicked(item);
 }

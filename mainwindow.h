@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <samplemodel.h>
 #include <QItemSelectionModel>
+#include <QListWidgetItem>
 
 namespace Ui {
 class MainWindow;
@@ -34,10 +35,17 @@ private slots:
 
     void on_action_plot_triggered();
 
+
+    void on_all_sets_itemClicked(QListWidgetItem *item);
+
+    void on_create_set_itemChanged(QListWidgetItem *item);
+
 private:
     Ui::MainWindow *ui;
     SampleModel *model;// модель для проб
     QItemSelectionModel *sel_model; // модель для выделения (выделение строк)
+    QMap<QString, unsigned int> *map;
+    bool del;
 };
 
 #endif // MAINWINDOW_H

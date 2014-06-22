@@ -20,6 +20,7 @@ public:
     static QHash<QString, unsigned int> *item_types;// все типы компонентов из БД
     //                                                QSqtring - имя типа компонента, unsigned int - id из БД
     static unsigned int analitic_id;
+    static unsigned int sample_set_id;
 };
 
 #endif // NAMES_H
