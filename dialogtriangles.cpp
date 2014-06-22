@@ -129,6 +129,7 @@ void DialogTriangles::setPlurList()
 }
 void DialogTriangles::on_listWidget_clicked(const QModelIndex &index)
 {
+    plot->repaint();
     plot->detachItems(QwtPlotItem::Rtti_PlotItem, true);  // Очистка рабочей области
     QHash<QString, unsigned int>::iterator iter;
     QVector<SampleInfo> si;             //Проба воды

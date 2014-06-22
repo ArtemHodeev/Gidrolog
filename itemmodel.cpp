@@ -169,7 +169,7 @@ QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int rol
             res = QVariant("Ошибка измерения");
             break;
         case 5:
-            res = QVariant("Отображать компоненты");
+            res = QVariant("Отображать компоненты?");
         }
     }
     else if (role == Qt::DisplayRole && orientation == Qt::Vertical)
@@ -357,7 +357,7 @@ void ItemModel::updateItems()
         {
             i_id = items_to_update.first()->getId();
         }
-        //Если параметр пробы, был недавно добавлен и его редктировали
+        //Если параметр пробы, был недавно добавлен и его редактировали
         else
         {
             QSqlQuery *q = new QSqlQuery(DatabaseAccessor::getDb());
@@ -404,7 +404,7 @@ void ItemModel::setItemsToDelete(int *mass)
 
     while(mass[count] != -1)
     {
-        index= findItemInPosition(mass[count]);
+        index = findItemInPosition(mass[count]);
         if (index != -1)
         {
             items_to_delete.append(items[index]);
@@ -427,7 +427,12 @@ void ItemModel::setItemsToDelete(int *mass)
 
         count ++;
     }
-    removeRows(first,count);
+    for (int i=0; i < items.size(); i++)
+    {
+        items[i]->setPosition(i);
+    }
+    if (first >= 0)
+        removeRows(first+1,count);
 }
 
 int ItemModel::findItemInPosition(int pos)
