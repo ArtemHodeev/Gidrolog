@@ -167,7 +167,8 @@ bool DBCreator::createTable(QString table_name)
             query_sql +="( ";
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
             query_sql += "name varchar(128) DEFAULT '', ";
-            query_sql += "PRIMARY KEY (id) ";
+            query_sql += "PRIMARY KEY (id), ";
+            query_sql += "UNIQUE (name) ";
             query_sql += ")";
         break;
 
@@ -177,7 +178,8 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
             query_sql += "name varchar(128) DEFAULT '', ";
             query_sql += "priority int NOT NULL DEFAULT 0, ";
-            query_sql += "PRIMARY KEY (id)";
+            query_sql += "PRIMARY KEY (id), ";
+            query_sql += "UNIQUE (name) ";
             query_sql += ")";
         break;
     case 2:
@@ -185,7 +187,8 @@ bool DBCreator::createTable(QString table_name)
             query_sql +="( ";
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
             query_sql += "name varchar(128) DEFAULT '', ";
-            query_sql += "PRIMARY KEY (id) ";
+            query_sql += "PRIMARY KEY (id), ";
+            query_sql += "UNIQUE (name) ";
             query_sql += ")";
         break;
     case 3:
@@ -196,7 +199,8 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "width double DEFAULT 0, ";
             query_sql += "length double DEFAULT 0, ";
             query_sql += "deep double DEFAULT 0, ";
-            query_sql += "PRIMARY KEY (id) ";
+            query_sql += "PRIMARY KEY (id), ";
+            query_sql += "UNIQUE (name) ";
             query_sql += ")";
         break;
     case 4:
@@ -209,7 +213,8 @@ bool DBCreator::createTable(QString table_name)
             query_sql += "error_line double precision DEFAULT 0, ";
             query_sql += "display boolean DEFAULT true, ";
             query_sql += "PRIMARY KEY (id), ";
-            query_sql += "FOREIGN KEY (type_id) ";
+            query_sql += "FOREIGN KEY (type_id), ";
+            query_sql += "UNIQUE (name) ";
             query_sql +=   "REFERENCES item_type (id) ";
             query_sql +=   "ON UPDATE CASCADE ON DELETE RESTRICT ";
             query_sql += ")";
