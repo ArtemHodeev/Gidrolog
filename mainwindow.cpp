@@ -39,20 +39,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-//     QListWidgetItem *create_item = new QListWidgetItem()
     QListWidgetItem *create_item = new QListWidgetItem("<Введите название>");//,ui->create_set);
     QListWidgetItem *available_item = 0;
-//    QListWidgetItem *create_item
-//    QListWidget *lwg = new QListWidget();
-//    lwg->setIconSize(QSize(48,48));
-//    create_item->setText("<Введите название>");
-
-
 
     create_item->setIcon(QPixmap(":/resources/new.png"));
     create_item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
                                 Qt::ItemIsEditable);
-//    lwg->insertItem(0,lwg);
     ui->create_set->addItem(create_item);
 
     ui->stackedWidget->setCurrentIndex(1);
@@ -67,12 +59,21 @@ MainWindow::MainWindow(QWidget *parent) :
         map->insert(iter.key(),iter.value());
         available_item =  new QListWidgetItem(iter.key(),ui->all_sets);
         available_item->setIcon(QPixmap(":/resources/available.png"));
-
-//        ui->all_sets->addItem(iter.key());
     }
+    //создание модели
+    model = new SampleModel();
+
+    // Создание обработчика действий по нажатию на кнопку "Сохранить"
+    QObject::connect(model,SIGNAL(actionSave()), this,SLOT(on_actionSave_triggered()));
+    QObject::connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this,SLOT(setDataSaved()));
 
     del = false;
-////    for ()
+    data_saved = true;
+    ui->action_closeSet->setEnabled(false);
+    ui->action_importExcel->setEnabled(false);
+    ui->action_calcilate->setEnabled(false);
+    ui->action_prepare->setEnabled(false);
+    ui->actionSave->setEnabled(false);
 
 }
 
@@ -84,7 +85,7 @@ MainWindow::~MainWindow()
         delete model;
         delete ui;
     }
-
+    delete map;
 }
 
 /*
@@ -99,19 +100,11 @@ MainWindow::~MainWindow()
  */
 void MainWindow::on_action_editorTool_triggered()
 {
-
-//    Editor *dlg = new Editor();
-//    dlg->exec();
-//    delete dlg;
-//    model->resetModel();
      EditorNew *window = new EditorNew();
      window->setWindowTitle(QString::fromUtf8("Редактор знаний"));
      window->resize(680, 559);
      window->show();
 
-//    Editor *dlg = new Editor();
-//    dlg->exec();
-//    delete dlg;
     // если модель уже имеется(т.е. не на главной странице), то reset
     if (ui->stackedWidget->currentIndex() == 0)
     {
@@ -131,18 +124,13 @@ void MainWindow::on_action_editorTool_triggered()
  */
 void MainWindow::on_actionSave_triggered()
 {
-    clock_t start;
-    clock_t end;
-    start = clock();
     model->saveItems();
-    end = clock() - start;
-    qDebug()<< "saving: "<<end / CLOCKS_PER_SEC;
+
     model->updateItems();
-    end = clock() - end;
-    qDebug()<< "updating: "<<end / CLOCKS_PER_SEC;
+
     model->removeItems();
-    end = clock() - end;
-    qDebug()<< "deleting: "<<end / CLOCKS_PER_SEC;
+
+    data_saved = true;
 }
 
 /*
@@ -180,6 +168,7 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
 
         model->setItemsToDelete(sample_num);
         delete sample_num;
+        data_saved = false;
     }
 }
 
@@ -197,23 +186,58 @@ void MainWindow::keyPressEvent(QKeyEvent *key_event)
  */
 void MainWindow::on_action_importExcel_triggered()
 {
-    QString url = QFileDialog::getOpenFileName();
-    if (url == "")
+    QMessageBox msg;
+    QAbstractButton *cancel = msg.addButton("Отменить", QMessageBox::RejectRole);
+    QAbstractButton *ok = msg.addButton("Продолжить",QMessageBox::AcceptRole);
+
+    msg.setText("Не сохраненые данные будут потеряны. Продолжить?");
+    msg.setIcon(QMessageBox::Question);
+    msg.exec();
+
+    if(msg.clickedButton() == ok)
     {
-        return;
+        QString url = QFileDialog::getOpenFileName();
+        if (url == "")
+        {
+            return;
+        }
+
+        QStringList s_list = url.split("\/");
+        QStringList names_list = s_list.last().split(".");
+        qDebug()<<"s_list.size: "<< s_list.size();
+        qDebug()<< names_list.first();
+        //Если расширение файла не *.xlsx
+        if (names_list.last().compare("xlsx") != 0)
+        {
+            QMessageBox::about(NULL,"Ошибка", "Выберите файл с расширением *.xlsx");
+        }
+        else
+        {
+            int same_sets_count = map->count(names_list.first());
+            QString name;
+            name = (same_sets_count == 0) ? names_list.first() : QString("%1(%2)")
+                                            .arg(names_list.first())
+                                            .arg(same_sets_count);
+            Starter start;
+
+           Names::sample_set_id = start.saveSampleSet(name);
+            // Подготовка для импорта проб
+            Importer doc(url);
+
+            // Импорт проб
+            QVector<Sample*> sam = doc.import();
+
+            //Если есть импортированные пробы, то переустановить модель
+            if (sam.size() != 0)
+            {
+                model->resetModel(sam);
+            }
+        }
+
     }
+    delete ok;
+    delete cancel;
 
-    // Подготовка для импорта проб
-    Importer doc(url);
-
-    // Импорт проб
-    QVector<Sample*> sam = doc.import();
-
-    //Если есть импортированные пробы, то переустановить модель
-    if (sam.size() != 0)
-    {
-        model->resetModel(sam);
-    }
 }
 
 void MainWindow::on_action_prepare_triggered()
@@ -306,13 +330,13 @@ void MainWindow::on_all_sets_itemClicked(QListWidgetItem *item)
 {
     del = true;
     ui->stackedWidget->setCurrentIndex(0);
+    ui->action_closeSet->setEnabled(true);
+    ui->action_importExcel->setEnabled(true);
+    ui->action_calcilate->setEnabled(true);
+    ui->action_prepare->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+
     Names::sample_set_id = map->value(item->data(Qt::DisplayRole).toString());
-
-    //создание модели
-    model = new SampleModel();
-
-    // Создание обработчика действий по нажатию на кнопку "Сохранить"
-    QObject::connect(model,SIGNAL(actionSave()), this,SLOT(on_actionSave_triggered()));
 
     // наполнение модели данными
     model->setItems();
@@ -338,7 +362,104 @@ void MainWindow::on_all_sets_itemClicked(QListWidgetItem *item)
 void MainWindow::on_create_set_itemChanged(QListWidgetItem *item)
 {
     Starter starter;
-    unsigned int set_id = starter.saveSampleSet(item->data(Qt::DisplayRole).toString());
-    Names::sample_set_id = set_id;
-    on_all_sets_itemClicked(item);
+    QString display_name = item->data(Qt::DisplayRole).toString();
+//    QString name;
+//    int same_set_count = map->count(display_name);
+    if (map->contains(display_name) == true)
+    {
+        QMessageBox::about(NULL, "Предупреждение", "Данное имя уже используется. Укажаите другое имя набора");
+    }
+    else
+    {
+
+        unsigned int set_id = starter.saveSampleSet(display_name);
+        Names::sample_set_id = set_id;
+//        item->setData(Qt::DisplayRole, display_name);
+        on_all_sets_itemClicked(item);
+    }
+
+}
+
+void MainWindow::setDataSaved()
+{
+    data_saved = false;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (data_saved == false)
+    {
+        QMessageBox msg;
+
+        QAbstractButton *ok = msg.addButton("Сохранить",QMessageBox::AcceptRole);
+        QAbstractButton *reject = msg.addButton("Отменить", QMessageBox::RejectRole);
+        QAbstractButton *cancel = msg.addButton("Не сохранить", QMessageBox::RejectRole);
+        msg.setText("Данные не сохранены. Сохранить?");
+        msg.setIcon(QMessageBox::Question);
+        msg.exec();
+
+        if (msg.clickedButton() == ok)
+        {
+            on_actionSave_triggered();
+        }
+        else if (msg.clickedButton() == reject)
+        {
+            event->ignore();
+        }
+        delete cancel;
+        delete ok;
+    }
+
+}
+
+void MainWindow::on_action_closeSet_triggered()
+{
+    if (data_saved == false)
+    {
+        QMessageBox msg;
+        QAbstractButton *cancel = msg.addButton("Отменить", QMessageBox::RejectRole);
+        QAbstractButton *ok = msg.addButton("Продолжить",QMessageBox::AcceptRole);
+
+        msg.setText("Не сохраненые данные будут потеряны. Продолжить?");
+        msg.setIcon(QMessageBox::Question);
+        msg.exec();
+
+        if(msg.clickedButton() ==  cancel)
+        {
+            return;
+        }
+    }
+
+        Starter start;
+        QMap<QString, unsigned int>::iterator iter;
+        QMap<QString, unsigned int> *local_map = start.getSampleSets();
+        QListWidgetItem *available_item;
+        QListWidgetItem *create_item = new QListWidgetItem("<Введите название>");
+
+        create_item->setIcon(QPixmap(":/resources/new.png"));
+        model->deleteAllSamples();
+        Names::sample_set_id = 0;
+        ui->stackedWidget->setCurrentIndex(1);
+        ui->all_sets->clear();
+        ui->create_set->clear();
+        ui->create_set->addItem(create_item);
+
+        for (iter = local_map->begin(); iter != local_map->end(); iter ++)
+        {
+            map->insert(iter.key(), iter.value());
+            available_item =  new QListWidgetItem(iter.key(),ui->all_sets);
+            ui->all_sets->addAction(ui->action_deleteSet);
+            available_item->setIcon(QPixmap(":/resources/available.png"));
+        }
+
+        ui->action_closeSet->setEnabled(false);
+        ui->action_importExcel->setEnabled(false);
+        ui->action_calcilate->setEnabled(false);
+        ui->action_prepare->setEnabled(false);
+        ui->actionSave->setEnabled(false);
+}
+
+void MainWindow::on_all_sets_customContextMenuRequested(const QPoint &pos)
+{
+
 }

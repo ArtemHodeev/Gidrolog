@@ -37,3 +37,4 @@ QMap<QString, unsigned int> *Starter::getSampleSets()
 {
     return map;
 }
+
