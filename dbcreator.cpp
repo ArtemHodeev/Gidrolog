@@ -21,7 +21,7 @@ DBCreator::DBCreator(QSqlDatabase db)
     table_names.append("item_sample");
     table_names.append("factor");
     table_names.append("analitic_type");
-    table_names.append("item_sample_backup");
+//    table_names.append("item_sample_backup");
 }
 DBCreator::~DBCreator()
 {}
@@ -240,10 +240,14 @@ bool DBCreator::createTable(QString table_name)
             query_sql = "CREATE TABLE item_sample ";
             query_sql += "( ";
             query_sql += "id int NOT NULL AUTO_INCREMENT, ";
+            query_sql += "sample_set_id int NOT NULL, ";
             query_sql += "sample_id int NOT NULL, ";
             query_sql += "item_id int NOT NULL, ";
             query_sql += "value double NOT NULL DEFAULT -1, ";
             query_sql += "PRIMARY KEY (id), ";
+            query_sql += "FOREIGN KEY (sample_set_id) ";
+            query_sql += "              REFERENCES sample_set(id) ";
+            query_sql += "              ON UPDATE CASCADE ON DELETE RESTRICT, ";
             query_sql += "FOREIGN KEY (sample_id) ";
             query_sql += "              REFERENCES sample(id) ";
             query_sql += "              ON UPDATE CASCADE ON DELETE RESTRICT, ";

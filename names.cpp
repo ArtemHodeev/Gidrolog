@@ -6,6 +6,7 @@ QHash<QString, unsigned int>* Names::locations = new QHash<QString, unsigned int
 QHash<QString, unsigned int>* Names::item_types = new QHash<QString, unsigned int>();
 
 unsigned int Names::analitic_id = 0;
+unsigned int Names::sample_set_id = 0;
 
 Names::Names()
 {

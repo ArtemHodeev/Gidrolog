@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     testsolve.cpp \
     editornew.cpp \
     sampleinfoparser.cpp \
-    mypicker.cpp
+    mypicker.cpp \
+    starter.cpp
 
 HEADERS  += mainwindow.h \
     editor.h \
@@ -144,7 +145,8 @@ HEADERS  += mainwindow.h \
     testsolve.h \
     editornew.h \
     sampleinfoparser.h \
-    mypicker.h
+    mypicker.h \
+    starter.h
 
 FORMS    += mainwindow.ui \
     editor.ui \
@@ -159,3 +161,6 @@ CONFIG += qwt
 
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
+
+RESOURCES += \
+    resources.qrc
