@@ -141,16 +141,13 @@ Qt::ItemFlags SampleModel::flags(const QModelIndex &index) const
 
 bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid() || role != Qt::EditRole)
-    {
-        return false;
-    }
-    if (value == QVariant(""))
+    if (!index.isValid() || role != Qt::EditRole || value == QVariant(""))
     {
         return false;
     }
 
     bool sign = false;
+    bool main_info_changed = false;
     Sample *i;
     i = (index.row() < rCount - 1) ? items.at(index.row()) : new Sample();
 
@@ -163,6 +160,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
         unsigned int loc_id = Names::locations->value(value.toString());
         i->setLocationId(loc_id);
         sign = true;
+        main_info_changed = true;
         break;
     }
     case 2:
@@ -174,6 +172,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
         i->setDate(value.toDateTime());
         sign = true;
+        main_info_changed = true;
         break;
     }
 //        Тип водной массы
@@ -182,6 +181,7 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
         unsigned int loc_id = Names::water_types->value(value.toString());
         i->setWaterId(loc_id);
         sign = true;
+        main_info_changed = true;
         break;
     }
 //        Комментарий
@@ -193,10 +193,12 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
         {
             QMessageBox::about(NULL,QString("Предупреждение"),QString("Укажите место взятия, дату отбора пробы и тип водной массы"));
             sign = false;
+
         }
         else
         {
-            i->setComment(value.toString());
+            i->setComment(value.toString().trimmed());
+            main_info_changed = true;
             sign = true;
         }
         break;
@@ -235,19 +237,23 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
 
             item_in_sample.setValue(value.toDouble());
             item_in_sample.setItemId(param_id);
-            i->getComponents()->insert(param_id, item_in_sample);
-            i->setPosition(index.row());
+            item_in_sample.setSampleId(i->getId());
 
-            //добавление редактируемой пробы/строки в список проб на обновление в БД
-            int pos = items_to_update.indexOf(i);
-            if (pos < 0)
-            {
-                items_to_update.append(i);
-            }
-            else
-            {
-                items_to_update[pos] = i;
-            }
+            items_in_sample_update.append(item_in_sample);
+
+//            i->getComponents()->insert(param_id, item_in_sample);
+//            i->setPosition(index.row());
+
+//            //добавление редактируемой пробы/строки в список проб на обновление в БД
+//            int pos = items_to_update.indexOf(i);
+//            if (pos < 0)
+//            {
+//                items_to_update.append(i);
+//            }
+//            else
+//            {
+//                items_to_update[pos] = i;
+//            }
         }
 
         break;
@@ -257,9 +263,10 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
     i->setPosition(index.row());
 
     //Проба создается, если заполенены место отбора, дата отбора и тип водной массы
-    if (sign == true)
-    {
-        if (index.row() < rCount - 1)
+//    if (sign == true )
+//    {
+
+        if (index.row() < rCount - 1 && main_info_changed == true)
         {
             items[index.row()] = i;
             if (items_to_update.contains(i) != true)
@@ -267,13 +274,13 @@ bool SampleModel::setData(const QModelIndex &index, const QVariant &value, int r
                 items_to_update.append(i);
             }
         }
-        else
+        else if (index.row() == rCount - 1 && sign == true)
         {
             items.append(i);
             items_to_save.append(i);
             insertRows(rCount,1);
         }
-    }
+//    }
 
     return true;
 }
@@ -362,7 +369,7 @@ void SampleModel::setSamples(QVector<Sample *> sample_mass)
     {
         items.append(sample_mass[i]);
         items_to_save.append(sample_mass[i]);
-        items_to_update.append(sample_mass[i]);
+//        items_to_update.append(sample_mass[i]);
         rCount ++;
     }
 
@@ -393,7 +400,7 @@ void SampleModel::setItems()
         s->setPosition(pos);
 
         q->prepare("SELECT item_id, value FROM item_sample WHERE sample_set_id = :set_id AND sample_id = :s_id");
-        q->bindValue(":sample_set", Names::sample_set_id);
+        q->bindValue(":set_id", Names::sample_set_id);
         q->bindValue(":s_id",query->value("id"));
         q->exec();
 
@@ -467,15 +474,18 @@ void SampleModel::updateItems()
         query->bindValue(":date", items_to_update.first()->getDate().toString("yyyy-MM-dd hh:mm"));
         query->bindValue(":comment",items_to_update.first()->getComment());
         query->exec();
-
-        QHash<unsigned int, ItemInSample>::iterator i;
-        unsigned int s_id = 0;
-        s_id = items_to_update.first()->getId();
+        items_to_update.removeFirst();
+    }
+//        QHash<unsigned int, ItemInSample>::iterator i;
+//        unsigned int s_id = 0;
+//        s_id = items_to_update.first()->getId();
         QString sql = "";
 
-        for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
+        QVector<ItemInSample>::iterator iter;
+
+        for (iter = items_in_sample_update.begin(); iter != items_in_sample_update.end(); iter ++)
         {
-            switch(i->getChanged())
+            switch(iter->getChanged())
             {
             case 0:
                continue;
@@ -492,31 +502,36 @@ void SampleModel::updateItems()
                break;
             }
 
-            i->setChanged(0);
+            iter->setChanged(0);
 
             query->prepare(sql);
             query->bindValue(":set_id", Names::sample_set_id);
-            query->bindValue(":s_id", s_id);
-            query->bindValue(":i_id",i.key());
-            query->bindValue(":value",i.value().getValue());
+            query->bindValue(":s_id", iter->getSampleId());
+            query->bindValue(":i_id",iter->getItemId());
+            query->bindValue(":value",iter->getValue());
             query->exec();
         }//for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
-
-        items_to_update.removeFirst();
-    }
+        items_in_sample_update.clear();
+//        items_to_update.removeFirst();
+//    }
 
     delete query;
 }
 void SampleModel::saveItems()
 {
     QSqlQuery *query = new QSqlQuery(DatabaseAccessor::getDb());
+    QSqlQuery *query_1 = new QSqlQuery(DatabaseAccessor::getDb());
 
     QString sql = "";
+    QString sql_items = "";
     int pos = -1;
 
     sql = "INSERT INTO sample (sample_set_id, location_id, sample_date, water_type_id, comment) ";
     sql += "VALUES (:sample_set_id,:location_id,:date,:water_id,:comment)";
     query->prepare(sql);
+
+    sql_items = "INSERT INTO item_sample (sample_set_id, sample_id, item_id, value) VALUES (:set_id,:s_id, :i_id, :value)";
+    query_1->prepare(sql_items);
 
     //Сохраняется информаци о пробе, без указания: какие параметры  в ней содержатся.
     //Параметры пробы могут быть сохранены только при обновлении пробы
@@ -532,6 +547,25 @@ void SampleModel::saveItems()
 
         pos = findItemInPosition(items_to_save.first()->getPosition());
         items[pos]->setId(query->lastInsertId().toUInt());
+        QHash<unsigned int, ItemInSample>::iterator i;
+        unsigned int s_id = 0;
+        s_id = query->lastInsertId().toUInt();
+
+
+        for (i = items_to_save.first()->getComponents()->begin(); i != items_to_save.first()->getComponents()->end(); i ++)
+        {
+            query_1->bindValue(":set_id", Names::sample_set_id);
+            query_1->bindValue(":s_id", s_id);
+            query_1->bindValue(":i_id",i.value().getItemId());
+            query_1->bindValue(":value",i.value().getValue());
+            query_1->exec();
+        }
+
+//            iter->setChanged(0);
+
+
+
+//        }//for (i = items_to_update.first()->getComponents()->begin(); i != items_to_update.first()->getComponents()->end(); i ++)
         items_to_save.removeFirst();
     }
     delete query;

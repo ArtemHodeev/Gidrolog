@@ -38,6 +38,7 @@ private:
     QVector<Sample*> items_to_update;
     QVector<Sample*> items_to_delete;
     QVector<Sample*> items_to_save;
+    QVector<ItemInSample> items_in_sample_update;
     QVector<Sample*> items;
     QVector<ItemInSample*> params_to_save;// параметры проб, которые будут созданы: в пробе появилось значение данного параметр
     QVector<ItemInSample*> params_to_update;// параметры проб, котороые обновили свое значение
