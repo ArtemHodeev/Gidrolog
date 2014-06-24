@@ -45,7 +45,7 @@ void ConfirmCalculator::on_pushButton_ok_pressed()
         QModelIndexList::iterator i;
         for (i = sel_columns.begin(); i != sel_columns.end(); i ++)
         {
-            rows[ind] = i->column();
+            rows[ind] = i->row();
             ind ++;
         }
         rows[ind] = -1;

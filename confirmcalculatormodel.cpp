@@ -121,7 +121,8 @@ void ConfirmCalculatorModel::setItemsToDelete(int *mass)
         }
         count ++;
     }
-    removeColumns(first,count,QModelIndex());
+    removeRows(first,count,QModelIndex());
+//    removeColumns(first,count,QModelIndex());
 }
 void ConfirmCalculatorModel::saveItems()
 {
@@ -280,6 +281,7 @@ Qt::ItemFlags ConfirmCalculatorModel::flags(const QModelIndex &index) const
 int ConfirmCalculatorModel::findItemInPosition(unsigned int pos)
 {
     int i = 0;
+
     while(i < items.size() && items[i]->getPosition() != pos)
     {
         i++;
