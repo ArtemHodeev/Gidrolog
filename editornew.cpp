@@ -79,6 +79,7 @@ EditorNew::EditorNew(QWidget *parent) :
     layout_criteries->addWidget(max_error_t);
     layout_criteries->addWidget(count_of_lost_label);
     layout_criteries->addWidget(count_of_lost_t);
+    layout_criteries->addStretch(3);
     criteries->setLayout(layout_criteries);
 
     item_model = new ItemModel();
@@ -102,7 +103,6 @@ EditorNew::EditorNew(QWidget *parent) :
     location_model = new LocationModel();
     location_model->setItems();
     location_table->setModel(location_model);
-    connect(location_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(on_location_changed()));
 
     factor_model = new FactorModel();
     factor_model->setItems();
@@ -256,20 +256,26 @@ void EditorNew::keyPressEvent(QKeyEvent *key_event)
         sel_rows[ind] = -1;
 
         // Удаление строк
-        current_model->setItemsToDelete(sel_rows);
+        if (sel_rows[0] != -1)
+        {
+            current_model->setItemsToDelete(sel_rows);
+        }
         switch(tabs->currentIndex())
         {
         case 0:
             item_edited = true;
             break;
-        case 2:
+        case 1:
             item_type_edited = true;
             break;
-        case 3:
+        case 2:
             water_edited = true;
             break;
-        case 4:
+        case 3:
             location_edited = true;
+            break;
+        case 4:
+            factor_edited = true;
             break;
         default:
             break;

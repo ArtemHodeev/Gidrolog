@@ -274,6 +274,11 @@ void ItemTypeModel::setItemsToDelete(int *mass)
 
         count ++;
     }
-    removeRows(first,count);
+    for (int i=0; i < items.size(); i++)
+    {
+        items[i]->setPosition(i);
+    }
+    if (first >= 0)
+        removeRows(first+1,count);
 }
 

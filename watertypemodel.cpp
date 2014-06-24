@@ -213,7 +213,7 @@ void WaterTypeModel::setItemsToDelete(int *mass)
 
     while(mass[count] != -1)
     {
-        index= findItemInPosition(mass[count]);
+        index = findItemInPosition(mass[count]);
         if (index != -1)
         {
             items_to_delete.append(items[index]);
@@ -235,9 +235,14 @@ void WaterTypeModel::setItemsToDelete(int *mass)
         }
 
         count ++;
+
     }
-    qDebug()<<"Items_to_delete size: "<<items_to_delete.size();
-    removeRows(first,count);
+    for (int i=0; i < items.size(); i++)
+    {
+        items[i]->setPosition(i);
+    }
+    if (first >= 0)
+        removeRows(first+1,count);
 }
 
 int WaterTypeModel::findItemInPosition(int pos)
